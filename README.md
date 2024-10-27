@@ -145,6 +145,7 @@ Further configurations can be done by editing the file cv\_header.tex, cv.tex, a
 2. cv.tex is the first page information for the c.v.  This contains things like your name and contact information, employment and education history, etc…   You can format this how you like, but know that the \\section\* command should be used to create different sections within the c.v.  
 3. cv\_tables.tex is included by cv.tex, and is responsible for including all of the automatically created tables in the c.v.   If you would like to use your own custom system for a particular section of the data, you can comment out the table that is being included by cv.tex, and import whatever LaTeX compatible file you want.
 
+
 ### Advanced Features & Command Line Options
 
 The `make_cv` tool provides a range of command-line options to customize and automate CV generation. Below is a list of the most useful options. Run `make_cv -h` to see the full list.
@@ -158,8 +159,8 @@ The `make_cv` tool provides a range of command-line options to customize and aut
 | `-e {SECTION}`           | Exclude a section from the CV. Sections include: `Grants`, `PersonalAwards`, `Conference`, `GradAdvisees`, `Proposals`, `UndergradResearch`, `Reviews`, `Refereed`, `Invited`, `Service`, `Teaching`, `Book`, `Patent`, `StudentAwards`, `Journal`. |
 | `-d {PATH}`              | Override the default data directory location specified in the config file.                                                                                                                                                      |
 | `-f {PATH}`              | Specify a configuration file. Defaults to `cv.cfg`.                                                                                                                                                                             |
-| `-D {NAME=<directory>}`  | Override data directory location in config file for specific sections. Names include: `Scholarship`, `PersonalAwards`, `StudentAwards`, `Service`, `Reviews`, `CurrentGradAdvisees`, `GradTheses`, `UndergradResearch`, `Teaching`, `Proposals`, `Grants`. |
-| `-F {NAME=<filename>}`   | Override data file location in config file for specific sections. Names include: `Scholarship`, `PersonalAwards`, `StudentAwards`, `Service`, `Reviews`, `CurrentGradAdvisees`, `GradTheses`, `UndergradResearch`, `Teaching`, `Proposals`, `Grants`. |
+| `-D {NAME=<directory>}`  | Override data directory location in config file for specific sections. `NAME` can be `Scholarship`, `PersonalAwards`, `StudentAwards`, `Service`, `Reviews`, `CurrentGradAdvisees`, `GradTheses`, `UndergradResearch`, `Teaching`, `Proposals`, `Grants`. |
+| `-F {NAME=<filename>}`   | Override data file location in config file for specific sections. `NAME` can be `Scholarship`, `PersonalAwards`, `StudentAwards`, `Service`, `Reviews`, `CurrentGradAdvisees`, `GradTheses`, `UndergradResearch`, `Teaching`, `Proposals`, `Grants`. |
 | `-J {NAME}`              | Specify the name of the reviews JSON file.                                                                                                                                                                                      |
 | `-j {true,false}`        | Force conversion of a reviewing JSON file downloaded from Web of Science.                                                                                                                                                       |
 | `-S {SCRAPERID}`         | Specify the `ScraperID` (optional, but helps avoid Google blocking requests).                                                                                                                                                   |
