@@ -145,51 +145,29 @@ Further configurations can be done by editing the file cv\_header.tex, cv.tex, a
 2. cv.tex is the first page information for the c.v.  This contains things like your name and contact information, employment and education history, etc…   You can format this how you like, but know that the \\section\* command should be used to create different sections within the c.v.  
 3. cv\_tables.tex is included by cv.tex, and is responsible for including all of the automatically created tables in the c.v.   If you would like to use your own custom system for a particular section of the data, you can comment out the table that is being included by cv.tex, and import whatever LaTeX compatible file you want.
 
-
 ### Advanced Features & Command Line Options
 
-`make_cv` can do a lot of things automatically for you. If you add a `-h` flag, it will give you a full list of things you can use it to do. Here are some of the most useful options:
+The `make_cv` tool provides a range of command-line options to customize and automate CV generation. Below is a list of the most useful options. Run `make_cv -h` to see the full list.
 
-  -g {NUMBER OF YEARS},  Search for and add new entries to the .bib file from Google Scholar for the last specified number of years; use -1 to search for everything. Defaults to 1 if -g 
-                        is passed without specifying a number.
-      
-  -c {true,false},  Update citation counts stored in the .bib file.
-      
-  -m {true,false},  Update the student author markers.
-      
-  -I {true,false},  Use bibtexautocomplete to search for and add missing DOIs to the .bib file.
-      
-  -e {SECTION},  Exclude section from CV. Sections can be: Grants, PersonalAwards, Conference, GradAdvisees, Proposals, UndergradResearch, Reviews, Refereed, Invited, Service, Teaching, 
-                Book, Patent, StudentAwards, Journal.
-      
-  -d {PATH TO THE ROOT DIRECTORY OF DATA FOLDERS},  Override data directory location in config file.
-      
-  -f {PATH TO THE CONFIGURATION FILE},  Specify a configuration file; defaults to cv.cfg.
-      
-  -D {NAME=<directory>},  Override data directory location in config file for specific sections. NAME can be Scholarship, PersonalAwards, StudentAwards, Service, Reviews, 					  CurrentGradAdvisees, GradTheses, UndergradResearch, Teaching, Proposals, Grants.
-      
-  -F {NAME=<filename>},   Override data file location in config file. NAME can be Scholarship, PersonalAwards, StudentAwards, Service, Reviews, CurrentGradAdvisees, GradTheses, 				  UndergradResearch, Teaching, Proposals, Grants.
-      
-  -J {NAME},  Specify the name of the reviews JSON file.
-      
-  -j {true,false},  Force conversion of a reviewing JSON file downloaded from Web of Science.
-      
-  -S {SCRAPERID},   Specify the ScraperID (not necessary but helps avoid Google blocking requests).
-      
-  -s {true,false},  Use scraper to avoid blocking by Google.
-      
-  -G {GOOGLEID},    Specify GoogleID (used for finding new publications).
-      
-  -g {N},   Search for and add new entries from the last N (default 1) years to the .bib file. Defaults to 1 if no number is specified.
-      
-  -I {true,false},   Search for and add missing DOIs to the .bib file.
-      
-  -C {true,false},   Include citation counts in the CV.
-      
-  -M {true,false},   Include student author markers in the CV.
-      
-  -e {SECTION},   Exclude section from CV. Sections include: Grants, PersonalAwards, Conference, GradAdvisees, Proposals, UndergradResearch, Reviews, Refereed, Invited, Service, 
-                  Teaching, Book, Patent, StudentAwards, Journal.
+| Option                   | Description                                                                                                                                                                                                                      |
+|--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `-g {NUMBER OF YEARS}`   | Search for and add new entries from Google Scholar to the `.bib` file for the past specified number of years. Use `-1` to search for all available entries. Defaults to `1` if `-g` is used without specifying a number.       |
+| `-c {true,false}`        | Update citation counts stored in the `.bib` file.                                                                                                                                                                               |
+| `-m {true,false}`        | Update student author markers in the `.bib` file.                                                                                                                                                                               |
+| `-I {true,false}`        | Use `bibtexautocomplete` to search for and add missing DOIs to the `.bib` file.                                                                                                                                                 |
+| `-e {SECTION}`           | Exclude a section from the CV. Sections include: `Grants`, `PersonalAwards`, `Conference`, `GradAdvisees`, `Proposals`, `UndergradResearch`, `Reviews`, `Refereed`, `Invited`, `Service`, `Teaching`, `Book`, `Patent`, `StudentAwards`, `Journal`. |
+| `-d {PATH}`              | Override the default data directory location specified in the config file.                                                                                                                                                      |
+| `-f {PATH}`              | Specify a configuration file. Defaults to `cv.cfg`.                                                                                                                                                                             |
+| `-D {NAME=<directory>}`  | Override data directory location in config file for specific sections. Names include: `Scholarship`, `PersonalAwards`, `StudentAwards`, `Service`, `Reviews`, `CurrentGradAdvisees`, `GradTheses`, `UndergradResearch`, `Teaching`, `Proposals`, `Grants`. |
+| `-F {NAME=<filename>}`   | Override data file location in config file for specific sections. Names include: `Scholarship`, `PersonalAwards`, `StudentAwards`, `Service`, `Reviews`, `CurrentGradAdvisees`, `GradTheses`, `UndergradResearch`, `Teaching`, `Proposals`, `Grants`. |
+| `-J {NAME}`              | Specify the name of the reviews JSON file.                                                                                                                                                                                      |
+| `-j {true,false}`        | Force conversion of a reviewing JSON file downloaded from Web of Science.                                                                                                                                                       |
+| `-S {SCRAPERID}`         | Specify the `ScraperID` (optional, but helps avoid Google blocking requests).                                                                                                                                                   |
+| `-s {true,false}`        | Use scraper to avoid Google blocking.                                                                                                                                                                                           |
+| `-G {GOOGLEID}`          | Specify `GoogleID` (used for finding new publications).                                                                                                                                                                         |
+| `-C {true,false}`        | Include citation counts in the CV.                                                                                                                                                                                              |
+| `-M {true,false}`        | Include student author markers in the CV.                                                                                                                                                                                       |
+
 
 
 For example, the following will look for any new google scholar entries in the 4 last years, help you categorize them, then update the citation counts using google scholar, update the student markers, and exclude the proposals and conferences section when making a c.v.
