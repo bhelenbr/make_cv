@@ -150,46 +150,46 @@ Further configurations can be done by editing the file cv\_header.tex, cv.tex, a
 
 `make_cv` can do a lot of things automatically for you. If you add a `-h` flag, it will give you a full list of things you can use it to do. Here are some of the most useful options:
 
-  -g {NUMBER OF YEARS}  Search for and add new entries to the .bib file from Google Scholar for the last specified number of years; use -1 to search for everything. Defaults to 1 if -g 
+  -g {NUMBER OF YEARS},  Search for and add new entries to the .bib file from Google Scholar for the last specified number of years; use -1 to search for everything. Defaults to 1 if -g 
                         is passed without specifying a number.
       
-  -c {true,false}  Update citation counts stored in the .bib file.
+  -c {true,false},  Update citation counts stored in the .bib file.
       
-  -m {true,false}  Update the student author markers.
+  -m {true,false},  Update the student author markers.
       
-  -I {true,false}  Use bibtexautocomplete to search for and add missing DOIs to the .bib file.
+  -I {true,false},  Use bibtexautocomplete to search for and add missing DOIs to the .bib file.
       
-  -e {SECTION}  Exclude section from CV. Sections can be: Grants, PersonalAwards, Conference, GradAdvisees, Proposals, UndergradResearch, Reviews, Refereed, Invited, Service, Teaching, 
+  -e {SECTION},  Exclude section from CV. Sections can be: Grants, PersonalAwards, Conference, GradAdvisees, Proposals, UndergradResearch, Reviews, Refereed, Invited, Service, Teaching, 
                 Book, Patent, StudentAwards, Journal.
       
-  -d {PATH TO THE ROOT DIRECTORY OF DATA FOLDERS}  Override data directory location in config file.
+  -d {PATH TO THE ROOT DIRECTORY OF DATA FOLDERS},  Override data directory location in config file.
       
-  -f {PATH TO THE CONFIGURATION FILE}  Specify a configuration file; defaults to cv.cfg.
+  -f {PATH TO THE CONFIGURATION FILE},  Specify a configuration file; defaults to cv.cfg.
       
-  -D {NAME=<directory>}  Override data directory location in config file for specific sections. NAME can be Scholarship, PersonalAwards, StudentAwards, Service, Reviews, 					 CurrentGradAdvisees, GradTheses, UndergradResearch, Teaching, Proposals, Grants.
+  -D {NAME=<directory>},  Override data directory location in config file for specific sections. NAME can be Scholarship, PersonalAwards, StudentAwards, Service, Reviews, 					  CurrentGradAdvisees, GradTheses, UndergradResearch, Teaching, Proposals, Grants.
       
-  -F {NAME=<filename>}   Override data file location in config file. NAME can be Scholarship, PersonalAwards, StudentAwards, Service, Reviews, CurrentGradAdvisees, GradTheses, 				 UndergradResearch, Teaching, Proposals, Grants.
+  -F {NAME=<filename>},   Override data file location in config file. NAME can be Scholarship, PersonalAwards, StudentAwards, Service, Reviews, CurrentGradAdvisees, GradTheses, 				  UndergradResearch, Teaching, Proposals, Grants.
       
-  -J {NAME}  Specify the name of the reviews JSON file.
+  -J {NAME},  Specify the name of the reviews JSON file.
       
-  -j {true,false}  Force conversion of a reviewing JSON file downloaded from Web of Science.
+  -j {true,false},  Force conversion of a reviewing JSON file downloaded from Web of Science.
       
-  -S {SCRAPERID}   Specify the ScraperID (not necessary but helps avoid Google blocking requests).
+  -S {SCRAPERID},   Specify the ScraperID (not necessary but helps avoid Google blocking requests).
       
-  -s {true,false}  Use scraper to avoid blocking by Google.
+  -s {true,false},  Use scraper to avoid blocking by Google.
       
-  -G {GOOGLEID}    Specify GoogleID (used for finding new publications).
+  -G {GOOGLEID},    Specify GoogleID (used for finding new publications).
       
-  -g {N}   Search for and add new entries from the last N (default 1) years to the .bib file. Defaults to 1 if no number is specified.
+  -g {N},   Search for and add new entries from the last N (default 1) years to the .bib file. Defaults to 1 if no number is specified.
       
-  -I {true,false}   Search for and add missing DOIs to the .bib file.
+  -I {true,false},   Search for and add missing DOIs to the .bib file.
       
-  -C {true,false}   Include citation counts in the CV.
+  -C {true,false},   Include citation counts in the CV.
       
-  -M {true,false}   Include student author markers in the CV.
+  -M {true,false},   Include student author markers in the CV.
       
-  -e {SECTION}   Exclude section from CV. Sections include: Grants, PersonalAwards, Conference, GradAdvisees, Proposals, UndergradResearch, Reviews, Refereed, Invited, Service, 
-                 Teaching, Book, Patent, StudentAwards, Journal.
+  -e {SECTION},   Exclude section from CV. Sections include: Grants, PersonalAwards, Conference, GradAdvisees, Proposals, UndergradResearch, Reviews, Refereed, Invited, Service, 
+                  Teaching, Book, Patent, StudentAwards, Journal.
 
 
 For example, the following will look for any new google scholar entries in the 4 last years, help you categorize them, then update the citation counts using google scholar, update the student markers, and exclude the proposals and conferences section when making a c.v.
