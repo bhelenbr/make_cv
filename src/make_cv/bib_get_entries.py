@@ -19,6 +19,17 @@ import sys
 
 from .bib_add_keywords import add_keyword
 
+import time
+import chromedriver_autoinstaller
+import requests
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from bs4 import BeautifulSoup
+
 # pip3 install scholarly
 # pip3 uninstall urllib3
 # pip3 install 'urllib3<=2'
@@ -144,29 +155,51 @@ def bib_get_entries(bibfile,author_id,years,outputfile,scraper_id=None):
 			if YN != 'Y' and YN !='y':
 				continue
 
-			pub_filled = scholarly.fill(pub)
-			if 'journal' in pub_filled['bib']:
-        			pub_filled['bib']['ENTRYTYPE'] = 'article'
-    			elif 'booktitle' in pub_filled['bib']:
-        			pub_filled['bib']['ENTRYTYPE'] = 'inproceedings' 
-    			elif 'conference' in pub_filled['bib']:
-        			pub_filled['bib']['ENTRYTYPE'] = 'conference'
-    			elif 'publisher' in pub_filled['bib']:
-        			pub_filled['bib']['ENTRYTYPE'] = 'book'
-    			elif 'institution' in pub_filled['bib']:
-        			pub_filled['bib']['ENTRYTYPE'] = 'techreport'
-    			elif 'patent' in pub_filled['bib']:
-        			pub_filled['bib']['ENTRYTYPE'] = 'patent'
-    			elif 'note' in pub_filled['bib']:
-        			pub_filled['bib']['ENTRYTYPE'] = 'misc'
-				
+			url = pub['citedby_url']
+			
+			response = requests.get(url)
+			soup = BeautifulSoup(response.content, 'html.parser')
+
+			first_entry = soup.find('h2', class_='gs_rt')
+
+			if first_entry and first_entry.a:
+    				url2 = "https://scholar.google.com" + first_entry.a['href']
+			else:
+    				print("No entry found.")
+
+			chromedriver_autoinstaller.install()
+
+			chrome_options = Options()
+			chrome_options.add_argument("--headless")
+			chrome_options.add_argument("--no-sandbox")
+			chrome_options.add_argument("--disable-dev-shm-usage")
+
+			service = Service()
+
+			driver = webdriver.Chrome(service=service, options=chrome_options)
+			driver.get(url2)
+
 			try:
-				bibtex_str = scholarly.bibtex(pub_filled)
-				print(bibtex_str)
-			except KeyError:
-				print('entry is missing pub_type or bib_id so skipping\n')
-				continue
+    				citation_link = WebDriverWait(driver, 10).until(
+        				EC.element_to_be_clickable((By.CLASS_NAME, "gs_or_cit"))
+    				)
+    				citation_link.click()
+
+    				bibtex_link = WebDriverWait(driver, 10).until(
+        				EC.presence_of_element_located((By.CLASS_NAME, "gs_citi"))
+    				)
+    
+   				bibtex_url = bibtex_link.get_attribute("href")
 				
+    				response = requests.get(bibtex_url)
+    				bibtex_content = response.text
+			except Exception as e:
+    				print("An error occurred:", e)
+			finally:
+    				driver.quit()
+
+			bibtex_str = bibtex_content
+			print(bibtex_str)
 			YN = input('Is this entry correct and ready to be added?\n[Y/N]? ')	
 			if YN == 'Y':
 				bib_database = bibtexparser.loads(bibtex_str, tbparser)
