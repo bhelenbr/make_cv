@@ -118,9 +118,12 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
             print(pub['bib']['title'])
             
         YN = input('Y/N?')
-        if YN == 'N':
-            continue
-            
+        if YN != 'Y' or YN != 'y':
+		print('Should I try to find a match using Google Scholar instead? (Sometimes this gets blocked by Google.):')
+            	YN2 = input('Y/N?')
+            	if YN2 != 'Y' and YN2 != 'y':
+                	continue
+		    
         # try to fill entry using bibtex autocomplete?
         with open('btac.bib', 'w') as tempfile:
             tempfile.write('@article{' + pub_id + ',\n title={' + pub['bib']['title'] + '},\n}')
