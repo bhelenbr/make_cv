@@ -116,9 +116,9 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 			print(pub['bib']['citation'] + ' ' + pub['bib']['title'])
 		except KeyError:
 			print(pub['bib']['title'])
-			
+		
 		YN = input('Y/N?')
-		if YN != 'Y' or YN != 'y':
+q		if YN.upper() != 'Y':
 			continue
 		
 		# try to fill entry using bibtex autocomplete?
@@ -138,7 +138,7 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 		print(BibTexWriter()._entry_to_bibtex(bib_database.entries[-1]))
 
 		YN = input('Is this btac entry correct and ready to be added?\nOnce an entry is added any future changes must be done manually.\n[Y/N]?')
-		if YN == 'Y':
+		if YN.upper() == 'Y':
 			add_keyword(bib_database.entries[-1])
 			if 'author' in bib_database.entries[-1].keys():
 				IDstring = re.search('^[A-z]+', bib_database.entries[-1]['author']).group(0)
@@ -149,9 +149,9 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 			else:
 				print('Skipped entry because it had no author field\n')
 		else:
-			print('Should I try to find a match using Google Scholar instead? (Sometimes this gets blocked by Google.):')
+			print('Should I try to find a match using Google Scholar instead? (Sometimes this gets blocked by Google. ):')
 			YN = input('Y/N?')
-			if YN != 'Y' and YN != 'y':
+			if YN.upper() != 'Y':
 				continue
 
 			url = pub['citedby_url']
@@ -167,7 +167,6 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 				print("No entry found.")
 
 			chromedriver_autoinstaller.install()
-
 			chrome_options = Options()
 			chrome_options.add_argument("--headless")
 			chrome_options.add_argument("--no-sandbox")
@@ -200,7 +199,7 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 			bibtex_str = bibtex_content
 			print(bibtex_str)
 			YN = input('Is this entry correct and ready to be added?\n[Y/N]? ')	
-			if YN == 'Y':
+			if YN.upper() == 'Y':
 				bib_database = bibtexparser.loads(bibtex_str, tbparser)
 				bib_database.entries[-1]['google_pub_id'] = pub_id
 				add_keyword(bib_database.entries[-1])
