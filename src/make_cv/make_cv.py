@@ -159,7 +159,7 @@ def add_default_args(parser):
 	parser.add_argument('-S','--ScraperID', help='ScraperID (not necessary, but avoids Google blocking requests)')
 	parser.add_argument('-s','--UseScraper', help='Use scraper to avoid blocking by Google',  choices=['true','false'])
 	parser.add_argument('-G','--GoogleID', help='GoogleID (used for finding new publications()')
-	parser.add_argument('-g','--GetNewScholarshipEntries', help='search for and add new entries from the last N (default 1) years to the .bib file', nargs='?', const='1', default='0')
+	parser.add_argument('-g','--GetNewScholarshipEntries', help='search for and add new entries from the last N (default 1) years to the .bib file', nargs='?', const='1')
 	parser.add_argument('-I','--SearchForDOIs', help='search for and add missing DOIs to the .bib file',  choices=['true','false'])
 	parser.add_argument('-c','--UpdateCitations', help='update citation counts',  choices=['true','false'])
 	parser.add_argument('-C','--IncludeCitationCounts', help='put citation counts in cv', choices=['true','false'])
@@ -264,8 +264,9 @@ def process_default_args(config,args):
 	else:
 		scraperID = config['ScraperID']
 		
-	# add new entries to .bib file	
-	if config['GetnewScholarshipEntries'] == None:
+	if config['GetnewScholarshipEntries'] == 'false':
+		config['GetnewScholarshipEntries'] = '0'
+	elif config['GetnewScholarshipEntries'] == 'true':
 		config['GetnewScholarshipEntries'] = '1'
 	
 	if config.getint('GetNewScholarshipEntries') != 0:
