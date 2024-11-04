@@ -119,10 +119,7 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
             
         YN = input('Y/N?')
         if YN != 'Y' or YN != 'y':
-		print('Should I try to find a match using Google Scholar instead? (Sometimes this gets blocked by Google.):')
-            	YN2 = input('Y/N?')
-            	if YN2 != 'Y' and YN2 != 'y':
-                	continue
+		continue
 		    
         # try to fill entry using bibtex autocomplete?
         with open('btac.bib', 'w') as tempfile:
