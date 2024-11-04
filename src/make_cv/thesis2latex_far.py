@@ -58,7 +58,7 @@ def thesis2latex_far(f,years,studentfile,thesisfile):
 		if nrows > 0:
 			count = 0
 			while count < nrows:
-				f.write(" & " +abbreviate_name(df.loc[count,"Student Name"])+": "  + " &  & " +str2latex(df.loc[count,"Current Program"][(df.loc[count,"Current Program"].find("-")+1):]) +"\\\\\n")
+				f.write(" & " +abbreviate_name(df.loc[count,"Student Name"])+": in progress"  + " &  & " +str2latex(df.loc[count,"Current Program"][(df.loc[count,"Current Program"].find("-")+1):]) +"\\\\\n")
 				count += 1
 		
 		if nrows2 > 0:

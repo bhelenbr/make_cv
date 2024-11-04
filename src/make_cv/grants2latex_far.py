@@ -39,6 +39,8 @@ def grants2latex_far(f,years,inputfile):
 	if (nrows > 0):
 		total = grants["Total Cost"].sum()
 		allocated = grants["Allocated Amt"].sum()
+		
+		f.write("Personal Allocation: " +"\\${:,.0f}k".format(allocated/1000) +"  Total: " +"\\${:,.0f}k\n".format(total/1000))
 	
 		f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXllll}\n& Sponsor: Title & Alloc/Total & Dates  \\\\\n\\hline\n")
 		count = 0
@@ -48,7 +50,7 @@ def grants2latex_far(f,years,inputfile):
 			count += 1
 	
 		f.write("\\end{tabularx}\n")
-		f.write("Allocation: " +"\\${:,.0f}k".format(allocated/1000) +"  Total: " +"\\${:,.0f}k\n".format(total/1000))
+		
 
 	return(nrows)
 	

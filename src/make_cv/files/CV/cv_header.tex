@@ -28,7 +28,7 @@
 \setlength{\extrarowheight}{2.5pt}
 % Add counter for rows of tables
 \newcounter{rowcnt}
-\newcommand\rownum{\ifnumequal{\value{rowcnt}}{0}{\#}{\therowcnt.}\stepcounter{rowcnt}}
+\newcommand\rownum{\ifnumequal{\value{rowcnt}}{0}{}{\therowcnt.}\stepcounter{rowcnt}}
 \AtEndEnvironment{tabularx}{\setcounter{rowcnt}{0}}
 
 % Allow text to be rough at the bottom for better page splits
@@ -46,6 +46,8 @@
 % Remove some fields from journal articles
 \AtEveryCitekey{\ifentrytype{article}{\clearfield{url}\clearfield{issn}\clearfield{review}\clearfield{series}\clearfield{eprint}}{}}
 \AtEveryCitekey{\ifentrytype{misc}{\clearfield{url}\clearfield{issn}\clearfield{review}\clearfield{series}\clearfield{eprint}}{}}
+\renewbibmacro*{url+urldate}{}
+\renewbibmacro*{eprint}{}
 
 % This adds the field citations to the bibliography data so I can add the number of citaitons
 \begin{filecontents}{biblatex-dm.cfg}
