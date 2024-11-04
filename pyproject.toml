@@ -22,10 +22,10 @@ dependencies = [
   "openpyxl",
   "bibtexparser<2.0.0",
   "bibtexautocomplete",
-  "scholarly"
-  "selenium"
-  "beautifulsoup4"
-  "chromedriver-autoinstaller"
+  "scholarly",
+  "selenium",
+  "beautifulsoup4",
+  "chromedriver-autoinstaller",
   "requests "
 ]
 
