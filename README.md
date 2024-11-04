@@ -178,7 +178,7 @@ Mac
 `make_cv -g 4 -c true -m true -e Conference -e Proposals`
 
 Windows  
-`python -m make_cv.make_cv -g true -c true -m true -e Conference -e Proposals`
+`python -m make_cv.make_cv -g 4 -c true -m true -e Conference -e Proposals`
 
 Most of the advanced features are by default off, but you can turn them on by default by editing the cv.cfg file in your CV folder.  I usually only use the advanced features intermittently so I leave the advanced features off by default and then use the command line options when I need to use them.
 
