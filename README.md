@@ -148,21 +148,37 @@ Further configurations can be done by editing the file cv\_header.tex, cv.tex, a
 
 ### Advanced Features & Command Line Options
 
-make\_cv can do a lot of things automatically for you.  If you add a `-h` flag it will give you a full list of things you can use it to do.  Here are some of the most useful options:  
-    
-  `-g {true,false} search for and add new entries to the .bib file using google scholar`  
-  `-c {true,false} update citation counts stored in .bib file`  
-  `-m {true,false} update the student author markers`  
-  `-I {true,false} using bibtexautocomplete, search for and add missing doi’s to .bib file`  
-  `-e {SECTION} exclude section from cv where the sections are Grants, PersonalAwards, Conference, GradAdvisees, Proposals, UndergradResearch, Reviews, Refereed, Invited, Service, Teaching, Book, Patent, StudentAwards, Journal`
+The `make_cv` tool provides a range of command-line options to customize and automate CV generation. Below is a list of the most useful options. Run `make_cv -h` to see the full list.
 
-For example, the following will look for any new google scholar entries in the last year, help you categorize them, then update the citation counts using google scholar, update the student markers, and exclude the proposals and conferences section when making a c.v.
+| Option                   | Description                                                                                                                                                                                                                      |
+|--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `-g {NUMBER OF YEARS}`   | Search for and add new entries from Google Scholar to the `.bib` file for the past specified number of years. Use `-1` to search for all available entries. Defaults to `1` if `-g` is used without specifying a number.       |
+| `-c {true,false}`        | Update citation counts stored in the `.bib` file.                                                                                                                                                                               |
+| `-m {true,false}`        | Update student author markers in the `.bib` file.                                                                                                                                                                               |
+| `-I {true,false}`        | Use `bibtexautocomplete` to search for and add missing DOIs to the `.bib` file.                                                                                                                                                 |
+| `-e {SECTION}`           | Exclude a section from the CV. Sections include: `Grants`, `PersonalAwards`, `Conference`, `GradAdvisees`, `Proposals`, `UndergradResearch`, `Reviews`, `Refereed`, `Invited`, `Service`, `Teaching`, `Book`, `Patent`, `StudentAwards`, `Journal`. |
+| `-d {PATH TO DATA DIRECTORY}` | Override the default data directory location specified in the config file.                                                                                                                                                      |
+| `-f {PATH TO CONFIGURATION FILE}` | Specify a configuration file. Defaults to `cv.cfg`.                                                                                                                                                                             |
+| `-D {NAME}`              | Override data directory location in config file for specific sections. `NAME` can be `Scholarship`, `PersonalAwards`, `StudentAwards`, `Service`, `Reviews`, `CurrentGradAdvisees`, `GradTheses`, `UndergradResearch`, `Teaching`, `Proposals`, `Grants`. |
+| `-F {NAME}`              | Override data file location in config file for specific sections. `NAME` can be `Scholarship`, `PersonalAwards`, `StudentAwards`, `Service`, `Reviews`, `CurrentGradAdvisees`, `GradTheses`, `UndergradResearch`, `Teaching`, `Proposals`, `Grants`. |
+| `-J {NAME}`              | Specify the name of the reviews JSON file.                                                                                                                                                                                      |
+| `-j {true,false}`        | Force conversion of a reviewing JSON file downloaded from Web of Science.                                                                                                                                                       |
+| `-S {SCRAPERID}`         | Specify the `ScraperID` (optional, but helps avoid Google blocking requests).                                                                                                                                                   |
+| `-s {true,false}`        | Use scraper to avoid Google blocking.                                                                                                                                                                                           |
+| `-G {GOOGLEID}`          | Specify `GoogleID` (used for finding new publications).                                                                                                                                                                         |
+| `-C {true,false}`        | Include citation counts in the CV.                                                                                                                                                                                              |
+| `-M {true,false}`        | Include student author markers in the CV.                                                                                                                                                                                       |
+
+
+
+
+For example, the following will look for any new google scholar entries in the 4 last years, help you categorize them, then update the citation counts using google scholar, update the student markers, and exclude the proposals and conferences section when making a c.v.
 
 Mac  
-`make_cv -g true -c true -m true -e Conference -e Proposals`
+`make_cv -g 4 -c true -m true -e Conference -e Proposals`
 
 Windows  
-`python -m make_cv.make_cv -g true -c true -m true -e Conference -e Proposals`
+`python -m make_cv.make_cv -g 4 -c true -m true -e Conference -e Proposals`
 
 Most of the advanced features are by default off, but you can turn them on by default by editing the cv.cfg file in your CV folder.  I usually only use the advanced features intermittently so I leave the advanced features off by default and then use the command line options when I need to use them.
 

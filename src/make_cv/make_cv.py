@@ -265,9 +265,7 @@ def process_default_args(config,args):
 		scraperID = config['ScraperID']
 		
 	# add new entries to .bib file	
-	if config['GetnewScholarshipEntries'] == 'false':
-		config['GetnewScholarshipEntries'] = '0'
-	elif config['GetnewScholarshipEntries'] == 'true':
+	if config['GetnewScholarshipEntries'] == None:
 		config['GetnewScholarshipEntries'] = '1'
 	
 	if config.getint('GetNewScholarshipEntries') != 0:
