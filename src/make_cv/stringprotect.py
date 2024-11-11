@@ -60,8 +60,8 @@ def split_names(name_list):
 	return(list_of_names)
 	
 	
-	# This function puts a single name in standard abbreviated form:
-# J. S. Smith
+# This function puts a single name in standard form:
+# John S. Smith
 def first_last(initial_name):
 	initial_name = initial_name.strip()
 	
@@ -88,6 +88,32 @@ def first_last(initial_name):
 	name = name.replace('_Sr',' Sr.')
 	return(name)
 	
+# Smith, John S. 
+def last_first(initial_name):
+	initial_name = initial_name.strip()
+	
+	# Deal with Jr. and Sr. last name endings
+	initial_name = re.sub('^(.*)?[ ]* Jr\\.?(.*)$','\\1_Jr\\2',initial_name)
+	initial_name = re.sub('^(.*)?[ ]* Sr\\.?(.*)$','\\1_Jr\\2',initial_name)
+	
+	if initial_name.find(',') != -1: # If any commas are detected
+		#print("In Part 1: Commas Included")
+		last_first = initial_name.split(',')
+		#print(mod_name)
+		last_name = last_first[0].strip()
+		first_name = last_first[1].strip()# This is now whatever remains besides last name
+	else:
+		first_last = initial_name.split()
+		last_name = first_last[-1]
+		nlast= len(last_name)
+		first_name = initial_name[0:len(initial_name)-nlast].strip()
+
+	name = last_name +", " +first_name
+	
+	# Undo Jr. and Sr. Change
+	name = name.replace('_Jr',' Jr.')
+	name = name.replace('_Sr',' Sr.')
+	return(name)
 	
 # This function puts a single name in standard abbreviated form:
 # J. S. Smith

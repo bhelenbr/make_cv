@@ -118,7 +118,7 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 			print(pub['bib']['title'])
 		
 		YN = input('Y/N?')
-q		if YN.upper() != 'Y':
+		if YN.upper() != 'Y':
 			continue
 		
 		# try to fill entry using bibtex autocomplete?
