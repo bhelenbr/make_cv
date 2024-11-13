@@ -32,6 +32,7 @@ from .student_awards2latex import student_awards2latex
 from .service2latex import service2latex
 from .publons2latex import publons2latex
 from .teaching2latex import teaching2latex
+from .shortformteaching import shortformteaching
 	
 	
 
@@ -123,7 +124,10 @@ def make_cv_tables(config,table_dir,years):
 		print('Updating teaching table')
 		fteaching = open(table_dir +os.sep +'teaching.tex', 'w') # file to write
 		filename = faculty_source +os.sep +config['TeachingFolder'] +os.sep +config['TeachingFile']
-		nrows = teaching2latex(fteaching,years,filename)	
+		if config.getboolean('ShortTeachingTable'):
+			nrows = shortformteaching(fteaching,years,filename)
+		else:
+			nrows = teaching2latex(fteaching,years,filename)	
 		fteaching.close()
 		if not(nrows):
 			os.remove(table_dir+os.sep +'teaching.tex')
