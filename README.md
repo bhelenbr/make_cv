@@ -180,6 +180,28 @@ Mac
 Windows  
 `python -m make_cv.make_cv -g 4 -c true -m true -e Conference -e Proposals`
 
+
+### NSF Requirements
+When applying for grants from the National Science Foundation (NSF), faculty members are often required to submit specific information regarding their PhD Advisees and Collaborators.
+
+- **PhD Advisees**: A list of doctoral students supervised by the faculty member, including names and start dates.
+
+- **Collaborators**: A list of researchers with whom the faculty member has collaborated on publications within a specified time frame.
+
+make_cv can generate these lists by using the following command. 
+
+Mac  
+`python -m make_cv.make_nsfcoa -y 4 -fmt csv`
+
+Windows  
+`python -m make_cv.make_nsfcoa -y 4 -fmt csv`
+
+- **`-y`**: Specifies the number of **years** for which collaborators are listed. The default is 4 years, but this can be adjusted to include collaborators from the last n years.
+
+- **`-fmt`**: Determines the output format, which can be either `xlsx` or `csv`. The default output format is `csv`.
+
+
+
 Most of the advanced features are by default off, but you can turn them on by default by editing the cv.cfg file in your CV folder.  I usually only use the advanced features intermittently so I leave the advanced features off by default and then use the command line options when I need to use them.
 
 The first time you run make\_cv it will find unclassified entries in your .bib file and ask you to classify them.  This will also happen if you add an entry from some other search source and it is not classified.  This modifies the keywords in the .bib file.  The categories determine in what sections that item will appear in the c.v.  If there is something appearing in the wrong section, use Bibdesk or Jabref to put the entry in the correct category.  (A drag and drop operation in BibDesk.  See Appendix F for Jabref instructions).  One of the categories is ignore, which should be chosen if you want to keep the entry in the .bib file but you don’t want it to appear in the c.v. 
