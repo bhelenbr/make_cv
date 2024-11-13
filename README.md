@@ -181,7 +181,7 @@ Windows
 `python -m make_cv.make_cv -g 4 -c true -m true -e Conference -e Proposals`
 
 
-### NSF Requirements
+#### NSF Requirements
 When applying for grants from the National Science Foundation (NSF), faculty members are often required to submit specific information regarding their PhD Advisees and Collaborators.
 
 - **PhD Advisees**: A list of doctoral students supervised by the faculty member, including names and start dates.
