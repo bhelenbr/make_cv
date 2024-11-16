@@ -168,6 +168,7 @@ The `make_cv` tool provides a range of command-line options to customize and aut
 | `-G {GOOGLEID}`          | Specify `GoogleID` (used for finding new publications).                                                                                                                                                                         |
 | `-C {true,false}`        | Include citation counts in the CV.                                                                                                                                                                                              |
 | `-M {true,false}`        | Include student author markers in the CV.                                                                                                                                                                                       |
+| `-T `        | Include the last update timestamp at the bottom of the CV. If the flag is passed, it adds a timestamp to indicate the last update of the CV. |
 
 
 
