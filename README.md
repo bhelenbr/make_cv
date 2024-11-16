@@ -183,7 +183,7 @@ Windows
 
 
 #### NSF Requirements
-When applying for grants from the National Science Foundation (NSF), faculty members are often required to submit specific information regarding their PhD Advisees and Collaborators.
+When applying for grants from the National Science Foundation (NSF), faculty members are often required to submit information regarding their PhD Advisees and Collaborators.
 
 - **PhD Advisees**: A list of doctoral students supervised by the faculty member, including names and start dates.
 
