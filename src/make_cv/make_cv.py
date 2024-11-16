@@ -14,6 +14,7 @@ import configparser
 import argparse
 import inspect
 from pathlib import Path
+import datetime
 
 from .create_config import create_config
 from .create_config import verify_config
@@ -58,6 +59,7 @@ def make_cv_tables(config,table_dir,years):
 			fpubs[counter].close()
 			if not(nrecords[counter]):
 				os.remove(table_dir+os.sep +pubfiles[counter])
+
 	
 	# Personal Awards
 	if config.getboolean('PersonalAwards'):
@@ -170,6 +172,8 @@ def add_default_args(parser):
 	parser.add_argument('-m','--UpdateStudentMarkers', help='update the student author markers', choices=['true','false'])
 	parser.add_argument('-M','--IncludeStudentMarkers', help='put student author markers in cv', choices=['true','false'])
 	parser.add_argument('-e','--exclude', help='exclude section from cv', choices=sections,action='append')
+	parser.add_argument('-T','--Timestamp', help='Include Last update timestamp at the bottom of cv', nargs='?', const='true')
+	
 
 def read_args(parser,argv):
 	if argv is None:
@@ -223,6 +227,7 @@ def process_default_args(config,args):
 	if args.ConvertJSON is not None: config['ConvertJSON'] = args.ConvertJSON
 	if args.IncludeStudentMarkers is not None: config['IncludeStudentMarkers'] = args.IncludeStudentMarkers
 	if args.IncludeCitationCounts is not None: config['IncludeCitationCounts'] = args.IncludeCitationCounts
+	if args.Timestamp is not None: config['Timestamp'] = args.Timestamp
 	
 	if args.exclude is not None:
 		for section in args.exclude:
@@ -320,6 +325,25 @@ def process_default_args(config,args):
 		backupfile = faculty_source +os.sep +config['ScholarshipFolder'] +os.sep +'backup4.bib'
 		shutil.copyfile(filename,backupfile)
 		bib_add_keywords(backupfile,filename)
+
+
+def add_timestamp_to_cv():
+    # Get current timestamp
+    current_time = datetime.datetime.now().strftime("%B %d, %Y")
+    
+    # Create timestamp in LaTeX format
+    timestamp_tex = f"""
+		% Add timestamp to bottom of CV
+		\\vspace*{{\\fill}}
+		\\begin{{center}}
+		\\small
+		Last updated: {current_time}
+		\\end{{center}}
+		"""
+    
+    # Write timestamp to a separate file
+    with open('timestamp.tex', 'w') as f:
+        f.write(timestamp_tex)
 		
 def typeset(config,filename,command):
 	# Create exclusion file
@@ -331,6 +355,13 @@ def typeset(config,filename,command):
 			exclusions.write('\\renewcommand{\\us}{}\n')
 			exclusions.write('\\renewcommand{\\gs}{}\n')
 	
+	if config["Timestamp"] and config.getboolean("Timestamp"):		
+		# Create timestamp
+		add_timestamp_to_cv()
+	else:
+		with open('timestamp.tex', 'w') as f:
+			f.write('')
+
 	with open('biblatex-dm.cfg', 'w') as configLatex:
 		configLatex.write('\\DeclareDatamodelFields[type=field, datatype=integer, nullok=true]{citations}\n')
 		configLatex.write('\\DeclareDatamodelEntryfields{citations}\n')
