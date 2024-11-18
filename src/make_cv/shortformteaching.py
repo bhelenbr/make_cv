@@ -31,24 +31,41 @@ def shortformteaching(f, years, inputfile):
     if 'course_title' not in df.columns:
         df['course_title'] = ""
 
-    # Create a new column for the course period
-    df['course_period'] = df['term'].apply(lambda x: x[-4:])
-    
-    # Count occurrences of each course and create a year range
-    course_groups = df.groupby('combined_course_num')['course_period'].agg(['min', 'max', 'count']).reset_index()
-    course_groups['year_range'] = course_groups['min'] + '-' + course_groups['max']
-    
-    # Create a string format for the output
-    course_groups['output'] = course_groups['combined_course_num'] + " " + course_groups['year_range'] + " (" + course_groups['count'].astype(str) + ")"
+    df = df.drop_duplicates(subset=['combined_course_num', 'term'])
 
-    # Write to the output file
-    if not course_groups.empty:
+    df['course_period'] = df['term'].apply(lambda x: x[-4:])
+
+    grouped = (
+        df.groupby(['combined_course_num', 'course_title'])
+        .agg(
+            min_year=('course_period', 'min'),
+            max_year=('course_period', 'max'),
+            count=('term', 'size')
+        )
+        .reset_index()
+    )
+
+    grouped['year_range'] = grouped.apply(
+        lambda row: row['min_year'] if row['min_year'] == row['max_year'] else row['min_year'] + '-' + row['max_year'],
+        axis=1
+    )
+
+    grouped['output'] = (
+        grouped['course_title'] + " " +
+        grouped['combined_course_num'] + " " +
+        grouped['year_range'] + " (" +
+        grouped['count'].astype(str) + " semesters)"
+    )
+
+    if not grouped.empty:
         f.write("\\begin{itemize}\n")
-        for index, row in course_groups.iterrows():
-            f.write(f"  \\item {row['output']}\n")
+        for _, row in grouped.iterrows():
+            f.write(f"  \\item {str2latex(row['output'])}\n")
         f.write("\\end{itemize}\n")
 
-    return len(course_groups)
+    return len(grouped)
+
+
 
 
 if __name__ == "__main__":
