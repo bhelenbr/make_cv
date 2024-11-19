@@ -40,7 +40,9 @@ folders = {'ScholarshipFolder': 'Scholarship',
 			'GrantsFolder': 'Proposals & Grants'} 
 			
 cv_keys = {'IncludeStudentMarkers': 'true',
-			'IncludeCitationCounts': 'true'}
+			'IncludeCitationCounts': 'true',
+	   		'ShortTeachingTable' : 'true', 
+	   		'Timestamp': 'false'}
 			
 far_keys = {'Years': '3',
 			'IncludeStudentMarkers': 'true',
