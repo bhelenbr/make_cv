@@ -288,6 +288,7 @@ def process_default_args(config,args):
 		shutil.copyfile(filename,backupfile)
 		nyears = int(config['GetNewScholarshipEntries'])
 		bib_get_entries(backupfile,config['GoogleID'],nyears,filename,scraperID)
+		os.remove(backupfile)
 		
 	# add/update citations counts in .bib file	
 	if config.getboolean('UpdateCitations'):
@@ -299,6 +300,7 @@ def process_default_args(config,args):
 		backupfile = faculty_source +os.sep +config['ScholarshipFolder'] +os.sep +'backup2.bib'
 		shutil.copyfile(filename,backupfile)
 		bib_add_citations(backupfile,config['GoogleID'],filename,scraperID)
+		os.remove(backupfile)
 		
 	# add/update citations counts in .bib file	
 	if config.getboolean('UpdateStudentMarkers'):
@@ -310,6 +312,7 @@ def process_default_args(config,args):
 		gradfile = faculty_source +os.sep +config['GradThesesFolder'] +os.sep +config['GradThesesFile']
 		ugradfile = faculty_source +os.sep +config['UndergradResearchFolder'] +os.sep +config['UndergradResearchFile']
 		bib_add_student_marker(100,ugradfile,gradfile,cur_grads,backupfile,filename)
+		os.remove(backupfile)
 		
 	if config.getboolean('SearchForDOIs'):
 		filename = faculty_source +os.sep +config['ScholarshipFolder'] +os.sep +config['ScholarshipFile']
@@ -325,6 +328,10 @@ def process_default_args(config,args):
 		backupfile = faculty_source +os.sep +config['ScholarshipFolder'] +os.sep +'backup4.bib'
 		shutil.copyfile(filename,backupfile)
 		bib_add_keywords(backupfile,filename)
+	try:
+		os.remove(backupfile)
+	except:
+		pass
 
 
 def add_timestamp_to_cv():
