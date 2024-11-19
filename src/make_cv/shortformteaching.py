@@ -46,16 +46,20 @@ def shortformteaching(f, years, inputfile):
     )
 
     grouped['year_range'] = grouped.apply(
-        lambda row: row['min_year'] if row['min_year'] == row['max_year'] else row['min_year'] + '-' + row['max_year'],
-        axis=1
+    lambda row: row['min_year'] if row['min_year'] == row['max_year'] else f"{row['min_year']}-{row['max_year']}",
+    axis=1
     )
 
-    grouped['output'] = (
-        grouped['course_title'] + " " +
-        grouped['combined_course_num'] + " " +
-        grouped['year_range'] + " (" +
-        grouped['count'].astype(str) + " semesters)"
+    grouped['output'] = grouped.apply(
+    lambda row: (
+        f"{row['course_title']} {row['combined_course_num']} {row['year_range']} "
+        f"({row['count']} semester)" if row['count'] == 1 else 
+        f"{row['course_title']} {row['combined_course_num']} {row['year_range']} "
+        f"({row['count']} semesters)"
+    ),
+    axis=1
     )
+
 
     if not grouped.empty:
         f.write("\\begin{itemize}\n")
