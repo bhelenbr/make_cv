@@ -13,7 +13,8 @@ defaults = {'data_dir': '..',
 				'UpdateStudentMarkers': 'false',
 				'GetNewScholarshipEntries': '0',
 				'SearchForDOIs': 'false',
-				'ConvertJSON': 'false'}
+				'ConvertJSON': 'false',
+	   			'ORCID': ''}
 
 files = {'ScholarshipFile': 'scholarship.bib',
 			'PersonalAwardsFile': 'personal awards data.xlsx',
