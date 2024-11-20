@@ -21,6 +21,7 @@ from .create_config import verify_config
 from .publons2excel import publons2excel
 from .bib_add_citations import bib_add_citations
 from .bib_get_entries import bib_get_entries
+from .bib_get_entries_orcid import bib_get_entries_orcid
 from .bib_add_student_markers import bib_add_student_markers
 from .bib_add_keywords import bib_add_keywords
 from .grants2latex_far import grants2latex_far
@@ -173,6 +174,8 @@ def add_default_args(parser):
 	parser.add_argument('-M','--IncludeStudentMarkers', help='put student author markers in cv', choices=['true','false'])
 	parser.add_argument('-e','--exclude', help='exclude section from cv', choices=sections,action='append')
 	parser.add_argument('-T','--Timestamp', help='Include Last update timestamp at the bottom of cv', nargs='?', const='true')
+	parser.add_argument('-orc','--GetNewScholarshipEntriesusingOrcid', help='search for and add new entries from the last N (default 1) years to the .bib file', nargs='?', const='1')
+	parser.add_argument('-orcid','--ORCID', help='ORCID (used for finding new publications()')
 	
 
 def read_args(parser,argv):
@@ -228,6 +231,8 @@ def process_default_args(config,args):
 	if args.IncludeStudentMarkers is not None: config['IncludeStudentMarkers'] = args.IncludeStudentMarkers
 	if args.IncludeCitationCounts is not None: config['IncludeCitationCounts'] = args.IncludeCitationCounts
 	if args.Timestamp is not None: config['Timestamp'] = args.Timestamp
+	if args.GetNewScholarshipEntriesusingOrcid is not None: config['GetNewScholarshipEntriesusingOrcid'] = args.GetNewScholarshipEntriesusingOrcid
+	if args.GoogleID is not None: config['ORCID'] = args.ORCID
 	
 	if args.exclude is not None:
 		for section in args.exclude:
@@ -289,6 +294,18 @@ def process_default_args(config,args):
 		nyears = int(config['GetNewScholarshipEntries'])
 		bib_get_entries(backupfile,config['GoogleID'],nyears,filename,scraperID)
 		os.remove(backupfile)
+	
+	if config.getint('GetNewScholarshipEntriesusingOrcid') != 0:
+		print("Trying to find new .bib entries from ORCID")
+		if config['ORCID'] == "":
+			print("Can't find new scholarship entries without providing ORCID")
+			exit()
+		filename = faculty_source +os.sep +config['ScholarshipFolder'] +os.sep +config['ScholarshipFile']
+		backupfile = faculty_source +os.sep +config['ScholarshipFolder'] +os.sep +'backup1.bib'
+		shutil.copyfile(filename,backupfile)
+		nyears = int(config['GetNewScholarshipEntries'])
+		bib_get_entries_orcid(backupfile,config['ORCID'],nyears,filename)
+		os.remove(backupfile)
 		
 	# add/update citations counts in .bib file	
 	if config.getboolean('UpdateCitations'):
@@ -329,7 +346,7 @@ def process_default_args(config,args):
 		shutil.copyfile(filename,backupfile)
 		bib_add_keywords(backupfile,filename)
 	try:
-		os.remove(backupfile)
+		os.remove(faculty_source +os.sep +config['ScholarshipFolder'] +os.sep +'backup4.bib')
 	except:
 		pass
 
