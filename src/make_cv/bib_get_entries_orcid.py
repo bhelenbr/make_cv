@@ -143,11 +143,14 @@ def bib_get_entries_orcid(bibfile, orcid, years, outputfile):
         # Match by title
         title = pub['title']
         index = next((i for i, d in enumerate(entries) if d.get('title') == title), None)
-        if index is None:
-            continue
         
-        if (year and entries[index]['year']!=str(year)) or (journal and entries[index]['journal']!=journal):
-            continue
+        if index is not None:
+            if year:
+                if not entries[index]['year']!=str(year)):
+                    continue
+            if journal:
+                if not entries[index]['journal']!=journal)):
+                    continue
 
         print('Should I try to complete this record using BibTeX autocomplete:')
         print(pub['title'])
