@@ -232,7 +232,7 @@ def process_default_args(config,args):
 	if args.IncludeCitationCounts is not None: config['IncludeCitationCounts'] = args.IncludeCitationCounts
 	if args.Timestamp is not None: config['Timestamp'] = args.Timestamp
 	if args.GetNewScholarshipEntriesusingOrcid is not None: config['GetNewScholarshipEntriesusingOrcid'] = args.GetNewScholarshipEntriesusingOrcid
-	if args.GoogleID is not None: config['ORCID'] = args.ORCID
+	if args.ORCID is not None: config['ORCID'] = args.ORCID
 	
 	if args.exclude is not None:
 		for section in args.exclude:
