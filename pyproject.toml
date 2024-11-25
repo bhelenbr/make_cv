@@ -27,7 +27,8 @@ dependencies = [
   "beautifulsoup4",
   "chromedriver-autoinstaller",
   "requests",
-  "pylatexenc"
+  "pylatexenc",
+  "webdriver-manager"
 ]
 
 [project.scripts]
