@@ -14,7 +14,8 @@ defaults = {'data_dir': '..',
 				'GetNewScholarshipEntries': '0',
 				'SearchForDOIs': 'false',
 				'ConvertJSON': 'false',
-	   			'ORCID': ''}
+	   			'ORCID': '',
+	   			'GetNewScholarshipEntriesusingOrcid':0}
 
 files = {'ScholarshipFile': 'scholarship.bib',
 			'PersonalAwardsFile': 'personal awards data.xlsx',
