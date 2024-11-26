@@ -7,33 +7,17 @@ import argparse
 from datetime import date
 import sys
 import time
-import chromedriver_autoinstaller
-import requests
+
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
-from bs4 import BeautifulSoup
 
 import bibtexparser
-from bibtexparser.bwriter import BibTexWriter
-from bibtexparser.bibdatabase import BibDatabase
-from bibtexparser.customization import convert_to_unicode
 from bibtexparser.bparser import BibTexParser
-from bibtexautocomplete.core import main as btac
-
-from .bib_add_keywords import add_keyword
-
-
-def getyear(paperbibentry):
-    if "year" in paperbibentry.keys():
-        return int(paperbibentry["year"])
-    if "date" in paperbibentry.keys():
-        return int(paperbibentry["date"][:4])
-    return 0
+from bibtexautocomplete import BibtexAutocomplete
 
 
 def get_entries_from_orcid(orcid,years):
@@ -90,6 +74,9 @@ def get_entries_from_orcid(orcid,years):
             if re.match(year_pattern, text):
                 match_year = re.search(r'\d+', text)
                 year = int(match_year.group())
+                match_type = re.search(r'\|\s*(.*)', text)
+                if match_type:
+                    type = match_type.group(1)  # Get the text after the '|'
                 break  # Once we find the correct year, stop
         if year<begin_year:
             break
@@ -101,8 +88,9 @@ def get_entries_from_orcid(orcid,years):
         entry = {
             "title": title_text,
             "journal": journal_name,
-            "year": year,
-            "doi": doi
+            "year": str(year),
+            "doi": doi,
+            "type":type
         }
         orcid_entries.append(entry)
 
@@ -112,7 +100,6 @@ def get_entries_from_orcid(orcid,years):
 
 
 def bib_get_entries_orcid(bibfile, orcid, years, outputfile):
-    newentries = []
 
     # Load bibfile
     tbparser = BibTexParser(common_strings=True)
@@ -132,25 +119,34 @@ def bib_get_entries_orcid(bibfile, orcid, years, outputfile):
 
     orcid_entries = get_entries_from_orcid(orcid,years)
 
+    type_mapping = {
+        'Conference paper': 'inproceedings',
+        'Journal article': 'article',
+        'Book': 'book',
+        'Thesis': 'thesis',
+        'Dissertation': 'thesis',
+        'Report': 'techreport',
+        'Book chapter': 'incollection',
+        'Patent': 'patent',
+        'Other': 'misc',
+        # Add more mappings as needed
+    }
+
     # Loop through ORCID entries
     for pub in orcid_entries:
         if 'year' not in pub:
             continue
 
-        year = pub['year']
-        journal=pub['journal']
-
         # Match by title
-        title = pub['title']
-        index = next((i for i, d in enumerate(entries) if d.get('title') == title), None)
-        
+        index = next((i for i, d in enumerate(entries) if d.get('title') == pub['title']), None)
         if index is not None:
-            if year:
-                if not entries[index]['year']!=str(year):
-                    continue
-            if journal:
-                if not entries[index]['journal']!=journal:
-                    continue
+            if (not pub['year'] or entries[index]['year']==pub['year']) and (not pub['journal'] or entries[index]['journal']==pub['journal']):
+                continue
+        
+        try:
+            type=type_mapping[pub['type']]
+        except:
+            type='misc'
 
         print('Should I try to complete this record using BibTeX autocomplete:')
         print(pub['title'])
@@ -159,38 +155,45 @@ def bib_get_entries_orcid(bibfile, orcid, years, outputfile):
         if YN.upper() != 'Y':
             continue
 
+        citation_key=''.join(''.join(word for word in pub['title'].split() if word.isalpha()))+pub['year']
+
+        # Construct the BibTeX entry as a string
+        bibtex_entry = ""
+        bibtex_entry += f'@{type}{{{citation_key},\n'
+        if pub['year'] and pub['doi']:
+            bibtex_entry += f'  title = {{{pub["title"]}}},\n'
+            bibtex_entry += f'  year = {{{pub["year"]}}},\n'
+            bibtex_entry += f'  doi = {{{pub["doi"]}}}\n'
+        elif pub['year']:
+            bibtex_entry += f'  title = {{{pub["title"]}}},\n'
+            bibtex_entry += f'  year = {{{pub["year"]}}}\n'
+        elif pub['doi']:
+            bibtex_entry += f'  title = {{{pub["title"]}}},\n'
+            bibtex_entry += f'  doi = {{{pub["doi"]}}}\n'
+        else:
+            bibtex_entry += f'  title = {{{pub["title"]}}}\n'
+        bibtex_entry += '}\n'  # Close the entry
+
         # Try to fill entry using BibTeX autocomplete
-        with open('btac.bib', 'w') as tempfile:
-            tempfile.write(f"@article{{title={{'{pub['title']}'}}}}")
+        completer = BibtexAutocomplete()
+        completer.load_string(bibtex_entry)
+        completer.autocomplete()
+        completer.write_file("btac.bib")
 
-        btac()
-        with open('btac.bib') as bibtex_file:
-            bibtex_str = bibtex_file.read()
+        with open('btac.bib', 'r') as src_file:
+            bibtex_entry = src_file.read()
 
-        bib_database = bibtexparser.loads(bibtex_str, tbparser)
-        if 'booktitle' in bib_database.entries[-1].keys():
-            bib_database.entries[-1]['ENTRYTYPE'] = 'inproceedings'
-        elif 'note' in bib_database.entries[-1].keys():
-            bib_database.entries[-1]['ENTRYTYPE'] = 'misc'
-        print(BibTexWriter()._entry_to_bibtex(bib_database.entries[-1]))
+        print('Is this btac entry correct and ready to be added?\nOnce an entry is added any future changes must be done manually.')
+        print(bibtex_entry)
+        YN = input('Y/N? ')
+        if YN.upper() != 'Y':
+            continue
 
-        YN = input('Is this BTAC entry correct and ready to be added? [Y/N]? ')
-        if YN.upper() == 'Y':
-            add_keyword(bib_database.entries[-1])
-            if 'author' in bib_database.entries[-1].keys():
-                IDstring = re.search('^[A-z]+', bib_database.entries[-1]['author']).group(0)
-                IDstring += str(year)
-                IDstring += re.search('^[A-z]+', bib_database.entries[-1]['title']).group(0)
-                bib_database.entries[-1]['ID'] = IDstring
-                newentries.append(bib_database.entries[-1]['ID'])
-            else:
-                print('Skipped entry because it had no author field')
+        with open(outputfile, 'a') as dest_file:  # Use 'a' to append
+            dest_file.write(bibtex_entry)
+        
+        
 
-    writer = BibTexWriter()
-    writer.order_entries_by = None
-    with open(outputfile, 'w') as thebibfile:
-        bibtex_str = bibtexparser.dumps(bib_database, writer)
-        thebibfile.write(bibtex_str)
 
     for file in ['dump.text', 'btac.bib']:
         try:
