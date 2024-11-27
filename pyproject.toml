@@ -25,7 +25,6 @@ dependencies = [
   "scholarly",
   "selenium",
   "beautifulsoup4",
-  "chromedriver-autoinstaller",
   "requests",
   "pylatexenc",
   "webdriver-manager"
