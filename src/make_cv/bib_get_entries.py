@@ -20,7 +20,7 @@ import sys
 from .bib_add_keywords import add_keyword
 
 import time
-import chromedriver_autoinstaller
+from webdriver_manager.chrome import ChromeDriverManager
 import requests
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -166,15 +166,13 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 			else:
 				print("No entry found.")
 
-			chromedriver_autoinstaller.install()
 			chrome_options = Options()
 			chrome_options.add_argument("--headless")
-			chrome_options.add_argument("--no-sandbox")
-			chrome_options.add_argument("--disable-dev-shm-usage")
+			chrome_options.add_argument("--disable-gpu")
 
 			service = Service()
 
-			driver = webdriver.Chrome(service=service, options=chrome_options)
+			driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 			driver.get(url2)
 
 			try:
