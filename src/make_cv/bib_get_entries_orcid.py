@@ -98,6 +98,9 @@ def get_entries_from_orcid(orcid,years):
     driver.quit()
     return orcid_entries
 
+def process_title(title):
+    # Remove special characters, keep only alphanumeric and spaces
+    return re.sub(r'[^a-zA-Z0-9\s]', '', title).lower().split()
 
 def bib_get_entries_orcid(bibfile, orcid, years, outputfile):
 
@@ -138,7 +141,7 @@ def bib_get_entries_orcid(bibfile, orcid, years, outputfile):
             continue
 
         # Match by title
-        index = next((i for i, d in enumerate(entries) if d.get('title', '').lower() == pub['title'].lower()), None)
+        index = next((i for i, d in enumerate(entries) if process_title(d.get('title', '')) == process_title(pub['title']), None)
         print(index)
 
         if index is not None:
