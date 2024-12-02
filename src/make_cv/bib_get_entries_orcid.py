@@ -140,7 +140,7 @@ def bib_get_entries_orcid(bibfile, orcid, years, outputfile):
         # Match by title
         index = next((i for i, d in enumerate(entries) if d.get('title') == pub['title']), None)
         if index is not None:
-            if (not pub['year'] or entries[index]['year']==pub['year']) and (not pub['journal'] or entries[index]['journal']==pub['journal']):
+            if (not pub['year'] or entries[index]['year']==pub['year']) or (not pub['journal'] or entries[index]['journal']==pub['journal']):
                 continue
         
         try:
