@@ -153,6 +153,7 @@ The `make_cv` tool provides a range of command-line options to customize and aut
 | Option                   | Description                                                                                                                                                                                                                      |
 |--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `-g {NUMBER OF YEARS}`   | Search for and add new entries from Google Scholar to the `.bib` file for the past specified number of years. Use `-g -1` to search for all available entries. Defaults to `1` if `-g` is used without specifying a number.       |
+| `-G {GOOGLEID}`          | Specify `GoogleID` (used for finding new publications).  
 | `-c {true,false}`        | Update citation counts stored in the `.bib` file.                                                                                                                                                                               |
 | `-m {true,false}`        | Update student author markers in the `.bib` file.                                                                                                                                                                               |
 | `-I {true,false}`        | Use `bibtexautocomplete` to search for and add missing DOIs to the `.bib` file.                                                                                                                                                 |
@@ -164,11 +165,12 @@ The `make_cv` tool provides a range of command-line options to customize and aut
 | `-J {NAME}`              | Specify the name of the reviews JSON file.                                                                                                                                                                                      |
 | `-j {true,false}`        | Force conversion of a reviewing JSON file downloaded from Web of Science.                                                                                                                                                       |
 | `-S {SCRAPERID}`         | Specify the `ScraperID` (optional, but helps avoid Google blocking requests).                                                                                                                                                   |
-| `-s {true,false}`        | Use scraper to avoid Google blocking.                                                                                                                                                                                           |
-| `-G {GOOGLEID}`          | Specify `GoogleID` (used for finding new publications).                                                                                                                                                                         |
+| `-s {true,false}`        | Use scraper to avoid Google blocking.                                                                                                                                                                                           |                                                                                                                                                                       |
 | `-C {true,false}`        | Include citation counts in the CV.                                                                                                                                                                                              |
 | `-M {true,false}`        | Include student author markers in the CV.                                                                                                                                                                                       |
 | `-T `        | Include the last update timestamp at the bottom of the CV. If the flag is passed, it adds a timestamp to indicate the last update of the CV. |
+| `-orc {NUMBER OF YEARS}`   | Search for and add new entries from ORCID to the `.bib` file for the past specified number of years. Use `-g -1` to search for all available entries. Defaults to `1` if `-g` is used without specifying a number.       |
+| `-orcid {ORCID}`          | Specify `ORCID` (used for finding new publications).  
 
 
 
