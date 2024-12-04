@@ -169,7 +169,7 @@ The `make_cv` tool provides a range of command-line options to customize and aut
 | `-C {true,false}`        | Include citation counts in the CV.                                                                                                                                                                                              |
 | `-M {true,false}`        | Include student author markers in the CV.                                                                                                                                                                                       |
 | `-T `        | Include the last update timestamp at the bottom of the CV. If the flag is passed, it adds a timestamp to indicate the last update of the CV. |
-| `-orc {NUMBER OF YEARS}`   | Search for and add new entries from ORCID to the `.bib` file for the past specified number of years. Use `-orc -1` to search for all available entries. Defaults to `1` if `-g` is used without specifying a number.       |
+| `-orc {NUMBER OF YEARS}`   | Search for and add new entries from ORCID to the `.bib` file for the past specified number of years.  Use `-orc -1` to search for all available entries. Defaults to `1` if `-g` is used without specifying a number.       |
 | `-orcid {ORCID}`          | Specify `ORCID` (used for finding new publications).  
 
 
