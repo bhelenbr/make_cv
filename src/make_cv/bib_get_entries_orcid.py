@@ -19,6 +19,41 @@ import bibtexparser
 from bibtexparser.bparser import BibTexParser
 from bibtexautocomplete import BibtexAutocomplete
 
+def parse_bibtex(file_path):
+    with open(file_path, 'r') as file:
+        content = file.read()
+
+    # Split the content into individual entries
+    entries = re.split(r'\n@', content)
+    parsed_entries = []
+
+    for entry in entries:
+        entry_dict = {}
+
+        # Extract the title field
+        title_match = re.search(r'(?:,|\n)\s*title\s*=\s*{(.+?)}', entry)
+        if title_match:
+            entry_dict['title'] = title_match.group(1)
+
+        # Extract doi
+        doi_match = re.search(r'doi\s*=\s*{(.+?)}', entry)
+        if doi_match:
+            entry_dict['doi']="https://doi.org/"
+            entry_dict['doi']+= doi_match.group(1)
+        else:
+            entry_dict['doi'] = 'None'
+
+        # Extract year
+        year_match = re.search(r'year\s*=\s*{(\d+)}', entry)
+        if year_match:
+            entry_dict['year'] = year_match.group(1)
+
+        # Only include entries with a title and year
+        if 'title' in entry_dict and 'year' in entry_dict:
+            parsed_entries.append(entry_dict)
+
+    return parsed_entries
+
 
 def get_entries_from_orcid(orcid,years):
 
@@ -98,27 +133,9 @@ def get_entries_from_orcid(orcid,years):
     driver.quit()
     return orcid_entries
 
-def process_title(title):
-    # Remove special characters, keep only alphanumeric and spaces
-    return re.sub(r'[^a-zA-Z0-9\s]', '', title).lower().split()
-
 def bib_get_entries_orcid(bibfile, orcid, years, outputfile):
 
-    # Load bibfile
-    tbparser = BibTexParser(common_strings=True)
-    tbparser.homogenize_fields = False
-    tbparser.alt_dict['url'] = 'url'  # Prevents change 'url' to 'link'
-    tbparser.expect_multiple_parse = True
-
-    with open(bibfile) as bibtex_file:
-        bibtex_str = bibtex_file.read()
-
-    bib_database = bibtexparser.loads(bibtex_str, tbparser)
-    entries = bib_database.entries
-
-    # Set arguments for btac
-    sys.argv.clear()
-    sys.argv.extend(['', '-i', '-f', '-m', 'btac.bib'])
+    bib_entries = parse_bibtex(bibfile)
 
     orcid_entries = get_entries_from_orcid(orcid,years)
 
@@ -140,13 +157,20 @@ def bib_get_entries_orcid(bibfile, orcid, years, outputfile):
         if 'year' not in pub:
             continue
 
-        # Match by title
-        index = next((i for i, d in enumerate(entries) if process_title(d.get('title', '')) == process_title(pub['title']), None)
-        print(index)
-
-        if index is not None:
-            if (not pub['year'] or entries[index]['year']==pub['year']):
-                continue
+        # Match by doi
+        if pub['doi']:
+            index = next((i for i, d in enumerate(bib_entries) if d.get('doi', '').lower() == pub['doi'].lower()), None)
+        
+        #Match by title if no match found
+        if index is None:
+            index = next((i for i, d in enumerate(bib_entries) if d.get('title', '').lower() == pub['title'].lower()), None)
+            if index is not None:
+                if not bib_entries[index]['year'] and pub['year']:
+                    pass 
+                elif (not pub['year'] or not bib_entries[index]['year'] or bib_entries[index]['year']==pub['year']):
+                    continue
+        else:
+            continue
         
         try:
             type=type_mapping[pub['type']]
