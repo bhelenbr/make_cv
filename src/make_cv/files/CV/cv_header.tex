@@ -5,6 +5,7 @@
 \usepackage{ifthen}
 \usepackage[tiny]{titlesec}
 \usepackage[backend=biber,style=numeric-comp,sorting=none,giveninits=true,maxnames=20]{biblatex}
+\usepackage{xstring}
 
 % Add bib file to make bibliography information
 \addbibresource{../Scholarship/scholarship.bib}
@@ -114,5 +115,32 @@
 
 \IfFileExists{exclusions.tex} {
 \input{exclusions.tex}
+}
+
+\def\makenamesetup{%
+  \def\bibnamedelima{~}%
+  \def\bibnamedelimb{ }%
+  \def\bibnamedelimc{ }%
+  \def\bibnamedelimd{ }%
+  \def\bibnamedelimi{ }%
+  \def\bibinitperiod{.}%
+  \def\bibinitdelim{~}%
+  \def\bibinithyphendelim{.-}}    
+\newcommand*{\makename}[2]{\begingroup\makenamesetup\xdef#1{#2}\endgroup}
+
+\newcommand*{\boldname}[2]{%
+  \def\lastname{#1}%
+  \def\firstinit{#2}}
+\boldname{}{}{}
+
+% Patch new definitions
+\renewcommand{\mkbibnamegiven}[1]{%
+  \ifboolexpr{ test {\ifdefequal{\lastname}{\namepartfamily}} and test {\IfBeginWith{\namepartgiven}{\firstinit}}     }
+  {\mkbibbold{#1}}{#1}%
+}
+
+\renewcommand{\mkbibnamefamily}[1]{%
+  \ifboolexpr{ test {\ifdefequal{\lastname}{\namepartfamily}} and test {\IfBeginWith{\namepartgiven}{\firstinit}} }
+  {\mkbibbold{#1}}{#1}%
 }
 

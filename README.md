@@ -20,7 +20,7 @@ Mac
 Windows  
 `python -m make_cv.make_cv -b <path>\mydata` 
 
-Where \<path\> is the path to the mydata folder.  This can be a relative or full path.  The \-b flag tells make\_cv to create a new data directory.  For example “`make_cv -b mydata”` creates the default data folders and files in a folder called `mydata` in  current working directory.   Later on, you can configure the locations of all files and folders, but to get started it is easiest to use the defaults.
+Where \<path\> is the path to the mydata folder.  This can be a relative or full path.  The \-b flag tells make\_cv to create a new data directory.  For example “`make_cv -b mydata”` creates the default data folders and files in a folder called `mydata` in the current working directory.   You can configure the locations of all files and folders, but to get started it is easiest to use the defaults.
 
 The folders/files created within mydata are
 
@@ -119,30 +119,31 @@ This folder contains 3 files
 
    To get the most recent data from Web of Science for your c.v.
 
-1. Log in to web of science at the link above using your account information  
-2.  Click “View My Researcher Profile”  
-3. Click on "Export CV "  
-4. Leave start and end dates as is.  Change format to JSON.  
-5.  Unclick “List your papers published in selected period  
-6. Under Reviews click “List the manuscripts you reviewed in the selected period”  
-7. Click the Download Icon (down arrow thingy)  
-8. Rename the downloaded json file `reviews data.json` and put it in your `mydata/Service` folder on the s-drive.  The .json file will get converted to `reviews data.xlsx` when the cv is created.   If you have your own reviewing records from before you started using Web of Science you can add them to a separate file called `reviews_non-publons.xlsx`   Use the same format as the `reviews data.xlsx` file i.e. ”Journal, Date, Rounds” and that will automatically get added to the reviews data whenever your c.v. or FAR is generated.  
+   1. Log in to web of science at the link above using your account information  
+   2. Click “View My Researcher Profile”  
+   3. Click on "Export CV "  
+   4. Leave start and end dates as is.  Change format to JSON.  
+   5.  Unclick “List your papers published in selected period  
+   6. Under Reviews click “List the manuscripts you reviewed in the selected period”  
+   7. Click the Download Icon (down arrow thingy)  
+   8. Rename the downloaded json file `reviews data.json` and put it in your `mydata/Service` folder on the s-drive.  The .json file will get converted to `reviews data.xlsx` when the cv is created.   If you have your own reviewing records from before you started using Web of Science you can add them to a separate file called `reviews_non-publons.xlsx`   Use the same format as the `reviews data.xlsx` file i.e. ”Journal, Date, Rounds” and that will automatically get added to the reviews data whenever your c.v. or FAR is generated.  
+   
    make\_cv will gather the reviews by journal and list the number reviews for each journal in the c.v.   it will also sum up the total number of reviews performed over the time period where records were kept and list that in the c.v. as well.
 
 Teaching
 
-7. Every school has a different format for their teaching evaluation data.  make\_cv assumes there will be entries in this file under the column headings: ‘combined\_course\_num', 'STRM', 'term', 'course\_section', 'course\_title','question', ‘Weighted Average', 'enrollment', 'count\_evals'.  ‘Combined\_course\_num’ is the course catalog number i.e. something like “ME515/CE538” for a cross-listed class.  ‘STRM’ is an integer field which is an integer associated with the term the class was taught.  This is used to sort the teaching chronologically.  ‘term’ is the text name of the term i.e. ‘Summer 2024’.  ‘course\_section’ is a section number.  This is treated as text, but is commonly an integer.  ‘course\_title’ is the title i.e. “Intro. to Finite Element Methods”.  ‘Question’ is an integer associated with the question number on the teaching evaluation.  make\_cv is currently assuming that question 19 and 20 are the ones that ask how you rate this instructor and how you rate this course.  These are the responses that go into the cv.  ‘Weighted Average’ is the teaching evaluation times the number of evaluations.  ‘Enrollment’ is the total enrollment in the section, and ‘count\_evals’ is the number of teaching evaluations received for that class.  This format is likely to not be convenient for other Universities.  See the customization section below for how to change this.. 
+7. Every school has a different format for their teaching evaluation data.  make\_cv assumes there will be entries in this file under the column headings: ‘combined\_course\_num', 'STRM', 'term', 'course\_section', 'course\_title','question', ‘Weighted Average', 'enrollment', 'count\_evals'.  ‘Combined\_course\_num’ is the course catalog number i.e. something like “ME515/CE538” for a cross-listed class.  ‘STRM’ is an integer field which is an integer associated with the term the class was taught.  This is used to sort the teaching chronologically.  ‘term’ is the text name of the term i.e. ‘Summer 2024’.  ‘course\_section’ is a section number.  This is treated as text, but is commonly an integer.  ‘course\_title’ is the title i.e. “Intro. to Finite Element Methods”.  ‘Question’ is an integer associated with the question number on the teaching evaluation.  make\_cv is currently assuming that question 19 and 20 are the ones that ask how you rate this instructor and how you rate this course.  These are the responses that go into the cv.  ‘Weighted Average’ is the teaching evaluation times the number of evaluations.  ‘Enrollment’ is the total enrollment in the section, and ‘count\_evals’ is the number of teaching evaluations received for that class.  This format is likely to not be convenient for other Universities.  See the customization section below for how to change this.. There are two output formats for teaching a long format that lists every class taught and a short format which condenses the information.  This is controlled by a flag in the configuration file 'shortteachingtable = true\/false'.
 
 ### Configuration & Customization
 
-To use all of the features of make\_cv, some additional information must be provided.  The file CV/cv.cfg contains all of the configuration information.  This is a text file that can be edited with any text editor.  To use any of the Google Scholar features, you have to enter your Google ID.  To find this go to [Google Scholar](https://scholar.google.com) and click on “My profile” in the top left.  If you examine the url for this page it should have a section that looks like: user=m\_of3wYAAAAJ\&hl=en.  Your user id is the string after the \= sign up to but not including the &.  So in this case it is “m\_of3wYAAAAJ”.  Put this value into the cv.cfg file under “googleid”.  
+To use all of the features of make\_cv, some additional information must be provided.  The file CV/cv.cfg contains all of the configuration information.  This is a text file that can be edited with any text editor.  To use any of the Google Scholar features, you have to enter your Google ID.  To find this go to [Google Scholar](https://scholar.google.com) and click on “My profile” in the top left.  If you examine the url for this page it should have a section that looks like: user=m\_of3wYAAAAJ\&hl=en.  Your user id is the string after the \= sign up to but not including the &.  So in this case it is “m\_of3wYAAAAJ”.  Put this value into the cv.cfg file under “googleid”.  You can also add your ORCID and use the ORCID data to find publications.
 
 The other significant configuration that can be done with this file is to set the defaults for what sections of the cv make\_cv controls.  These are controlled by the entries under “CV”.  If a data file is empty or missing, make\_cv will automatically exclude it so you don’t need to turn off empty sections.  I often leave all the sections on, then use command line options (discussed below) to create a shorter c.v. when I need that.
 
 Further configurations can be done by editing the file cv\_header.tex, cv.tex, and cv\_tables.tex. 
 
 1. cv\_header.tex is the LaTex header file that gets imported into cv.tex.  If you are comfortable with Latex, you can customize things like, fonts, margins, etc… with this file.  
-2. cv.tex is the first page information for the c.v.  This contains things like your name and contact information, employment and education history, etc…   You can format this how you like, but know that the \\section\* command should be used to create different sections within the c.v.  
+2. cv.tex is the first page information for the c.v.  This contains things like your name and contact information, employment and education history, etc…   You can format this how you like, but know that the \\section\* command should be used to create different sections within the c.v.  In the default cv.tex file there is a command at the top \\boldname\{Lastname\}\{F\}.  Put your lastname and first initial here to have your name bolded in all citations.
 3. cv\_tables.tex is included by cv.tex, and is responsible for including all of the automatically created tables in the c.v.   If you would like to use your own custom system for a particular section of the data, you can comment out the table that is being included by cv.tex, and import whatever LaTeX compatible file you want.
 
 
@@ -180,28 +181,6 @@ Mac
 Windows  
 `python -m make_cv.make_cv -g 4 -c true -m true -e Conference -e Proposals`
 
-
-#### NSF Collaborator List
-When applying for grants from the National Science Foundation (NSF), faculty members are often required to submit information regarding their PhD Advisees and Collaborators.
-
-- **PhD Advisees**: A list of doctoral students supervised by the faculty member, including names and start dates.
-
-- **Collaborators**: A list of researchers with whom the faculty member has collaborated on publications within a specified time frame.
-
-make_cv can generate these lists by using the following command. 
-
-Mac  
-`python -m make_cv.make_nsfcoa -y 4 -fmt xlsx`
-
-Windows  
-`python -m make_cv.make_nsfcoa -y 4 -fmt xlsx`
-
-- **`-y`**: Specifies the number of **years** for which collaborators are listed. The default is 4 years, but this can be adjusted to include collaborators from the last n years.
-
-- **`-fmt`**: Determines the output format, which can be either `xlsx` or `csv`. The default output format is `csv`.
-
-
-
 Most of the advanced features are by default off, but you can turn them on by default by editing the cv.cfg file in your CV folder.  I usually only use the advanced features intermittently so I leave the advanced features off by default and then use the command line options when I need to use them.
 
 The first time you run make\_cv it will find unclassified entries in your .bib file and ask you to classify them.  This will also happen if you add an entry from some other search source and it is not classified.  This modifies the keywords in the .bib file.  The categories determine in what sections that item will appear in the c.v.  If there is something appearing in the wrong section, use Bibdesk or Jabref to put the entry in the correct category.  (A drag and drop operation in BibDesk.  See Appendix F for Jabref instructions).  One of the categories is ignore, which should be chosen if you want to keep the entry in the .bib file but you don’t want it to appear in the c.v. 
@@ -220,7 +199,27 @@ This can also be turned on and off with \-C flag or by using the entry includeci
 
 \-I true will use bibtexautocomplete to search for DOI’s that are missing from the .bib file.  It will add the doi then add a record btacqueried to the .bib file so it will never try to find the doi for that entry again.  
 
-Appendix A: Python & LaTex Installation Instructions
+### make\_nsfcoa - NSF Collaborator List
+When applying for grants from the National Science Foundation (NSF), faculty members are often required to submit information regarding their PhD Advisees and Collaborators.
+
+- **PhD Advisees**: A list of doctoral students supervised by the faculty member, including names and start dates.
+
+- **Collaborators**: A list of researchers with whom the faculty member has collaborated on publications within a specified time frame.
+
+make_nsfcoa can generate these lists by using the following command. 
+
+Mac  
+`make_nsfcoa -y 4 -fmt xlsx`
+
+Windows  
+`python -m make_cv.make_nsfcoa -y 4 -fmt xlsx`
+
+- **`-y`**: Specifies the number of **years** for which collaborators are listed. The default is 4 years, but this can be adjusted to include collaborators from the last n years.
+
+- **`-fmt`**: Determines the output format, which can be either `xlsx` or `csv`. The default output format is `csv`.
+
+
+### Appendix A: Python & LaTex Installation Instructions
 
 ##### Mac Installation
 
@@ -244,7 +243,7 @@ Install python from Windows App Store
 and LaTeX from [https://miktex.org/download](https://miktex.org/download)  
 when installing LaTeX change the default paper size to letter and also click “automatically install missing packages” (something like that anyway).
 
-##### Appendix B: Instructions for Modifying Your scholarship.bib file with Jabref
+### Appendix B: Instructions for Modifying Your scholarship.bib file with Jabref
 
 (Warning: Jabref refuses to save a file to a network drive so I have to save it to the desktop and then drag it over to the network drive.) 
 
