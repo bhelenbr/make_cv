@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "make_cv"
-version = "0.1.4"
+version = "0.1.6"
 authors = [
   { name="Brian Helenbrook", email="brian.helenbrook@gmail.com" },
 ]
@@ -21,7 +21,7 @@ dependencies = [
   "pandas",
   "openpyxl",
   "bibtexparser<2.0.0",
-  "bibtexautocomplete",
+  "bibtexautocomplete>1.4.0",
   "scholarly",
   "selenium",
   "beautifulsoup4",

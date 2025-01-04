@@ -8,38 +8,24 @@ defaults = {'data_dir': '..',
 				'GoogleID': '',
 				'ScraperID': '',
 				'UseScraper': 'false',
-				'ReviewsFileJSON': 'reviews data.json',
 				'UpdateCitations': 'false',
 				'UpdateStudentMarkers': 'false',
 				'GetNewScholarshipEntries': '0',
 				'SearchForDOIs': 'false',
-				'ConvertJSON': 'false',
 	   			'ORCID': '',
 	   			'GetNewScholarshipEntriesusingOrcid':'0'}
 
-files = {'ScholarshipFile': 'scholarship.bib',
-			'PersonalAwardsFile': 'personal awards data.xlsx',
-			'StudentAwardsFile': 'student awards data.xlsx',
-			'ServiceFile': 'service data.xlsx',
-			'ReviewsFile': 'reviews data.xlsx',
-			'CurrentGradAdviseesFile':'current student data.xlsx',
-			'GradThesesFile': 'thesis data.xlsx',
-			'UndergradResearchFile': 'undergraduate research data.xlsx',
-			'TeachingFile': 'teaching evaluation data.xlsx',
-			'ProposalsFile': 'proposals & grants.xlsx',
-			'GrantsFile': 'proposals & grants.xlsx'} 
-
-folders = {'ScholarshipFolder': 'Scholarship',
-			'PersonalAwardsFolder': 'Awards',
-			'StudentAwardsFolder': 'Awards',
-			'ServiceFolder': 'Service',
-			'ReviewsFolder': 'Service',
-			'CurrentGradAdviseesFolder':'Scholarship',
-			'GradThesesFolder': 'Scholarship',
-			'UndergradResearchFolder': 'Service',
-			'TeachingFolder': 'Teaching',
-			'ProposalsFolder': 'Proposals & Grants',
-			'GrantsFolder': 'Proposals & Grants'} 
+files = {'ScholarshipFile': 'Scholarship/scholarship.bib',
+			'PersonalAwardsFile': 'Awards/personal awards data.xlsx',
+			'StudentAwardsFile': 'Awards/student awards data.xlsx',
+			'ServiceFile': 'Service/service data.xlsx',
+			'ReviewsFile': 'Service/reviews data.json',
+			'CurrentGradAdviseesFile':'Scholarship/current student data.xlsx',
+			'GradThesesFile': 'Scholarship/thesis data.xlsx',
+			'UndergradResearchFile': 'Service/undergraduate research data.xlsx',
+			'TeachingFile': 'Teaching/teaching evaluation data.xlsx',
+			'ProposalsFile': 'Proposals & Grants/proposals & grants.xlsx',
+			'GrantsFile': 'Proposals & Grants/proposals & grants.xlsx'} 
 			
 cv_keys = {'IncludeStudentMarkers': 'true',
 			'IncludeCitationCounts': 'true',
@@ -60,11 +46,6 @@ def verify_config(config):
 			return False
 	
 	for key in files:
-		if not key in config['DEFAULT'].keys():
-			print(key +' is missing from config file')
-			return False
-	
-	for key in folders:
 		if not key in config['DEFAULT'].keys():
 			print(key +' is missing from config file')
 			return False
@@ -100,9 +81,6 @@ def create_config(filename, old_config=None):
     config = configparser.ConfigParser()
     config['DEFAULT'] = defaults        
     for key, value in files.items():
-        config['DEFAULT'][key] = value
-
-    for key, value in folders.items():
         config['DEFAULT'][key] = value
         
     config['CV'] = cv_keys

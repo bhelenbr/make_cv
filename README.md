@@ -1,6 +1,6 @@
 ### make\_cv 
 
-make\_cv is a program that uses Python and LaTex to make a faculty curriculum vitae.  For reasons that are not clear to me, faculty use a c.v. to keep track of everything they have done in their careers.  For most of the data (awards, service, grants, etc…), the basic methodology that make\_cv uses is to keep the data in its most natural format and then process it using Python’s pandas to create LaTeX tabularx tables which are then generated into a c.v.  For scholarship items the system uses a .bib file to store the data and then uses biber to create publications lists (journal articles, conferences, books, etc…).  make\_cv has several features built in to make managing this data easier.  For example, it interfaces with google scholar to update citation counts for each journal article and it uses the provided data on student advisees to mark student authors in the bibliography.   It will also use bibtexautocomplete to fill in missing DOI data for publications.  The following describes its set-up and use.  Other utilities are provided to make web pages from your data (make\_web) and faculty activity reports (make\_far).  These are basically the same except that make\_far offers a \-y flag to limit the number of years of data that are used to make the activity report and the formatting of the data is always chronological.  The default is 3 years of data.
+make\_cv is a program that uses Python and LaTex to make a faculty curriculum vitae.  For reasons that are not clear to me, faculty use a c.v. to keep track of everything they have done in their careers.  For most of the data (awards, service, grants, etc…), the basic methodology that make\_cv uses is to keep the data in its most natural format and then process it using Python’s pandas to create LaTeX tabularx tables which are then generated into a c.v.  For scholarship items the system uses a .bib file to store the data and then uses biber to create publications lists (journal articles, conferences, books, etc…).  make\_cv has several features built in to make managing this data easier.  For example, it interfaces with google scholar to update citation counts for each journal article and it uses the provided data on student advisees to mark student authors in the bibliography.   It will also use bibtexautocomplete to fill in missing DOI data for publications.  The following describes its set-up and use.  Other utilities are provided to make web pages from your data (make\_web), faculty activity reports (make\_far), and NSF collaborator list (make\_nsfcoa).  make\_far offers a \-y flag to limit the number of years of data that are used to make the activity report and the formatting of the data is always chronological.  The default is 3 years of data.  
 
 ### Installation & Startup:
 
@@ -160,10 +160,7 @@ The `make_cv` tool provides a range of command-line options to customize and aut
 | `-e {SECTION}`           | Exclude a section from the CV. Sections include: `Grants`, `PersonalAwards`, `Conference`, `GradAdvisees`, `Proposals`, `UndergradResearch`, `Reviews`, `Refereed`, `Invited`, `Service`, `Teaching`, `Book`, `Patent`, `StudentAwards`, `Journal`. |
 | `-d {PATH TO DATA DIRECTORY}` | Override the default data directory location specified in the config file.                                                                                                                                                      |
 | `-f {PATH TO CONFIGURATION FILE}` | Specify a configuration file. Defaults to `cv.cfg`.                                                                                                                                                                             |
-| `-D {NAME}`              | Override data directory location in config file for specific sections. `NAME` can be `Scholarship`, `PersonalAwards`, `StudentAwards`, `Service`, `Reviews`, `CurrentGradAdvisees`, `GradTheses`, `UndergradResearch`, `Teaching`, `Proposals`, `Grants`. |
 | `-F {NAME}`              | Override data file location in config file for specific sections. `NAME` can be `Scholarship`, `PersonalAwards`, `StudentAwards`, `Service`, `Reviews`, `CurrentGradAdvisees`, `GradTheses`, `UndergradResearch`, `Teaching`, `Proposals`, `Grants`. |
-| `-J {NAME}`              | Specify the name of the reviews JSON file.                                                                                                                                                                                      |
-| `-j {true,false}`        | Force conversion of a reviewing JSON file downloaded from Web of Science.                                                                                                                                                       |
 | `-S {SCRAPERID}`         | Specify the `ScraperID` (optional, but helps avoid Google blocking requests).                                                                                                                                                   |
 | `-s {true,false}`        | Use scraper to avoid Google blocking.                                                                                                                                                                                           |                                                                                                                                                                       |
 | `-C {true,false}`        | Include citation counts in the CV.                                                                                                                                                                                              |
@@ -184,7 +181,7 @@ Windows
 `python -m make_cv.make_cv -g 4 -c true -m true -e Conference -e Proposals`
 
 
-#### NSF Requirements
+#### NSF Collaborator List
 When applying for grants from the National Science Foundation (NSF), faculty members are often required to submit information regarding their PhD Advisees and Collaborators.
 
 - **PhD Advisees**: A list of doctoral students supervised by the faculty member, including names and start dates.
@@ -194,10 +191,10 @@ When applying for grants from the National Science Foundation (NSF), faculty mem
 make_cv can generate these lists by using the following command. 
 
 Mac  
-`python -m make_cv.make_nsfcoa -y 4 -fmt csv`
+`python -m make_cv.make_nsfcoa -y 4 -fmt xlsx`
 
 Windows  
-`python -m make_cv.make_nsfcoa -y 4 -fmt csv`
+`python -m make_cv.make_nsfcoa -y 4 -fmt xlsx`
 
 - **`-y`**: Specifies the number of **years** for which collaborators are listed. The default is 4 years, but this can be adjusted to include collaborators from the last n years.
 
@@ -209,7 +206,7 @@ Most of the advanced features are by default off, but you can turn them on by de
 
 The first time you run make\_cv it will find unclassified entries in your .bib file and ask you to classify them.  This will also happen if you add an entry from some other search source and it is not classified.  This modifies the keywords in the .bib file.  The categories determine in what sections that item will appear in the c.v.  If there is something appearing in the wrong section, use Bibdesk or Jabref to put the entry in the correct category.  (A drag and drop operation in BibDesk.  See Appendix F for Jabref instructions).  One of the categories is ignore, which should be chosen if you want to keep the entry in the .bib file but you don’t want it to appear in the c.v. 
 
-If you add \-g true, it will use Google Scholar to find any entries that have appeared in the last year and ask you if you want to add them.  Everything in google scholar has an id, so it keeps track of these in the .bib file and will never ask you to add an entry twice.  It also uses these id tags when it updates the number of citations an entry has.  It will use bibtexautocomplete to add doi information to the new entries.  The doi’s appear as hyperlinks in the c.v. so people can click on an entry in your c.v. and be taken to the corresponding web location for that item.
+If you add \-g, it will use Google Scholar to find any entries that have appeared in the last year and ask you if you want to add them.  Everything in google scholar has an id, so it keeps track of these in the .bib file and will never ask you to add an entry twice.  It also uses these id tags when it updates the number of citations an entry has.  It will use bibtexautocomplete to add doi information to the new entries.  The doi’s appear as hyperlinks in the c.v. so people can click on an entry in your c.v. and be taken to the corresponding web location for that item.
 
 If you add \-m true, it uses the files “undergraduate research data.xlsx”, “thesis data.xlsx” and “current student data.xlsx” to find the first initial and last names of all of your student advisees.  It then adds a marker after those names in the .bib file.  The two markers are \\us for undergraduate student and \\gs for graduate student.  The actual symbol that these commands create is defined in the `cv_header.tex` file.  Currently, make\_cv is configured to mark these authors in perpetuity, meaning that if you have a student who was an undergraduate advisee that became a graduate advisee, then you published with them 10 years later, that author will still receive both an undergraduate and a graduate advisee student marker.  There is a way to set a time limit for when this terminates, but I haven’t exposed that functionality yet.
 
@@ -239,7 +236,7 @@ Make a virtual environment for python scripts so they can be separate from syste
 `source ~/.venv/bin/activate`
 
 To make this python installation work every time you open a new terminal window:  
-`cat “source ~/.venv/bin/activate” >> .zprofile`
+`cat ~/.venv/bin/activate >> .zprofile`
 
 ##### Windows Installation
 

@@ -53,7 +53,7 @@ def make_cv_tables(config,table_dir,years):
 	print('Updating scholarship tables')
 	pubfiles = ["journal.tex","conference.tex","patent.tex","book.tex","invited.tex","refereed.tex"]
 	fpubs = [open(table_dir +os.sep +name, 'w') for name in pubfiles]
-	filename = faculty_source +os.sep +config['ScholarshipFolder'] +os.sep +config['ScholarshipFile']
+	filename = faculty_source +os.sep +config['ScholarshipFile']
 	if os.path.isfile(filename):
 		nrecords = bib2latex_far(fpubs,years,filename)
 		for counter in range(len(pubfiles)):
@@ -66,7 +66,7 @@ def make_cv_tables(config,table_dir,years):
 	if config.getboolean('PersonalAwards'):
 		print('Updating personal awards table')
 		fpawards = open(table_dir +os.sep +'personal_awards.tex', 'w') # file to write
-		filename = faculty_source +os.sep +config['PersonalAwardsFolder'] +os.sep +config['PersonalAwardsFile']
+		filename = faculty_source +os.sep +config['PersonalAwardsFile']
 		nrows = personal_awards2latex(fpawards,years,filename)
 		fpawards.close()
 		if not(nrows):
@@ -76,7 +76,7 @@ def make_cv_tables(config,table_dir,years):
 	if config.getboolean('StudentAwards'):
 		print('Updating student awards table')
 		fsawards = open(table_dir +os.sep +'student_awards.tex', 'w') # file to write
-		filename = faculty_source +os.sep +config['StudentAwardsFolder'] +os.sep +config['StudentAwardsFile']
+		filename = faculty_source +os.sep +config['StudentAwardsFile']
 		nrows = student_awards2latex(fsawards,years,filename)	
 		fsawards.close()
 		if not(nrows):
@@ -86,7 +86,7 @@ def make_cv_tables(config,table_dir,years):
 	if config.getboolean('Service'):
 		print('Updating service table')
 		fservice = open(table_dir +os.sep +'service.tex', 'w') # file to write
-		filename = faculty_source +os.sep +config['ServiceFolder'] +os.sep +config['ServiceFile']
+		filename = faculty_source +os.sep +config['ServiceFile']
 		nrows = service2latex(fservice,years,filename)	
 		fservice.close()
 		if not(nrows):
@@ -95,7 +95,7 @@ def make_cv_tables(config,table_dir,years):
 	if config.getboolean('Reviews'):
 		print('Updating reviews table')
 		freviews = open(table_dir +os.sep +'reviews.tex', 'w') # file to write
-		filename = faculty_source +os.sep +config['ReviewsFolder'] +os.sep +config['ReviewsFile']
+		filename = faculty_source +os.sep +config['ReviewsFile']
 		nrows = publons2latex(freviews,years,filename)
 		freviews.close()
 		if not(nrows):
@@ -105,8 +105,8 @@ def make_cv_tables(config,table_dir,years):
 	if config.getboolean('GradAdvisees'):
 		print('Updating graduate advisees table')
 		fthesis = open(table_dir +os.sep +'thesis.tex', 'w') # file to write
-		filename1 = faculty_source +os.sep +config['CurrentGradAdviseesFolder'] +os.sep +config['CurrentGradAdviseesFile']
-		filename2 = faculty_source +os.sep +config['GradThesesFolder'] +os.sep +config['GradThesesFile']
+		filename1 = faculty_source +os.sep +config['CurrentGradAdviseesFile']
+		filename2 = faculty_source +os.sep +config['GradThesesFile']
 		nrows = thesis2latex_far(fthesis,years,filename1,filename2)
 		fthesis.close()
 		if not(nrows):
@@ -116,7 +116,7 @@ def make_cv_tables(config,table_dir,years):
 	if config.getboolean('UndergradResearch'):
 		print('Updating undergraduate research table')
 		fur = open(table_dir +os.sep +'undergraduate_research.tex', 'w') # file to write
-		filename = faculty_source +os.sep +config['UndergradResearchFolder'] +os.sep +config['UndergradResearchFile']
+		filename = faculty_source +os.sep +config['UndergradResearchFile']
 		nrows = UR2latex(fur,years,filename)	
 		fur.close()
 		if not(nrows):
@@ -126,7 +126,7 @@ def make_cv_tables(config,table_dir,years):
 	if config.getboolean('Teaching'):
 		print('Updating teaching table')
 		fteaching = open(table_dir +os.sep +'teaching.tex', 'w') # file to write
-		filename = faculty_source +os.sep +config['TeachingFolder'] +os.sep +config['TeachingFile']
+		filename = faculty_source +os.sep +config['TeachingFile']
 		if config.getboolean('ShortTeachingTable'):
 			nrows = shortformteaching(fteaching,years,filename)
 		else:
@@ -138,7 +138,7 @@ def make_cv_tables(config,table_dir,years):
 	if config.getboolean('Grants'):
 		print('updating grants table')
 		fgrants = open(table_dir +os.sep +'grants.tex', 'w') # file to write
-		filename = faculty_source +os.sep +config['GrantsFolder'] +os.sep +config['GrantsFile']
+		filename = faculty_source +os.sep +config['GrantsFile']
 		nrows = grants2latex_far(fgrants,years,filename)
 		fgrants.close()
 		if not(nrows):
@@ -148,7 +148,7 @@ def make_cv_tables(config,table_dir,years):
 	if config.getboolean('Proposals'):
 		print('updating proposals table')
 		fprops = open(table_dir +os.sep +'proposals.tex', 'w') # file to write
-		filename = faculty_source +os.sep +config['ProposalsFolder'] +os.sep +config['ProposalsFile']
+		filename = faculty_source +os.sep +config['ProposalsFile']
 		nrows = props2latex_far(fprops,years,filename)	
 		fprops.close()
 		if not(nrows):
@@ -159,10 +159,7 @@ def add_default_args(parser):
 	parser.add_argument('-b','--begin', help='create default directory structure & files named <>',)
 	parser.add_argument('-d','--data_dir', help='the name of root directory containing the data folders')
 	parser.add_argument('-f','--configfile', default='cv.cfg', help='the configuration file, default is cv.cfg')
-	parser.add_argument('-D','--directory', help='override data directory location in config file.  Format is NAME=<directory> where NAME can be: Scholarship, PersonalAwards, StudentAwards, Service, Reviews, CurrentGradAdvisees, GradTheses, UndergradResearch, Teaching, Proposals, Grants', action='append')
 	parser.add_argument('-F','--file', help='override data file location in config file.  Format is NAME=<file name> where NAME can be: Scholarship, PersonalAwards, StudentAwards, Service, Reviews, CurrentGradAdvisees, GradTheses, UndergradResearch, Teaching, Proposals, Grants', action='append')
-	parser.add_argument('-J','--ReviewsFileJSON', help='the name of the reviews JSON file')
-	parser.add_argument('-j','--ConvertJSON', help='force conversion of a reviewing JSON file downloaded from web of science',  choices=['true','false'])  
 	parser.add_argument('-S','--ScraperID', help='ScraperID (not necessary, but avoids Google blocking requests)')
 	parser.add_argument('-s','--UseScraper', help='Use scraper to avoid blocking by Google',  choices=['true','false'])
 	parser.add_argument('-G','--GoogleID', help='GoogleID (used for finding new publications()')
@@ -222,12 +219,10 @@ def process_default_args(config,args):
 	if args.GoogleID is not None: config['GoogleID'] = args.GoogleID
 	if args.ScraperID is not None: config['ScraperID'] = args.ScraperID
 	if args.UseScraper is not None: config['UseScraper'] = args.UseScraper
-	if args.ReviewsFileJSON is not None: config['ReviewsFileJSON'] = args.ReviewsFileJSON
 	if args.UpdateCitations is not None: config['UpdateCitations'] = args.UpdateCitations
 	if args.UpdateStudentMarkers is not None: config['UpdateStudentMarkers'] = args.UpdateStudentMarkers
 	if args.GetNewScholarshipEntries is not None: config['GetNewScholarshipEntries'] = args.GetNewScholarshipEntries
 	if args.SearchForDOIs is not None: config['SearchForDOIs'] = args.SearchForDOIs
-	if args.ConvertJSON is not None: config['ConvertJSON'] = args.ConvertJSON
 	if args.IncludeStudentMarkers is not None: config['IncludeStudentMarkers'] = args.IncludeStudentMarkers
 	if args.IncludeCitationCounts is not None: config['IncludeCitationCounts'] = args.IncludeCitationCounts
 	if args.Timestamp is not None: config['Timestamp'] = args.Timestamp
@@ -238,15 +233,6 @@ def process_default_args(config,args):
 		for section in args.exclude:
 			config[section] = 'false'
 	
-	if args.directory is not None:
-		for directory in args.directory:
-			strings = directory.split('=')
-			if len(strings) == 2 and strings[0] in files:
-				config[strings[0]+'Folder'] = strings[1]
-			else:
-				print('Unable to parse directory location' + directory)
-				exit()
-
 	if args.file is not None:
 		for file in args.file:
 			strings = file.split('=')
@@ -267,11 +253,14 @@ def process_default_args(config,args):
 	faculty_source = config['data_dir']
 	
 	# convert a reviewin history json file from Web of Science
-	if config.getboolean('ConvertJSON'):
-		print('Converting json file')
-		filename = faculty_source +os.sep +config['ReviewsFolder'] +os.sep +config['ReviewsFile']
-		json = faculty_source +os.sep +config['ReviewsFolder'] +os.sep +config['ReviewsFileJSON']
-		publons2excel(json,filename)
+	reviewfile = config['ReviewsFile']
+	name_extension_tuple = os.path.splitext(reviewfile)
+	if name_extension_tuple[1] == '.json':
+		print('Converting json reviewing file')
+		xls = faculty_source +os.sep +name_extension_tuple[0] +'.xlsx'
+		json = faculty_source +os.sep +reviewfile
+		publons2excel(json,xls)
+		config['ReviewsFile'] = name_extension_tuple[0] +'.xlsx'
 		
 	if config['UseScraper'] == 'false':
 		scraperID = None
@@ -328,7 +317,7 @@ def process_default_args(config,args):
 		cur_grads = faculty_source +os.sep +config['CurrentGradAdviseesFolder'] +os.sep +config['CurrentGradAdviseesFile']
 		gradfile = faculty_source +os.sep +config['GradThesesFolder'] +os.sep +config['GradThesesFile']
 		ugradfile = faculty_source +os.sep +config['UndergradResearchFolder'] +os.sep +config['UndergradResearchFile']
-		bib_add_student_marker(100,ugradfile,gradfile,cur_grads,backupfile,filename)
+		bib_add_student_markers(100,ugradfile,gradfile,cur_grads,backupfile,filename)
 		os.remove(backupfile)
 		
 	if config.getboolean('SearchForDOIs'):
@@ -339,14 +328,14 @@ def process_default_args(config,args):
 		# I think btac deletes the comments from a .bib file so I need to add them back in?
 
 	# Check for missing keywords in .bib file
-	filename = faculty_source +os.sep +config['ScholarshipFolder'] +os.sep +config['ScholarshipFile']
+	filename = faculty_source +os.sep +config['ScholarshipFile']
 	if os.path.isfile(filename):
 		print('Checking for .bib entries that are missing type specifiers')
-		backupfile = faculty_source +os.sep +config['ScholarshipFolder'] +os.sep +'backup4.bib'
+		backupfile = faculty_source +os.sep +'backup.bib'
 		shutil.copyfile(filename,backupfile)
 		bib_add_keywords(backupfile,filename)
 	try:
-		os.remove(faculty_source +os.sep +config['ScholarshipFolder'] +os.sep +'backup4.bib')
+		os.remove(faculty_source +os.sep +'backup.bib')
 	except:
 		pass
 
@@ -379,7 +368,7 @@ def typeset(config,filename,command):
 			exclusions.write('\\renewcommand{\\us}{}\n')
 			exclusions.write('\\renewcommand{\\gs}{}\n')
 	
-	if config["Timestamp"] and config.getboolean("Timestamp"):		
+	if "Timestamp" in config.keys() and config.getboolean("Timestamp"):
 		# Create timestamp
 		add_timestamp_to_cv()
 	else:
@@ -408,11 +397,11 @@ def typeset(config,filename,command):
 	subprocess.run(command) 
 	
 	# cleanup
-	for file in [filename +".aux",filename +".bbl",filename +".bcf",filename +".blg",filename +".log",filename +".out",filename +".run.xml","biblatex-dm.cfg","exclusions.tex",filename +".toc"]:
+	for file in [filename +".aux",filename +".bbl",filename +".bcf",filename +".blg",filename +".log",filename +".out",filename +".run.xml","biblatex-dm.cfg","exclusions.tex",filename +".toc","timestamp.tex"]:
 		try:
 			os.remove(file)
 		except OSError as err:
-			print("")
+			pass
 
 
 def main(argv = None):

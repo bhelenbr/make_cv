@@ -46,20 +46,20 @@ def getyear(paperbibentry):
 def get_collaborator_list(config, years, output_format):
     faculty_source = config['data_dir']
     
-    bibfile = os.path.join(faculty_source, config['ScholarshipFolder'], config['ScholarshipFile'])
+    bibfile = os.path.join(faculty_source, config['ScholarshipFile'])
     with open(bibfile) as bibtex_file:
         bibtex_str = bibtex_file.read()
     tbparser = BibTexParser(common_strings=True)
     bib_database = bibtexparser.loads(bibtex_str, tbparser)
     
-    cur_grad = os.path.join(faculty_source, config['CurrentGradAdviseesFolder'], config['CurrentGradAdviseesFile'])
+    cur_grad = os.path.join(faculty_source, config['CurrentGradAdviseesFile'])
     try:
         cur_grad_names = pd.read_excel(cur_grad, sheet_name="Data", parse_dates=['Start Date'])
     except OSError:
         print("Could not open/read file: " + cur_grad)
         return
     
-    grads = os.path.join(faculty_source, config['GradThesesFolder'], config['GradThesesFile'])
+    grads = os.path.join(faculty_source, config['GradThesesFile'])
     try:
         grad_names = pd.read_excel(grads, sheet_name="Data", dtype={'Start Date': int, 'Year': int})
     except OSError:
