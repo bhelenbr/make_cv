@@ -52,7 +52,7 @@ def make_far_tables(config,table_dir):
 	if config.getboolean('PersonalAwards'):
 		print('Updating personal awards table')
 		fpawards = open(table_dir +os.sep +'personal_awards.tex', 'w') # file to write
-		filename = faculty_source +os.sep +config['PersonalAwardsFile']
+		filename = os.path.join(faculty_source,config['PersonalAwardsFile'])
 		nrows = personal_awards2latex_far(fpawards,years,filename)
 		fpawards.close()
 		if not(nrows):
@@ -62,7 +62,7 @@ def make_far_tables(config,table_dir):
 	if config.getboolean('StudentAwards'):
 		print('Updating student awards table')
 		fsawards = open(table_dir +os.sep +'student_awards.tex', 'w') # file to write
-		filename = faculty_source +os.sep +config['StudentAwardsFile']
+		filename = os.path.join(faculty_source,config['StudentAwardsFile'])
 		nrows = student_awards2latex_far(fsawards,years,filename)	
 		fsawards.close()
 		if not(nrows):
@@ -72,7 +72,7 @@ def make_far_tables(config,table_dir):
 	if config.getboolean('Service'):
 		print('Updating service table')
 		fservice = open(table_dir +os.sep +'service.tex', 'w') # file to write
-		filename = faculty_source +os.sep +config['ServiceFile']
+		filename = os.path.join(faculty_source,config['ServiceFile'])
 		nrows = service2latex_far(fservice,years,filename)	
 		fservice.close()
 		if not(nrows):
@@ -81,7 +81,7 @@ def make_far_tables(config,table_dir):
 	if config.getboolean('Reviews'):
 		print('Updating reviews table')
 		freviews = open(table_dir +os.sep +'reviews.tex', 'w') # file to write
-		filename = faculty_source +os.sep +config['ReviewsFile']
+		filename = os.path.join(faculty_source,config['ReviewsFile'])
 		nrows = publons2latex_far(freviews,years,filename)
 		freviews.close()
 		if not(nrows):
@@ -91,7 +91,7 @@ def make_far_tables(config,table_dir):
 	if config.getboolean('UndergradResearch'):
 		print('Updating undergraduate research table')
 		fur = open(table_dir +os.sep +'undergraduate_research.tex', 'w') # file to write
-		filename = faculty_source +os.sep +config['UndergradResearchFile']
+		filename = os.path.join(faculty_source,config['UndergradResearchFile'])
 		nrows = UR2latex_far(fur,years,filename)	
 		fur.close()
 		if not(nrows):
@@ -101,7 +101,7 @@ def make_far_tables(config,table_dir):
 	if config.getboolean('Teaching'):
 		print('Updating teaching table')
 		fteaching = open(table_dir +os.sep +'teaching.tex', 'w') # file to write
-		filename = faculty_source +os.sep +config['TeachingFile']
+		filename = os.path.join(faculty_source,config['TeachingFile'])
 		nrows = teaching2latex_far(fteaching,years,filename)	
 		fteaching.close()
 		if not(nrows):

@@ -68,7 +68,7 @@ def input_keyword(keyword):
 
 def add_keyword(paperbibentry):
 	keyword = guess_type(paperbibentry)
-	input_keyword(keyword)
+	keyword = input_keyword(keyword)
 	if "keywords" in paperbibentry.keys():
 		response = input('Should I erase current keywords [Y/N] default is [Y]')
 		if (response == 'N'):
