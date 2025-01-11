@@ -30,9 +30,9 @@ def grants2latex_far(f,years,inputfile):
 		today = date.today()
 		year = today.year
 		begin_year = year - years	
-		grants = grants[grants['PRO_BGN_DT'].apply(lambda x: x.year) >= begin_year]
+		grants = grants[grants['Begin Date'].apply(lambda x: x.year) >= begin_year]
 		
-	grants = grants.sort_values(by=['PRO_BGN_DT'],ascending = [False])
+	grants = grants.sort_values(by=['Begin Date'],ascending = [False])
 	grants.reset_index(inplace=True,drop=True)
 	nrows = grants.shape[0] 
 
@@ -45,8 +45,8 @@ def grants2latex_far(f,years,inputfile):
 		f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXllll}\n& Sponsor: Title & Alloc/Total & Dates  \\\\\n\\hline\n")
 		count = 0
 		while count < nrows:
-			f.write("& " +str2latex(grants.loc[count,"Name.1"].upper())+": " +str2latex(grants.loc[count,"Long Descr"]) + " & " + "\\${:,.0f}k".format(grants.loc[count,"Allocated Amt"]/1000) + "/" +"\\${:,.0f}k".format(grants.loc[count,"Total Cost"]/1000))
-			f.write(" & " +grants.loc[count,"PRO_BGN_DT"].strftime("%m/%Y") +"-" +grants.loc[count,"PRO_END_DT"].strftime("%m/%Y") +"\\\\\n")
+			f.write("& " +str2latex(grants.loc[count,"Sponsor"].upper())+": " +str2latex(grants.loc[count,"Long Descr"]) + " & " + "\\${:,.0f}k".format(grants.loc[count,"Allocated Amt"]/1000) + "/" +"\\${:,.0f}k".format(grants.loc[count,"Total Cost"]/1000))
+			f.write(" & " +grants.loc[count,"Begin Date"].strftime("%m/%Y") +"-" +grants.loc[count,"End Date"].strftime("%m/%Y") +"\\\\\n")
 			count += 1
 	
 		f.write("\\end{tabularx}\n")

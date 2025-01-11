@@ -44,6 +44,15 @@ def split_names(name_list):
 		list_of_names = name_list.split(" and ")
 	elif ncommas > 1: # Multiple commas
 		list_of_names = name_list.split(",")
+		if (list_of_names[0].strip().find(" ") == -1):
+			# if there are no spaces the first word is a last name (probably)
+			if (len(list_of_names) % 2): 
+				print('This list can not be broken: ' +name_list)
+			else:
+				new_list_of_names = []
+				for count in range(0,len(list_of_names),2):
+					new_list_of_names.append(list_of_names[count+1].strip() +' ' +list_of_names[count].strip())
+				list_of_names = new_list_of_names
 	elif ncommas == 1:
 		list_of_names = name_list.split(",")
 		if (list_of_names[0].strip().find(" ") == -1) & (list_of_names[0].strip().find(".") == -1):
@@ -218,6 +227,11 @@ if __name__ == "__main__":
 	print(abbreviate_name_list(names))
 	
 	names = "B. T. Helenbrook and N. Bagheri and K. D. Visser"
+	print('test split of name list ' +names)
+	print(split_names(names))
+	print(abbreviate_name_list(names))
+	
+	names = "Helenbrook, B.T., Baheri, N., and Visser, Kenneth D."
 	print('test split of name list ' +names)
 	print(split_names(names))
 	print(abbreviate_name_list(names))
