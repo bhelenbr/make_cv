@@ -80,7 +80,6 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 		begin_year = 0
 		
 	# Load bibfile
-	# homogenize_fields: Sanitize BibTeX field names, for example change `url` to `link` etc.
 	tbparser = BibTexParser(common_strings=True)
 	tbparser.homogenize_fields = False  # no dice
 	tbparser.alt_dict['url'] = 'url'	# this finally prevents change 'url' to 'link'
@@ -104,9 +103,7 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 	sys.argv.append('-m')
 	sys.argv.append('btac.bib')
 	
-	useGoogle = False
-
-	# Loop through google scholar entries
+	# Loop through Google Scholar entries
 	for pub in author['publications']:
 		if 'pub_year' in pub['bib']:
 			year = pub['bib']['pub_year']
@@ -133,7 +130,6 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 		# try to fill entry using bibtex autocomplete?
 		with open('btac.bib', 'w') as tempfile:
 			tempfile.write('@article{' + pub_id + ',\n title={' + pub['bib']['title'] + '},\n}')
-		tempfile.close()
 		btac(['-s'])
 		with open('btac.bib') as bibtex_file:
 			bibtex_str = bibtex_file.read()
@@ -220,7 +216,7 @@ if __name__ == "__main__":
 	parser.add_argument('-o', '--output',default="scholarship1.bib",help='the name of the output file')
 	parser.add_argument('-y', '--years',default="1",type=int,help='the number of years to go back, default is 1 year')
 	parser.add_argument('bibfile',help='the .bib file to add the citations to')
-	parser.add_argument('-a', '--author_id',default="",help='the google scholar id for the author. If not provided it will look for a file titled "google_id" in the current working directory')
+	parser.add_argument('-a', '--author_id',default="",help='the Google Scholar id for the author. If not provided it will look for a file titled "google_id" in the current working directory')
 	parser.add_argument('-s', '--scraperID',help='A scraper ID in case Google Scholar is blocking requests')		  
 	args = parser.parse_args()
 	
