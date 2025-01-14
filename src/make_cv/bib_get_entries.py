@@ -111,97 +111,98 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 			# found match
 			continue
 		
-		print('Should I try to complete this record using bibtex autocomplete:')
+		print('Trying to complete this record using bibtex autocomplete:')
 		try:
 			print(pub['bib']['citation'] + ' ' + pub['bib']['title'])
 		except KeyError:
 			print(pub['bib']['title'])
 		
-		YN = input('Y/N?')
-		if YN.upper() != 'Y':
-			continue
-		
 		# try to fill entry using bibtex autocomplete?
 		with open('btac.bib', 'w') as tempfile:
 			tempfile.write('@article{' + pub_id + ',\n title={' + pub['bib']['title'] + '},\n}')
 		tempfile.close()
-		btac()
+		btac(['-s'])
 		with open('btac.bib') as bibtex_file:
 			bibtex_str = bibtex_file.read()
 		
 		bib_database = bibtexparser.loads(bibtex_str, tbparser)
-		if 'booktitle' in bib_database.entries[-1].keys():
-			bib_database.entries[-1]['ENTRYTYPE'] = 'inproceedings'
-		elif 'note' in bib_database.entries[-1].keys():
-			bib_database.entries[-1]['ENTRYTYPE'] = 'misc'
-		bib_database.entries[-1]['google_pub_id'] = pub_id
-		print(BibTexWriter()._entry_to_bibtex(bib_database.entries[-1]))
-
-		YN = input('Is this btac entry correct and ready to be added?\nOnce an entry is added any future changes must be done manually.\n[Y/N]?')
-		if YN.upper() == 'Y':
-			add_keyword(bib_database.entries[-1])
-			if 'author' in bib_database.entries[-1].keys():
+		if 'author' in bib_database.entries[-1].keys():
+			if 'booktitle' in bib_database.entries[-1].keys():
+				bib_database.entries[-1]['ENTRYTYPE'] = 'inproceedings'
+			elif 'note' in bib_database.entries[-1].keys():
+				bib_database.entries[-1]['ENTRYTYPE'] = 'misc'
+			bib_database.entries[-1]['google_pub_id'] = pub_id
+			print(BibTexWriter()._entry_to_bibtex(bib_database.entries[-1]))
+		
+			YN = input('Is this btac entry correct and ready to be added?\nOnce an entry is added any future changes must be done manually.\n[Y/N]?')
+			if YN.upper() == 'Y':
+				add_keyword(bib_database.entries[-1])
 				IDstring = re.search('^[A-z]+', bib_database.entries[-1]['author']).group(0)
 				IDstring += year
 				IDstring += re.search('^[A-z]+', bib_database.entries[-1]['title']).group(0)
 				bib_database.entries[-1]['ID'] = IDstring
 				newentries.append(bib_database.entries[-1]['ID'])
-			else:
-				print('Skipped entry because it had no author field\n')
-		else:
-			print('Should I try to find a match using Google Scholar instead? (Sometimes this gets blocked by Google. ):')
-			YN = input('Y/N?')
-			if YN.upper() != 'Y':
 				continue
-
-			url = pub['citedby_url']
+		else:
+			print('missing author')
 			
-			response = requests.get(url)
-			soup = BeautifulSoup(response.content, 'html.parser')
+		print('Should I try to find a match using Google Scholar instead? (Sometimes this gets blocked by Google. ):')
+		YN = input('Y/N?')
+		if YN.upper() != 'Y':
+			continue
+			
+		if not 'citedby_url' in pub.keys():
+			continue
+			
+		url = pub['citedby_url']
+		
+		response = requests.get(url)
+		soup = BeautifulSoup(response.content, 'html.parser')
+		
+		first_entry = soup.find('h2', class_='gs_rt')
 
-			first_entry = soup.find('h2', class_='gs_rt')
+		if first_entry and first_entry.a:
+			url2 = "https://scholar.google.com" + first_entry.a['href']
+		else:
+			print("No entry found.")
+			continue
 
-			if first_entry and first_entry.a:
-				url2 = "https://scholar.google.com" + first_entry.a['href']
-			else:
-				print("No entry found.")
+		chrome_options = Options()
+		chrome_options.add_argument("--headless")
+		chrome_options.add_argument("--disable-gpu")
 
-			chrome_options = Options()
-			chrome_options.add_argument("--headless")
-			chrome_options.add_argument("--disable-gpu")
+		service = Service()
 
-			service = Service()
+		driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+		driver.get(url2)
 
-			driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-			driver.get(url2)
+		try:
+			citation_link = WebDriverWait(driver, 10).until(
+				EC.element_to_be_clickable((By.CLASS_NAME, "gs_or_cit"))
+			)
+			citation_link.click()
 
-			try:
-				citation_link = WebDriverWait(driver, 10).until(
-					EC.element_to_be_clickable((By.CLASS_NAME, "gs_or_cit"))
-				)
-				citation_link.click()
+			bibtex_link = WebDriverWait(driver, 10).until(
+				EC.presence_of_element_located((By.CLASS_NAME, "gs_citi"))
+			)
 
-				bibtex_link = WebDriverWait(driver, 10).until(
-					EC.presence_of_element_located((By.CLASS_NAME, "gs_citi"))
-				)
-	
-				bibtex_url = bibtex_link.get_attribute("href")
-				
-				response = requests.get(bibtex_url)
-				bibtex_content = response.text
-			except Exception as e:
-				print("An error occurred:", e)
-			finally:
-				driver.quit()
+			bibtex_url = bibtex_link.get_attribute("href")
+			
+			response = requests.get(bibtex_url)
+			bibtex_content = response.text
+		except Exception as e:
+			print("An error occurred:", e)
+		finally:
+			driver.quit()
 
-			bibtex_str = bibtex_content
-			print(bibtex_str)
-			YN = input('Is this entry correct and ready to be added?\n[Y/N]? ')	
-			if YN.upper() == 'Y':
-				bib_database = bibtexparser.loads(bibtex_str, tbparser)
-				bib_database.entries[-1]['google_pub_id'] = pub_id
-				add_keyword(bib_database.entries[-1])
-				newentries.append(bib_database.entries[-1]['ID'])		
+		bibtex_str = bibtex_content
+		print(bibtex_str)
+		YN = input('Is this entry correct and ready to be added?\n[Y/N]? ')	
+		if YN.upper() == 'Y':
+			bib_database = bibtexparser.loads(bibtex_str, tbparser)
+			bib_database.entries[-1]['google_pub_id'] = pub_id
+			add_keyword(bib_database.entries[-1])
+			newentries.append(bib_database.entries[-1]['ID'])		
 
 	writer = BibTexWriter()
 	writer.order_entries_by = None
