@@ -31,30 +31,26 @@ def getyear(paperbibentry):
 def bib_add_student_markers(years,ugrads,grads,cur_grad,bibfile,outputfile):
 	try:
 		cur_grad_names = pd.read_excel(cur_grad,sheet_name="Data",parse_dates=['Start Date'])
-		cur_grad_found = True
 	except OSError:
 		print("Could not open/read file: " + cur_grad)
-		cur_grad_found = False
+		cur_grad_names = pd.DataFrame([],columns=('Student Name','Start Date','Term'))
 		
 	try:
 		grad_names = pd.read_excel(grads,sheet_name="Data",dtype={'Start Date':int,'Year':int})
-		grad_found = True
 	except OSError:
 		print("Could not open/read file: " + grads)
-		grad_found = False
+		grad_names = pd.DataFrame([],columns=('Student','Start Date'))
 	
 	try:
 		ugrad_names = pd.read_excel(ugrads,sheet_name="Data")
-		ugrad_found = True
 	except OSError:
 		print("Could not open/read file: " + ugrads)
-		ugrad_found = False
+		ugrad_names	= pd.DataFrame([],columns=('Student','Calendar Year','Term'))
 		
 	
 	# Split lists of undergraduate students into individual entries
 	row_list = []
-	nrows = ugrad_names.shape[0]
-	for row in range(nrows):
+	for row in range(ugrad_names.shape[0]):
 		row_data = ugrad_names.iloc[row]
 		list_of_names = split_names(row_data['Students'])
 		for name in list_of_names:
@@ -66,15 +62,15 @@ def bib_add_student_markers(years,ugrads,grads,cur_grad,bibfile,outputfile):
 	# Find start date of undergraduates
 	ugrad_list = ugrad_list.pivot_table(values=['Calendar Year'], index=['Student'], aggfunc={'Calendar Year': 'max'},fill_value=0,observed=False)	
 	
+	
 	# Combine graduate student lists
 	# Rename Column for current students
 	cur_grad_names.rename(columns={"Student Name": "Student"},inplace=True)
 	cur_grad_names['Start Date'] = cur_grad_names['Start Date'].apply(lambda x : x.year)
 	grad_list = pd.concat([cur_grad_names,grad_names],ignore_index=True,join="inner")
 	grad_list['Student'] = grad_list['Student'].apply(lambda x : abbreviate_name(x,first_initial_only=True))
-	grad_list = grad_list.pivot_table(values=['Start Date'], index=['Student'], aggfunc={'Start Date': 'max'},fill_value=0,observed=False)
-	grad_list.columns=['Calendar Year']
-	
+	grad_list.rename(columns={'Start Date':'Calendar Year'},inplace=True)
+	grad_list = grad_list.pivot_table(values=['Calendar Year'], index=['Student'], aggfunc={'Calendar Year': 'max'},fill_value=0,observed=False)
 
 	# homogenize_fields: Sanitize BibTeX field names, for example change `url` to `link` etc.
 	tbparser = BibTexParser(common_strings=True)
@@ -99,7 +95,6 @@ def bib_add_student_markers(years,ugrads,grads,cur_grad,bibfile,outputfile):
 				abbrev = abbreviate_name(author,first_initial_only=True)
 				newauths = newauths +spacer +first_last(author)
 
-				print(abbrev)
 				if abbrev in grad_list.index:
 					if grad_list.loc[abbrev,'Calendar Year']+years > pubyear:
 						newauths = newauths +'\\gs'

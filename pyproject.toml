@@ -20,6 +20,7 @@ classifiers = [
 dependencies = [
   "pandas",
   "openpyxl",
+  "XlsxWriter",
   "bibtexparser<2.0.0",
   "bibtexautocomplete>=1.4.0",
   "scholarly",
