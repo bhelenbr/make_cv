@@ -34,6 +34,19 @@ from bs4 import BeautifulSoup
 # pip3 uninstall urllib3
 # pip3 install 'urllib3<=2'
 
+def process_entry(paperbibentry,pub_id):
+	if 'booktitle' in paperbibentry.keys():
+		paperbibentry['ENTRYTYPE'] = 'inproceedings'
+	elif 'note' in bib_database.entries[-1].keys():
+		paperbibentry['ENTRYTYPE'] = 'misc'
+	paperbibentry['google_pub_id'] = pub_id
+	add_keyword(paperbibentry)
+	IDstring = re.search('^[A-z]+', paperbibentry['author']).group(0)
+	IDstring += year
+	IDstring += re.search('^[A-z]+', paperbibentry['title']).group(0)
+	paperbibentry['ID'] = IDstring
+	
+
 def getyear(paperbibentry):
 	if "year" in paperbibentry.keys(): 
 		return(int(paperbibentry["year"]))
@@ -127,31 +140,18 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 		
 		bib_database = bibtexparser.loads(bibtex_str, tbparser)
 		if 'author' in bib_database.entries[-1].keys():
-			if 'booktitle' in bib_database.entries[-1].keys():
-				bib_database.entries[-1]['ENTRYTYPE'] = 'inproceedings'
-			elif 'note' in bib_database.entries[-1].keys():
-				bib_database.entries[-1]['ENTRYTYPE'] = 'misc'
-			bib_database.entries[-1]['google_pub_id'] = pub_id
+			process_entry(bib_database.entries[-1],pub_id)
 			print(BibTexWriter()._entry_to_bibtex(bib_database.entries[-1]))
-		
-			YN = input('Is this btac entry correct and ready to be added?\nOnce an entry is added any future changes must be done manually.\n[Y/N]?')
+			YN = input('Is this entry correct and ready to be added?\nOnce an entry is added any changes must be done manually.\n[Y/N]?')
 			if YN.upper() == 'Y':
-				add_keyword(bib_database.entries[-1])
-				IDstring = re.search('^[A-z]+', bib_database.entries[-1]['author']).group(0)
-				IDstring += year
-				IDstring += re.search('^[A-z]+', bib_database.entries[-1]['title']).group(0)
-				bib_database.entries[-1]['ID'] = IDstring
 				newentries.append(bib_database.entries[-1]['ID'])
 				continue
 		else:
-			print('missing author')
+			print('Failed: missing author')
 			
-		print('Should I try to find a match using Google Scholar instead? (Sometimes this gets blocked by Google. ):')
-		YN = input('Y/N?')
-		if YN.upper() != 'Y':
-			continue
-			
+		print('Trying to complete this record using Google Scholar (Sometimes this gets blocked):')
 		if not 'citedby_url' in pub.keys():
+			print('Failed: no cited by link')
 			continue
 			
 		url = pub['citedby_url']
@@ -164,7 +164,7 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 		if first_entry and first_entry.a:
 			url2 = "https://scholar.google.com" + first_entry.a['href']
 		else:
-			print("No entry found.")
+			print("No entry found. Google probably blocked the request.")
 			continue
 
 		chrome_options = Options()
@@ -189,38 +189,24 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 			bibtex_url = bibtex_link.get_attribute("href")
 			
 			response = requests.get(bibtex_url)
-			bibtex_content = response.text
+			bibtex_str = response.text
+			bib_database = bibtexparser.loads(bibtex_str, tbparser)
+			process_entry(bib_database.entries[-1],pub_id)
+			print(BibTexWriter()._entry_to_bibtex(bib_database.entries[-1]))
+			YN = input('Is this entry correct and ready to be added?\nOnce an entry is added any changes must be done manually.\n[Y/N]?')
+			if YN.upper() == 'Y':
+				newentries.append(bib_database.entries[-1]['ID'])
+				continue
 		except Exception as e:
 			print("An error occurred:", e)
 		finally:
 			driver.quit()
-
-		bibtex_str = bibtex_content
-		print(bibtex_str)
-		YN = input('Is this entry correct and ready to be added?\n[Y/N]? ')	
-		if YN.upper() == 'Y':
-			bib_database = bibtexparser.loads(bibtex_str, tbparser)
-			bib_database.entries[-1]['google_pub_id'] = pub_id
-			add_keyword(bib_database.entries[-1])
-			newentries.append(bib_database.entries[-1]['ID'])		
-
+	
 	writer = BibTexWriter()
 	writer.order_entries_by = None
 	with open(outputfile, 'w') as thebibfile:
 		bibtex_str = bibtexparser.dumps(bib_database, writer)
 		thebibfile.write(bibtex_str)
-	
-	if useGoogle:	
-		sys.argv.clear()
-		sys.argv.append('')
-		sys.argv.append('-c')
-		sys.argv.append('doi')
-		sys.argv.append('-i')
-		sys.argv.append('-e')
-		sys.argv.append('')
-		for entry in newentries:
-			sys.argv[-1] = entry
-			btac()
 	
 	for file in ['dump.text', 'btac.bib']:
 		try:
