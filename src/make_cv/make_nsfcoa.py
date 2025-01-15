@@ -69,7 +69,7 @@ def get_collaborator_list(config, years, output_format):
 	grantfile = os.path.join(faculty_source, config['GrantsFile'])
 	try:
 		grants = pd.read_excel(grantfile)
-		grants.fillna('',inplace=True)
+		grants.fillna(value={'Principal Investigators':'','Funded?':'No'},inplace=True)
 		grants = grants[grants['Funded?'].str.match('Y')]
 		grants.reset_index(inplace=True,drop=True)
 	except OSError:
@@ -98,12 +98,10 @@ def get_collaborator_list(config, years, output_format):
 	grad_list = grad_list[grad_list["Degree"].apply(lambda x: "PhD" in x)]
 	
 	converter = LatexNodes2Text()
-	print("PhD Advisees")
 	for index, row in grad_list.iterrows():
 		student_name = converter.latex_to_text(last_first(row["Student"]))
 		advisees_list.append([student_name, '8/1/' + str(row["Year"])])
-		print(f"{student_name}\t\t8/1/{str(row['Year'])}")
-
+	
 	grad_list['Student'] = grad_list['Student'].apply(lambda x: abbreviate_name(x, first_initial_only=True))
 	
 	for icpbe, paperbibentry in enumerate(bib_database.entries):
@@ -163,11 +161,13 @@ def get_collaborator_list(config, years, output_format):
 			csv_writer.writerow(["Collaborators"])
 			csv_writer.writerow(["Name", "Date"])
 			csv_writer.writerows(collaborators)
+			print("collaborators.csv created")
 
 	elif output_format == 'xlsx':
 		with pd.ExcelWriter("collaborators.xlsx", engine='openpyxl') as writer:
 			pd.DataFrame(advisees_list, columns=["Name", "Date"]).to_excel(writer, sheet_name='PhD Advisees', index=False)
 			pd.DataFrame(collaborators, columns=["Name", "Date"]).to_excel(writer, sheet_name='Collaborators', index=False)
+			print("collaborators.xlsx created")
 
 def main(argv=None):
 	parser = argparse.ArgumentParser(description='This script creates an NSF Advisee & Collaborator List')

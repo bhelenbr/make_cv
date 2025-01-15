@@ -2,11 +2,9 @@ python -m pip install --upgrade pip
 python -m pip install --upgrade build
 python -m pip install --upgrade twine
 
-rm dist/*
 vi pyproject.toml   # change version number
+rm dist/*
 python -m build
-
-# For actual distribution
 python -m twine upload dist/*
 python -m pip install --upgrade make_cv==X.X.X
 

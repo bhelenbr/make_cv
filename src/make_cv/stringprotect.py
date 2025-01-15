@@ -73,7 +73,9 @@ def split_names(name_list):
 # John S. Smith
 def first_last(initial_name):
 	initial_name = initial_name.strip()
-	
+	if len(initial_name) == 0:
+		return('')
+		
 	# Deal with Jr. and Sr. last name endings
 	initial_name = re.sub('^(.*)?[ ]* Jr\\.?(.*)$','\\1_Jr\\2',initial_name)
 	initial_name = re.sub('^(.*)?[ ]* Sr\\.?(.*)$','\\1_Jr\\2',initial_name)
@@ -100,7 +102,9 @@ def first_last(initial_name):
 # Smith, John S. 
 def last_first(initial_name):
 	initial_name = initial_name.strip()
-	
+	if len(initial_name) == 0:
+		return('')
+		
 	# Deal with Jr. and Sr. last name endings
 	initial_name = re.sub('^(.*)?[ ]* Jr\\.?(.*)$','\\1_Jr\\2',initial_name)
 	initial_name = re.sub('^(.*)?[ ]* Sr\\.?(.*)$','\\1_Jr\\2',initial_name)
@@ -128,7 +132,9 @@ def last_first(initial_name):
 # J. S. Smith
 def abbreviate_name(initial_name,first_initial_only=False):
 	initial_name = initial_name.strip()
-	
+	if len(initial_name) == 0:
+		return('')
+		
 	# Deal with Jr. and Sr. last name endings
 	initial_name = re.sub('^(.*)?[ ]* Jr\\.?(.*)$','\\1_Jr\\2',initial_name)
 	initial_name = re.sub('^(.*)?[ ]* Sr\\.?(.*)$','\\1_Jr\\2',initial_name)

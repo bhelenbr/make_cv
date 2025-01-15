@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "make_cv"
-version = "0.2.3"
+version = "0.2.9"
 authors = [
   { name="Brian Helenbrook", email="brian.helenbrook@gmail.com" },
 ]
@@ -24,10 +24,10 @@ dependencies = [
   "bibtexparser<2.0.0",
   "bibtexautocomplete>=1.4.0",
   "scholarly",
-  "selenium",
   "beautifulsoup4",
   "requests",
   "pylatexenc",
+  "selenium",
   "webdriver-manager"
 ]
 
@@ -35,6 +35,7 @@ dependencies = [
 make_cv = "make_cv.make_cv:main"
 make_far = "make_cv.make_far:main"
 make_web = "make_cv.make_web:main"
+make_nsfcoa = "make_cv.make_nsfcoa:main"
 
 [project.urls]
 Homepage = "https://github.com/bhelenbr/make_cv"
