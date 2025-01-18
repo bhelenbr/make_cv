@@ -103,16 +103,13 @@ def bib_add_keywords(bibfile,outputfile):
 		bibtex_str = bibtex_file.read()
 	bib_database = bibtexparser.loads(bibtex_str, tbparser)
 	
-	new_db = BibDatabase()
-	bibdblen = len(bib_database.entries)
 	for paperbibentry in bib_database.entries:
 		if "year" in paperbibentry.keys() or "date" in paperbibentry.keys():
 			if not check_keyword_exists(paperbibentry):
 				print(BibTexWriter()._entry_to_bibtex(paperbibentry))
 				add_keyword(paperbibentry)
-			new_db.entries.append(paperbibentry)
 	
-	new_db.entries = sorted(new_db.entries, key=lambda k: int(k["year"]), reverse=True)	
+	# new_db.entries = sorted(new_db.entries, key=lambda k: int(k["year"]), reverse=True)	
 	
 	writer = BibTexWriter()
 	# writer.contents = ['comments', 'entries']
@@ -121,7 +118,7 @@ def bib_add_keywords(bibfile,outputfile):
 	writer.order_entries_by = None
 	
 	with open(outputfile, 'w') as thebibfile:
-		bibtex_str = bibtexparser.dumps(new_db,writer)
+		bibtex_str = bibtexparser.dumps(bib_database,writer)
 		thebibfile.write(bibtex_str)
 		
 	# file = open("scholarship1.bib",'a')

@@ -54,7 +54,6 @@ def getyear(paperbibentry):
 	return 0
 
 def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
-	newentries = []
 	
 	# Set up a ProxyGenerator object to use free proxies
 	# This needs to be done only once per session
@@ -80,8 +79,7 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 		
 	# Load bibfile
 	tbparser = BibTexParser(common_strings=True)
-	tbparser.homogenize_fields = False  # no dice
-	tbparser.alt_dict['url'] = 'url'	# this finally prevents change 'url' to 'link'
+	tbparser.alt_dict['url'] = 'url'	# this prevents change 'url' to 'link'
 	tbparser.expect_multiple_parse = True
 	with open(bibfile) as bibtex_file:
 		bibtex_str = bibtex_file.read()
@@ -93,14 +91,6 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 	titles = [re.sub('[\\W_]', '', entry['title']).lower() if 'title' in entry.keys() else None for entry in entries]
 	# Create list of google publication ids if they exist
 	google_pub_ids = [entry["google_pub_id"] if "google_pub_id" in entry.keys() else None for entry in entries]
-	
-	# Set arguments for btac
-	sys.argv.clear()
-	sys.argv.append('')
-	sys.argv.append('-i')
-	sys.argv.append('-f')
-	sys.argv.append('-m')
-	sys.argv.append('btac.bib')
 	
 	# Loop through Google Scholar entries
 	for pub in author['publications']:
@@ -128,17 +118,18 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 		# try to fill entry using bibtex autocomplete?
 		with open('btac.bib', 'w') as tempfile:
 			tempfile.write('@article{' + pub_id + ',\n title={' + pub['bib']['title'] + '},\n}')
-		btac(['-s'])
+		btac(['-s','-i','-f','-m','btac.bib'])
+		
 		with open('btac.bib') as bibtex_file:
 			bibtex_str = bibtex_file.read()
 		
-		bib_database = bibtexparser.loads(bibtex_str, tbparser)
-		if 'author' in bib_database.entries[-1].keys():
+		if bibtex_str.find('author'):
+			bib_database = bibtexparser.loads(bibtex_str, tbparser)
 			process_entry(bib_database.entries[-1],pub_id,year)
 			print(BibTexWriter()._entry_to_bibtex(bib_database.entries[-1]))
 			YN = input('Is this entry correct and ready to be added?\nOnce an entry is added any changes must be done manually.\n[Y/N]?')
-			if YN.upper() == 'Y':
-				newentries.append(bib_database.entries[-1]['ID'])
+			if YN.upper() == 'N':
+				bib_database.entries.pop()
 				continue
 		else:
 			print('BibTeX Autocomplete failed: missing author')
@@ -187,7 +178,6 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 			if YN.upper() == 'Y':
 				bib_database = bibtexparser.loads(bibtex_str, tbparser)
 				process_entry(bib_database.entries[-1],pub_id,year)				
-				newentries.append(bib_database.entries[-1]['ID'])
 				continue
 	
 	writer = BibTexWriter()
