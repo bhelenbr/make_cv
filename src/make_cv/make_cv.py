@@ -136,7 +136,7 @@ def make_cv_tables(config,table_dir,years):
 			os.remove(table_dir+os.sep +'teaching.tex')
 	
 	if config.getboolean('Grants'):
-		print('updating grants table')
+		print('Updating grants table')
 		fgrants = open(table_dir +os.sep +'grants.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['GrantsFile'])
 		nrows = grants2latex_far(fgrants,years,filename)
@@ -146,7 +146,7 @@ def make_cv_tables(config,table_dir,years):
 	
 	# Proposals
 	if config.getboolean('Proposals'):
-		print('updating proposals table')
+		print('Updating proposals table')
 		fprops = open(table_dir +os.sep +'proposals.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['ProposalsFile'])
 		nrows = props2latex_far(fprops,years,filename)	

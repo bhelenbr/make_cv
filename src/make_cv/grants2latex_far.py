@@ -12,7 +12,7 @@ from .stringprotect import str2latex
 
 def grants2latex_far(f,years,inputfile):
 	try:
-		props = pd.read_excel(inputfile,header=0)
+		props = pd.read_excel(inputfile,sheet_name="Data",header=0)
 	except OSError:
 		print("Could not open/read file: " + inputfile)
 		return(0)

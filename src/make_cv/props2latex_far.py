@@ -16,8 +16,7 @@ from .stringprotect import str2latex
 def props2latex_far(f,years,inputfile):
 	source = inputfile # file to read
 	try:
-		# props = pd.read_excel(source,header=0,dtype={'Name.1':str,'Long Descr':str,'Allocated Amt':float,'Total Cost':float,'PRO_BGN_DT':dt.datetime,'PRO_END_DT':dt.datetime})
-		props = pd.read_excel(source,header=0,dtype={'Name.1':str,'Long Descr':str,'Allocated Amt':float,'Total Cost':float})
+		props = pd.read_excel(source,sheet_name="Data",header=0,dtype={'Sponsor':str,'Long Descr':str,'Allocated Amt':float,'Total Cost':float})
 
 	except OSError:
 		print("Could not open/read file: " + source)

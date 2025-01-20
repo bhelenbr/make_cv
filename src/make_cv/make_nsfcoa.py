@@ -68,7 +68,7 @@ def get_collaborator_list(config, years, output_format):
 		
 	grantfile = os.path.join(faculty_source, config['GrantsFile'])
 	try:
-		grants = pd.read_excel(grantfile)
+		grants = pd.read_excel(grantfile,sheet_name="Data")
 		grants.fillna(value={'Principal Investigators':'','Funded?':'No'},inplace=True)
 		grants = grants[grants['Funded?'].str.match('Y')]
 		grants.reset_index(inplace=True,drop=True)

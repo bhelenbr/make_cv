@@ -123,14 +123,15 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 		with open('btac.bib') as bibtex_file:
 			bibtex_str = bibtex_file.read()
 		
-		if bibtex_str.find('author'):
+		if bibtex_str.find('author') > -1:
 			bib_database = bibtexparser.loads(bibtex_str, tbparser)
-			process_entry(bib_database.entries[-1],pub_id,year)
 			print(BibTexWriter()._entry_to_bibtex(bib_database.entries[-1]))
 			YN = input('Is this entry correct and ready to be added?\nOnce an entry is added any changes must be done manually.\n[Y/N]?')
-			if YN.upper() == 'N':
-				bib_database.entries.pop()
+			if YN.upper() == 'Y':
+				process_entry(bib_database.entries[-1],pub_id,year)
 				continue
+			else:
+				bib_database.entries.pop()
 		else:
 			print('BibTeX Autocomplete failed: missing author')
 		
@@ -152,10 +153,10 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 				if a_tag and a_tag.get("href"):
 					bibtex_url = a_tag["href"]
 				else:
-					print('Scraper got blocked: ' +output_query)
+					print('Scraper got blocked: \n' +output_query)
 					continue
 			else:
-				print('Google blocked request, try using a scraper id from www.scraperapi.com or just download entry from google scholar yourself from: ' +output_query)
+				print('Google blocked request, try using a scraper id from www.scraperapi.com or just download entry from google scholar yourself from: \n' +output_query)
 				continue
 			
 			# try to follow BibTeX link to get citation
@@ -168,7 +169,7 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 						print('Scraper got blocked: ' +bibtex_url)
 						continue
 				else:
-					print('Google blocked request, try using a scraper id from www.scraperapi.com or just download entry from google scholar yourself from: ' +bibtex_url)
+					print('Google blocked request, try using a scraper id from www.scraperapi.com or just download entry from google scholar yourself from: \n' +bibtex_url)
 					continue				
 			
 			# Process response

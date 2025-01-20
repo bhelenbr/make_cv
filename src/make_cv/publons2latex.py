@@ -36,12 +36,12 @@ def publons2latex(f,years,inputfile):
 
 	table = reviews.pivot_table(index=['Journal'], values=['Rounds'], aggfunc=('count','sum'),observed=False)
 	table.reset_index(inplace=True)
-	table.columns=['Journal','Reviews','Rounds']
 	#print(table)
+	
 	nrows = table.shape[0] 
-
 	if (nrows > 0):
-		f.write("\\begin{tabularx}{\linewidth}{Xl}\nJournal & Reviews(Rounds)  \\\\\n\\hline\n")
+		table.columns=['Journal','Reviews','Rounds']
+		f.write("\\begin{tabularx}{\\linewidth}{Xl}\nJournal & Reviews(Rounds)  \\\\\n\\hline\n")
 
 		count = 0
 		total_reviews = 0
@@ -51,8 +51,8 @@ def publons2latex(f,years,inputfile):
 			total_reviews += table.loc[count,"Reviews"]
 			total_rounds += table.loc[count,"Rounds"]
 			count += 1
-	f.write("\\end{tabularx}\n")
-	f.write("Reviews since " +str(yearmin)+ ": " +str(total_reviews) +"(" +str(total_rounds) +")")
+		f.write("\\end{tabularx}\n")
+		f.write("Reviews since " +str(yearmin)+ ": " +str(total_reviews) +"(" +str(total_rounds) +")")
 	return(nrows)
 	
 if __name__ == "__main__":
