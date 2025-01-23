@@ -100,8 +100,7 @@ def bib_add_keywords(bibfile,outputfile):
 	tbparser.alt_dict['url'] = 'url'    # this finally prevents change 'url' to 'link'
 	
 	with open(bibfile) as bibtex_file:
-		bibtex_str = bibtex_file.read()
-	bib_database = bibtexparser.loads(bibtex_str, tbparser)
+		bib_database = bibtexparser.load(bibtex_file, tbparser)
 	
 	for paperbibentry in bib_database.entries:
 		if "year" in paperbibentry.keys() or "date" in paperbibentry.keys():
@@ -120,13 +119,6 @@ def bib_add_keywords(bibfile,outputfile):
 	with open(outputfile, 'w') as thebibfile:
 		bibtex_str = bibtexparser.dumps(bib_database,writer)
 		thebibfile.write(bibtex_str)
-		
-	# file = open("scholarship1.bib",'a')
-	# file.write("@Comment{jabref-meta: databaseType:bibtex;}\n\n")
-	# file.write("\n@Comment{jabref-meta: grouping:\n")
-	# file.write("0 AllEntriesGroup:;\n")
-	# file.write("1 AutomaticKeywordGroup:\\;0\\;keywords\\;,\\;>\\;1\\;0x8a8a8aff\\;\\;\\;;\n}")
-	# file.close()
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description='This script guesses the type of each entry and adds the type as a keyword')

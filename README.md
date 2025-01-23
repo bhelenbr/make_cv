@@ -235,11 +235,10 @@ Install python from Windows App Store
 
 Install LaTeX from [https://miktex.org/download](https://miktex.org/download).  When installing LaTeX change the default paper size to letter and also click “automatically install missing packages” (something like that anyway).
 
-Add the python scripts path to your environment variables:
+Add the python scripts path to your environment variables.  If you don’t want to do this, you can also just type `python -m make_cv.make_cv` or `python -m make_cv.make_far` etc... The following is how to add the path I think (currently untested)
 
-1. open the "System Properties" by right-clicking "This PC" (or "My Computer") \> Properties  
-2. navigate to the "Advanced" tab and click "Environment Variables"  
-3. find the "Path" variable under "System variables", click "Edit", and add the path to the python scripts folder which should be something like `C:\Users\<username>\AppData\Local\Programs\Python\Python38\Scripts`
+1. Type “Environment Variables” in the search bar (bottom left)  
+2. find the "Path" variable under "System variables", click "Edit", and add the path to the python scripts folder.  It should have printed the needed path when you installed make\_cv.  It should be something like: `C:\Users\<username>\AppData\Local\Programs\Python\Python38\Scripts`
 
 ### Appendix B: Instructions for Modifying Your scholarship.bib file with Jabref
 

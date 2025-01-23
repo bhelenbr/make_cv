@@ -81,10 +81,8 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 	tbparser = BibTexParser(common_strings=True)
 	tbparser.alt_dict['url'] = 'url'	# this prevents change 'url' to 'link'
 	tbparser.expect_multiple_parse = True
-	with open(bibfile) as bibtex_file:
-		bibtex_str = bibtex_file.read()
-	
-	bib_database = bibtexparser.loads(bibtex_str, tbparser)
+	with open(bibfile,encoding='utf-8') as bibtex_file:
+		bib_database = bibtexparser.load(bibtex_file, tbparser)
 	entries = bib_database.entries
 	
 	# Create list of titles in bibfile compressing out nonalphanumeric characters

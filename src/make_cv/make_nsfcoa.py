@@ -47,7 +47,7 @@ def get_collaborator_list(config, years, output_format):
 	faculty_source = config['data_dir']
 	
 	bibfile = os.path.join(faculty_source, config['ScholarshipFile'])
-	with open(bibfile) as bibtex_file:
+	with open(bibfile,encoding='utf-8') as bibtex_file:
 		bibtex_str = bibtex_file.read()
 	tbparser = BibTexParser(common_strings=True)
 	bib_database = bibtexparser.loads(bibtex_str, tbparser)

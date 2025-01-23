@@ -77,9 +77,8 @@ def bib_add_student_markers(years,ugrads,grads,cur_grad,bibfile,outputfile):
 	tbparser.homogenize_fields = False  # no dice
 	tbparser.alt_dict['url'] = 'url'    # this finally prevents change 'url' to 'link'
 	
-	with open(bibfile) as bibtex_file:
-		bibtex_str = bibtex_file.read()
-	bib_database = bibtexparser.loads(bibtex_str, tbparser)
+	with open(bibfile,encoding='utf-8') as bibtex_file:
+		bib_database = bibtexparser.load(bibtex_file, tbparser)
 	
 	# new_db = BibDatabase()
 	

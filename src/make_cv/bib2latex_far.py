@@ -34,9 +34,8 @@ def bib2latex_far(f,years,inputfile):
 	tbparser.alt_dict['url'] = 'url'    # this finally prevents change 'url' to 'link'
 
 	try:
-		bibtex_file = open(inputfile)
-		bibtex_str = bibtex_file.read()
-		bib_database = bibtexparser.loads(bibtex_str, tbparser)
+		with open(inputfile) as bibtex_file:
+			bib_database = bibtexparser.load(bibtex_file, tbparser)
 		bib_database.entries = sorted(bib_database.entries, key=lambda k: getyear(k), reverse=True)	
 	except OSError:
 		print("Could not open/read file: " +inputfile)
