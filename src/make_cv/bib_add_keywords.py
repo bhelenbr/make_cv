@@ -99,7 +99,7 @@ def bib_add_keywords(bibfile,outputfile):
 	tbparser.homogenize_fields = False  # no dice
 	tbparser.alt_dict['url'] = 'url'    # this finally prevents change 'url' to 'link'
 	
-	with open(bibfile) as bibtex_file:
+	with open(bibfile,encoding='utf-8') as bibtex_file:
 		bib_database = bibtexparser.load(bibtex_file, tbparser)
 	
 	for paperbibentry in bib_database.entries:
@@ -116,7 +116,7 @@ def bib_add_keywords(bibfile,outputfile):
 	# writer.order_entries_by = ('year','ENTRYTYPE', 'author')
 	writer.order_entries_by = None
 	
-	with open(outputfile, 'w') as thebibfile:
+	with open(outputfile, 'w', encoding='utf-8') as thebibfile:
 		bibtex_str = bibtexparser.dumps(bib_database,writer)
 		thebibfile.write(bibtex_str)
 

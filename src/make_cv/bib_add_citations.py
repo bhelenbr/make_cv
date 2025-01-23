@@ -41,7 +41,7 @@ def bib_add_citations(bibfile,author_id,outputfile,scraper_id=None):
 	tbparser = BibTexParser(common_strings=True)
 	tbparser.homogenize_fields = False  # no dice
 	tbparser.alt_dict['url'] = 'url'    # this finally prevents change 'url' to 'link'
-	with open(bibfile) as bibtex_file:
+	with open(bibfile,encoding='utf-8') as bibtex_file:
 		bib_database = bibtexparser.load(bibfile, tbparser)
 	entries = bib_database.entries
 	
@@ -112,7 +112,7 @@ def bib_add_citations(bibfile,author_id,outputfile,scraper_id=None):
 	
 	writer = BibTexWriter()
 	writer.order_entries_by = None
-	with open(outputfile, 'w') as thebibfile:
+	with open(outputfile, 'w',encoding='utf-8') as thebibfile:
 		bibtex_str = bibtexparser.dumps(bib_database,writer)
 		thebibfile.write(bibtex_str)
 

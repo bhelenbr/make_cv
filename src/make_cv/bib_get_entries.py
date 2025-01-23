@@ -114,11 +114,11 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 			print(pub['bib']['title'])
 		
 		# try to fill entry using bibtex autocomplete?
-		with open('btac.bib', 'w') as tempfile:
+		with open('btac.bib', 'w',encoding='utf-8') as tempfile:
 			tempfile.write('@article{' + pub_id + ',\n title={' + pub['bib']['title'] + '},\n}')
 		btac(['-s','-i','-f','-m','btac.bib'])
 		
-		with open('btac.bib') as bibtex_file:
+		with open('btac.bib',encoding='utf-8') as bibtex_file:
 			bibtex_str = bibtex_file.read()
 		
 		if bibtex_str.find('author') > -1:
@@ -181,7 +181,7 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 	
 	writer = BibTexWriter()
 	writer.order_entries_by = None
-	with open(outputfile, 'w') as thebibfile:
+	with open(outputfile, 'w',encoding='utf-8') as thebibfile:
 		bibtex_str = bibtexparser.dumps(bib_database, writer)
 		thebibfile.write(bibtex_str)
 	

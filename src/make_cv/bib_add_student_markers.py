@@ -105,7 +105,7 @@ def bib_add_student_markers(years,ugrads,grads,cur_grad,bibfile,outputfile):
 		
 	writer = BibTexWriter()
 	writer.order_entries_by = None
-	with open(outputfile, 'w') as thebibfile:
+	with open(outputfile, 'w', encoding='utf-8') as thebibfile:
 		bibtex_str = bibtexparser.dumps(bib_database,writer)
 		thebibfile.write(bibtex_str)
 
