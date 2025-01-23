@@ -233,14 +233,21 @@ To make this python installation work every time you open a new terminal window:
 
 Install python from Windows App Store
 
-Install LaTeX from [https://miktex.org/download](https://miktex.org/download).  When installing LaTeX change the default paper size to letter and also click “automatically install missing packages” (something like that anyway).
+Install LaTeX from [https://miktex.org/download](https://miktex.org/download).  When installing LaTeX change the default paper size to letter and also click “automatically install missing packages” (something like that anyway).  If you choose to only install for yourself you will have to open the MikTeX Console program and click “Settings” in the left side bar, then the “Directories” tab,  copy the “Link target directory” and add it to the path. (See below for modifying the Windows path).  Probably easier to install for all users but that has not been tested.
 
-Add the python scripts path to your environment variables.  If you don’t want to do this, you can also just type `python -m make_cv.make_cv` or `python -m make_cv.make_far` etc... The following is how to add the path I think (currently untested)
+Add the python scripts path to your environment variables as well.  The path should have printed out when you installed make\_cv (at the end of the long spew of text. If you can’t find it, pip uninstall make\_cv and then pip install make\_cv and it should print again).  It should be something like: `C:\Users\<username>\AppData\Local\Programs\Python\Python38\Scripts`
 
-1. Type “Environment Variables” in the search bar (bottom left)  
-2. find the "Path" variable under "System variables", click "Edit", and add the path to the python scripts folder.  It should have printed the needed path when you installed make\_cv.  It should be something like: `C:\Users\<username>\AppData\Local\Programs\Python\Python38\Scripts`
+ If you don’t want to do this, you can also just type `python -m make_cv.make_cv` or `python -m make_cv.make_far` etc... 
 
-### Appendix B: Instructions for Modifying Your scholarship.bib file with Jabref
+This is how to add to the path in Windows:
+
+1. Type “Environment Variables” in the search bar (bottom left) and click on “Edit the system environment variables”  
+2. Click the “Environment Variables” button  
+3. In the list click on the “PATH” variable  
+4. Click “Edit…”  
+5. Click “New” and then paste the path you want to add
+
+### Appendix B: Instructions for modifying your scholarship.bib file with Jabref
 
 If you use the scholarship.bib template file, Jabref will show you the categorization of all entries in the left sidebar by default.  If it is not showing, under the “View” menu make sure “Groups” has a check mark next to it.  Right click on the “All Entries” group in the left side bar.  Choose “Add subgroup”, give the group the name “Categories”, Choose “Collect By” “Specified Keywords” dialog, then “Generate groups from keywords in the following field” and type “keywords” for the field to group by.  For the delimiter put a semicolon, then hit ok.   This should make your current categories show in the left side bar.  Save the file so you won’t have to do this again the next time you open it. 
 
