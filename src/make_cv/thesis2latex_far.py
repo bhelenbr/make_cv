@@ -53,7 +53,8 @@ def thesis2latex_far(f,years,studentfile,thesisfile):
 	
 	
 	if (nrows+nrows2 > 0):
-		f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXll}\n & Name: Title  & Date & Degree \\\\\n\\hline\n")
+		f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXll}\n & Name: Title  & Date & Degree \\endfirsthead\n")
+		f.write("\\multicolumn{4}{l}{\\conthead{Graduate Advisees}} \\endhead \\cline{2-4}\n")
 		
 		if nrows > 0:
 			count = 0

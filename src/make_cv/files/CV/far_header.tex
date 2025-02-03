@@ -4,7 +4,7 @@
 \usepackage{ltablex}
 \usepackage{ifthen}
 \usepackage[tiny]{titlesec}
-\usepackage[backend=biber,style=numeric-comp,sorting=none,giveninits=true,maxnames=20]{biblatex}
+\usepackage[backend=biber,style=numeric-comp,sorting=none,giveninits=true,maxnames=20,eprint=false,isbn=false]{biblatex}
 \usepackage{xstring}
 
 % Add bib file to make bibliography information
@@ -43,6 +43,8 @@
 \providecommand{\us}{\textsuperscript{*}}
 \providecommand{\gs}{\textsuperscript{+}}
 
+\newcommand{\printhead}[1]{#1}
+\newcommand{\conthead}[1]{#1 (continued)}
 
 % Remove some fields from journal articles
 \AtEveryCitekey{\ifentrytype{article}{\clearfield{url}\clearfield{issn}\clearfield{review}\clearfield{series}\clearfield{eprint}}{}}

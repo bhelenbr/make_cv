@@ -18,7 +18,7 @@ def UR2latex(f,years,inputfile):
 		df = pd.read_excel(source,sheet_name="Data")
 	except OSError:
 		print("Could not open/read file: " + source)
-		return
+		return 0
 
 	df.fillna('',inplace=True)	
 	if (years > 0):
@@ -42,7 +42,8 @@ def UR2latex(f,years,inputfile):
 		df = df.reset_index()
 		#print(df)
 		
-		f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXll}\n & Name: Title  & Program & Date(Semesters) \\\\\n\\hline\n")
+		f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXll}\n & Name: Title  & Program & Date(Semesters) \\endfirsthead\n")
+		f.write("\\multicolumn{4}{l}{\\conthead{Undergraduate Research}} \\endhead \\cline{2-4}\n")
 		count = 0
 		while count < nrows:
 			f.write(" & " +abbreviate_name_list(df.loc[count,"Students"])+": " +str2latex(df.loc[count,"Title"]) + " & " +str2latex(df.loc[count,"Program Type"]) + " & " +str2latex(df.loc[count,"Calendar Year"]) +"("+str2latex(df.loc[count,"Term"]) +")\\\\\n")

@@ -49,17 +49,17 @@ def make_cv_tables(config,table_dir,years):
 	if not os.path.exists(table_dir):
 		os.makedirs(table_dir)
 	
-	# Scholarly Works
-	print('Updating scholarship tables')
-	pubfiles = ["journal.tex","conference.tex","patent.tex","book.tex","invited.tex","refereed.tex"]
-	fpubs = [open(table_dir +os.sep +name, 'w') for name in pubfiles]
-	filename = os.path.join(faculty_source,config['ScholarshipFile'])
-	if os.path.isfile(filename):
-		nrecords = bib2latex_far(fpubs,years,filename)
-		for counter in range(len(pubfiles)):
-			fpubs[counter].close()
-			if not(nrecords[counter]):
-				os.remove(table_dir+os.sep +pubfiles[counter])
+# 	# Scholarly Works
+# 	print('Updating scholarship tables')
+# 	pubfiles = ["journal.tex","conference.tex","patent.tex","book.tex","invited.tex","refereed.tex"]
+# 	fpubs = [open(table_dir +os.sep +name, 'w') for name in pubfiles]
+# 	filename = os.path.join(faculty_source,config['ScholarshipFile'])
+# 	if os.path.isfile(filename):
+# 		nrecords = bib2latex_far(fpubs,years,filename)
+# 		for counter in range(len(pubfiles)):
+# 			fpubs[counter].close()
+# 			if not(nrecords[counter]):
+# 				os.remove(table_dir+os.sep +pubfiles[counter])
 
 	
 	# Personal Awards
@@ -395,6 +395,7 @@ def typeset(config,filename,command):
 			break
 		except OSError as err:
 			continue
+	subprocess.run(command) 
 	subprocess.run(command) 
 	
 	# cleanup

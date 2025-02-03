@@ -11,6 +11,8 @@ from datetime import date
 
 from .stringprotect import str2latex
 
+names = ["Department","School","University","Professional","Community"]
+
 def personal_awards2latex(f,years,inputfile):
 	source = inputfile # file to read
 	try:
@@ -26,12 +28,10 @@ def personal_awards2latex(f,years,inputfile):
 		source_data = source_data[(source_data['Year'] >= begin_year)]
 		if source_data.shape[0] == 0:
 			return(0)
-			
+	
 	#table = source_data.pivot_table(columns=['Year'], values=['Year'], index=['Type', 'Title'], aggfunc={'Year': 'count'},observed=False)
-
-
-	f.write("\\begin{tabularx}{\linewidth}{lXl}\nType & Title  & Date \\\\\n\\hline\n")
-	names = ["Department","School","University","Professional","Community"]
+	
+	f.write("\\begin{rubric}{Personal Awards}\n")
 	total = 0
 	for name in names:
 		table = source_data[source_data.Type == name].pivot_table(columns=['Year'], values=['Year'], index=['Type', 'Title'], aggfunc={'Year': 'count'},observed=False)
@@ -39,38 +39,38 @@ def personal_awards2latex(f,years,inputfile):
 		df = df.fillna(0)
 		#print(df)
 		#print(df.columns)
-		nrows = df.shape[0] 
+		nrows = df.shape[0]
 		ncols = df.shape[1]
 		total += nrows
-		headername = "{\\bf " +name + "}"
-		count = 0
-		while count < nrows:
-			# make date string
-			date_string = ""
-			separ = ""
-			prev_found = False
-			found = False
-			for year in range(2,ncols-1):
-				if (df.iloc[count,year] > 0):
+		if nrows > 0: 
+			f.write("\\subrubric{" +name +"}\n")
+			count = 0
+			while count < nrows:
+				# make date string
+				date_string = ""
+				separ = ""
+				prev_found = False
+				found = False
+				for year in range(2,ncols-1):
+					if (df.iloc[count,year] > 0):
+						if (found==False):
+							date_string = date_string +separ +str(df.columns[year][1])
+							separ = ","
+						prev_found = found
+						found = True
+					else:
+						if ((prev_found == True) and (found == True)):
+							date_string = date_string +"-" +str(df.columns[year-1][1])
+						prev_found = found
+						found = False
+				if (df.iloc[count,ncols-1] > 0):
 					if (found==False):
-						date_string = date_string +separ +str(df.columns[year][1])
-						separ = ","
-					prev_found = found
-					found = True
-				else:
-					if ((prev_found == True) and (found == True)):
-						date_string = date_string +"-" +str(df.columns[year-1][1])
-					prev_found = found
-					found = False
-			if (df.iloc[count,ncols-1] > 0):
-				if (found==False):
-					date_string = date_string +separ +str(df.columns[ncols-1][1])
-				else:
-					date_string = date_string +"-" +str(df.columns[ncols-1][1])	
-			f.write(headername + " & " +str2latex(df.iloc[count,1]) + " & " +date_string +"\\\\\n")
-			headername = ""
-			count += 1
-	f.write("\\end{tabularx}\n")
+						date_string = date_string +separ +str(df.columns[ncols-1][1])
+					else:
+						date_string = date_string +"-" +str(df.columns[ncols-1][1])	
+				f.write("\\entry*[" +date_string +"]" +str2latex(df.iloc[count,1])+ "\n")
+				count += 1
+	f.write("\\end{rubric}\n")
 	return(total)
 	
 if __name__ == "__main__":

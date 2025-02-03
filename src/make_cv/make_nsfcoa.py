@@ -103,7 +103,6 @@ def get_collaborator_list(config, years, output_format):
 		advisees_list.append([student_name, '8/1/' + str(row["Year"])])
 	
 	grad_list['Student'] = grad_list['Student'].apply(lambda x: abbreviate_name(x, first_initial_only=True))
-	
 	for icpbe, paperbibentry in enumerate(bib_database.entries):
 		year = getyear(paperbibentry)
 		if not (year >= begin_year):
@@ -116,7 +115,7 @@ def get_collaborator_list(config, years, output_format):
 			author_list = split_names(authstr)
 			for author in author_list:
 				abbrev = abbreviate_name(author, first_initial_only=True)
-				if abbrev in grad_list.index:
+				if abbrev in grad_list['Student'].values:
 					continue
 				key = last_first(abbrev)
 				if key in collab_list.keys():

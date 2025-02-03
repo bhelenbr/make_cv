@@ -1,0 +1,14 @@
+% Specify you last name/first initial to have it be bold in the author list
+% if you have changed your name or if you need to highlight multiple authors, you can specify multiple names separated by a comma {Doe/J,Smith/T} 
+\mynames{Doe/J}
+
+%% Photo is only shown if "usePhoto" is true
+\setboolean{usePhoto}{true}
+
+\leftheader{%
+  {\LARGE\bfseries\sffamily Firstname (Nickname) M. Lastname, Ph.D.}\\
+  My address, New York, NY 12222, (800) 867-5309 \\
+  \makefield{\faEnvelope[regular]}{\href{mailto:myemail@somewhere.edu}{\texttt{daidun@clarkson.edu}}}
+  \makefield{\faLinkedin}{\href{http://www.linkedin.com/in/example/}{\texttt{LinkedIn}}}
+  \makefield{\faGlobe}{\href{http://example.example.org/}{\texttt{Webpage}}}
+}

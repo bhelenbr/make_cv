@@ -37,13 +37,13 @@ def student_awards2latex(f,years,inputfile):
 	if (nrows > 0):
 		#print(df.columns)
 
-		f.write("\\begin{tabularx}{\\linewidth}{XXl}\nTitle & Student  & Year \\\\\n\\hline\n")
+		f.write("\\begin{rubric}{Student Awards}\n")
 		count = 0
 		while count < nrows:
-			f.write(str2latex(df.loc[count,"Title"]) + " & " +abbreviate_name_list(df.loc[count,"Student"]) + " & " +str2latex(df.loc[count,"Year"]) +"\\\\\n")
+			f.write("\\entry*[" +str2latex(df.loc[count,"Year"]) +"] {\\em " +str2latex(df.loc[count,"Title"]) + "} " +abbreviate_name_list(df.loc[count,"Student"]) +"\n")
 			count += 1
 	
-		f.write("\\end{tabularx}\n")
+		f.write("\\end{rubric}\n")
 	
 	return(nrows)
 

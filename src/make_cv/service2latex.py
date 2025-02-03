@@ -24,8 +24,11 @@ def service2latex(f,years,inputfile):
 		year = today.year
 		begin_year = year - years
 		source_data = source_data[source_data['Calendar Year'].apply(lambda x: int(x)) >= begin_year]
-
-	f.write("\\begin{tabularx}{\\linewidth}{lXl}\nType & Description  & Dates \\\\\n\\hline\n")
+		
+	if source_data.shape[0] == 0:
+		return(0)
+	
+	f.write("\\begin{rubric}{Service}\n")
 	names = ["Department","University","Professional","Community"]
 	totalrows = 0
 	for name in names:
@@ -35,6 +38,9 @@ def service2latex(f,years,inputfile):
 		#print(df)
 		#print(df.columns)
 		nrows = df.shape[0]
+		if nrows == 0:
+			continue
+		
 		totalrows += nrows
 		ncols = df.shape[1]
 		maxyear = [0] * nrows
@@ -47,7 +53,7 @@ def service2latex(f,years,inputfile):
 		df.reset_index()
 		# print(df)
 
-		headername = "{\\bf " +name + "}"
+		f.write("\\subrubric{" +name +"}\n")
 		count = 0
 		while count < nrows:
 			# make date string
@@ -69,10 +75,9 @@ def service2latex(f,years,inputfile):
 					found = False
 			if ((prev_found == True) and (found == True)):
 				date_string = date_string +"-" +str(df.columns[ncols-1][1])
-			f.write(headername + " & " +str2latex(df.iloc[count,1]) + " & " +date_string +"\\\\\n")
-			headername = ""
+			f.write("\\entry*[" +date_string +"] " +str2latex(df.iloc[count,1]) +"\n")
 			count += 1
-	f.write("\\end{tabularx}\n")
+	f.write("\\end{rubric}\n")
 	return(totalrows)
 	
 if __name__ == "__main__":

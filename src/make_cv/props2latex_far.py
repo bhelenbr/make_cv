@@ -23,8 +23,7 @@ def props2latex_far(f,years,inputfile):
 		return(0)
 	
 	
-	props.fillna(value={"Sponsor": "", "Long Descr": "", "Allocated Amt": 0, "Total Cost": 0},inplace=True)
-
+	props.fillna(value={"Sponsor": "", "Title": "", "Allocated Amt": 0, "Total Cost": 0, "Funded?": "N", "Begin Date": dt.datetime(1900,1,1),"End Date": dt.datetime(1900,1,1)},inplace=True)
 	if years > 0:
 		today = dt.date.today()
 		year = today.year
@@ -36,10 +35,11 @@ def props2latex_far(f,years,inputfile):
 	nrows = props.shape[0] 
 
 	if (nrows > 0):	
-		f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXlll}\n & Sponsor: Title & Alloc/Total & Dates  \\\\\n\\hline\n")
+		f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXllll}\n& Sponsor: Title & Alloc/Total & Dates  \\endfirsthead\n")
+		f.write("\\multicolumn{4}{l}{\\conthead{Proposals}} \\endhead \\cline{2-4}\n")
 		count = 0
 		while count < nrows:
-			f.write(" & " +str2latex(props.loc[count,"Sponsor"].upper())+": " +str2latex(props.loc[count,"Long Descr"]) + " & " + "\\${:,.0f}k".format(props.loc[count,"Allocated Amt"]/1000) + "/" +"\\${:,.0f}k".format(props.loc[count,"Total Cost"]/1000))
+			f.write(" & " +str2latex(props.loc[count,"Sponsor"].upper())+": " +str2latex(props.loc[count,"Title"]) + " & " + "\\${:,.0f}k".format(props.loc[count,"Allocated Amt"]/1000) + "/" +"\\${:,.0f}k".format(props.loc[count,"Total Cost"]/1000))
 			f.write(" & " +props.loc[count,"Begin Date"].strftime("%m/%Y") +"-" +props.loc[count,"End Date"].strftime("%m/%Y") +"\\\\\n")
 			count += 1
 	

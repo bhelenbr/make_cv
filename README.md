@@ -1,6 +1,6 @@
 ### make\_cv
 
-make\_cv is a program that uses Python and LaTex to make a faculty curriculum vitae.  For reasons that are not clear to me, faculty use a c.v. to keep track of everything they have done in their careers.  For most of the data (awards, service, grants, etc…), the basic methodology that make\_cv uses is to keep the data in its most natural format and then process it using Python’s pandas to create LaTeX tabularx tables which are then generated into a c.v.  For scholarship items the system uses a .bib file to store the data and then uses biber to create publications lists (journal articles, conferences, books, etc…).  make\_cv has several features built in to make managing this data easier.  For example, it interfaces with google scholar to update citation counts for each journal article and it uses the provided data on student advisees to mark student authors in the bibliography.   It will also use bibtexautocomplete to fill in missing DOI data for publications.  The following describes its set-up and use.  Other utilities are provided to make web pages from your data (make\_web), faculty activity reports (make\_far), and an NSF collaborator list (make\_nsfcoa).  make\_far offers a \-y flag to limit the number of years of data that are used to make the activity report and the formatting of the data is always chronological.  The default is 3 years of data.
+make\_cv is a program that uses Python and LaTex to make a faculty curriculum vitae.  For tenure and promotion, faculty need a c.v. that keeps track of everything they have done in their careers.  For most of the data (awards, service, grants, etc…), the basic methodology that make\_cv uses is to keep the data in its most natural format and then process it using Python’s pandas to create LaTeX tabularx tables which are then generated into a c.v.  For scholarship items the system uses a .bib file to store the data and then uses biber to create publications lists (journal articles, conferences, books, etc…).  make\_cv has several features built in to make managing this data easier.  For example, it interfaces with google scholar to update citation counts for each journal article and it uses the provided data on student advisees to mark student authors in the bibliography.   It will also use bibtexautocomplete to fill in missing DOI data for publications.  The following describes its set-up and use.  Other utilities are provided to make web pages from your data (make\_web), faculty activity reports (make\_far), and an NSF collaborator list (make\_nsfcoa).  make\_far offers a \-y flag to limit the number of years of data that are used to make the activity report and the formatting of the data is always chronological.  The default is 3 years of data.
 
 ### Installation & Quick Start:
 
@@ -29,17 +29,23 @@ This will get everything and might take a while.  There are other import options
 
 ### The Data
 
-The folders and files created within mydata are
+The files created within the `mydata/CV` folder are  
+`contact_info.tex` – personal info for cv creation *(fill in your data)*  
+`cv.cfg` – configuration file  
+`cv.tex` – document that gets compiled by XeLaTeX to create (cv)  
+`education.tex` – educational history  *(fill in your data)*  
+`employment.tex` – employment history  *(fill in your data)*  
+`far_header.tex` – header file for activity report  
+`far.tex` – document that gets compiled by XeLaTeX to create activity report  
+`nsf2page.tex` – document to make a 2-page NSF cv (cannot be submitted to NSF anymore)   
+`photo.jpg` – personal photo *(provide photo or set usePhoto to false in contact\_info.tex)*  
+`referee.tex` – file to include list of references (delete file or rename if you don’t want that)  
+`settings.sty` – settings and commands for the cv creation (fonts, colors, symbols, etc…)  
+`web.tex` – file to create an .html list of publications with make\_web (not very tested yet)
 
+The data files created within the `mydata` folder are  
 `Awards/personal awards data.xlsx`  
 `Awards/student awards data.xlsx`  
-`CV/cv.cfg`  
-`CV/cv.tex`  
-`CV/cv_header.tex`  
-`CV/cv_tables.tex`  
-`CV/far.tex`  
-`CV/nsf2page.tex`  
-`CV/webpage.tex`  
 `Proposals & Grants/proposals & grants.xlsx`  
 `Scholarship/scholarship.bib`  
 `Scholarship/thesis data.xlsx`  
@@ -57,7 +63,7 @@ Awards
 
 Proposals & Grants
 
-2. There is one excel file here `proposals & grants.xlsx`.  The only necessary fields are “Proposal”, “Sponsor”, “Allocated Amt”, “Total Cost”, “Funded?”, “Long Descr”, and “Begin Date”.   “Proposal” must be a unique identifier for each proposal.  “Sponsor” is the name of the funding agency.  “Allocated Amt” is the percent that should be allocated to you and “Total Cost” is the total dollar amount of the grant.  “Funded?” is a Y or N field that states whether the proposal was funded or not.  "Begin Date" is the start date for the proposed work.  “Submit Date” is the submission date.   The proposals are organized by proposal start date in the c.v..  If you make a faculty activity report, then the proposals are organized by submission date.  make\_cv will sum up your allocated and total grant dollars and put that at the bottom of the grant section of the c.v.  It will do the same for the proposal dollars.  The field "Principal Investigators" is only used when making an NSF collaborator list.
+2. There is one excel file here `proposals & grants.xlsx`.  The only necessary fields are “Proposal\_ID”, “Sponsor”, “Allocated Amt”, “Total Cost”, “Funded?”, “Title”, and “Begin Date”, and “End Date”.   “Proposal” must be a unique identifier for each proposal.  “Sponsor” is the name of the funding agency.  “Allocated Amt” is the percent that should be allocated to you and “Total Cost” is the total dollar amount of the grant.  “Funded?” is a Y or N field that states whether the proposal was funded or not.  "Begin Date" is the start date for the proposed work.  “Submit Date” is the submission date.   The proposals are organized by proposal start date in the c.v. and faculty activity report.   make\_cv will sum up your allocated and total grant dollars and put that at the bottom of the grant section of the c.v.  It will do the same for the proposal dollars.  The field "Principal Investigators" is used when making an NSF collaborator list.
 
 Scholarship
 
@@ -144,11 +150,7 @@ To use all of the features of make\_cv, some additional information must be prov
 
 The other significant configuration that can be done with this file is to set the defaults for what sections of the cv make\_cv controls.  These are controlled by the entries under “CV”.  If a data file is empty or missing, make\_cv will automatically exclude it so you don’t need to turn off empty sections.  I often leave all the sections on, then use command line options (discussed below) to create a shorter c.v. when I need that.
 
-Further configurations can be done by editing the file cv\_header.tex, cv.tex, and cv\_tables.tex.
-
-1. cv\_header.tex is the LaTex header file that gets imported into cv.tex.  If you are comfortable with Latex, you can customize things like, fonts, margins, etc… with this file.  
-2. cv.tex is the first page information for the c.v.  This contains things like your name and contact information, employment and education history, etc…   You can format this how you like, but know that the \\section\* command should be used to create different sections within the c.v.  
-3. cv\_tables.tex is included by cv.tex, and is responsible for including all of the automatically created tables in the c.v.   If you would like to use your own custom system for a particular section of the data, you can comment out the table that is being included by cv.tex, and import whatever LaTeX compatible file you want.
+Further configurations can be done by editing `cv.tex` and `settings.sty` files. These are normal LaTeX files so you can modify them as you like.
 
 ### Advanced Features & Command Line Options
 
@@ -183,7 +185,7 @@ The first time you run make\_cv it will find unclassified entries in your .bib f
 
 If you add `-g`, it will use Google Scholar to find any entries that have appeared in the last year and ask you if you want to add them.  Everything in google scholar has an id, so it keeps track of these in the .bib file and will never ask you to add an entry twice.  It also uses these id tags when it updates the number of citations an entry has.  It will use bibtexautocomplete to add doi information to the new entries.  The doi’s appear as hyperlinks in the c.v. so people can click on an entry in your c.v. and be taken to the corresponding web location for that item.
 
-If you add `-m true`, it uses the files “undergraduate research data.xlsx”, “thesis data.xlsx” and “current student data.xlsx” to find the first initial and last names of all of your student advisees.  It then adds a marker after those names in the .bib file.  The two markers are \\us for undergraduate student and \\gs for graduate student.  The actual symbol that these commands create is defined in the `cv_header.tex` file.  Currently, make\_cv is configured to mark these authors in perpetuity, meaning that if you have a student who was an undergraduate advisee that became a graduate advisee, then you published with them 10 years later, that author will still receive both an undergraduate and a graduate advisee student marker.  There is a way to set a time limit for when this terminates, but I haven’t exposed that functionality yet.
+If you add `-m true`, it uses the files “undergraduate research data.xlsx”, “thesis data.xlsx” and “current student data.xlsx” to find the first initial and last names of all of your student advisees.  It then adds a marker after those names in the .bib file.  The two markers are \\us for undergraduate student and \\gs for graduate student.  The actual symbol that these commands create is defined in the `settings.sty` file.  Currently, make\_cv is configured to mark these authors in perpetuity, meaning that if you have a student who was an undergraduate advisee that became a graduate advisee, then you published with them 10 years later, that author will still receive both an undergraduate and a graduate advisee student marker.  There is a way to set a time limit for when this terminates, but I haven’t exposed that functionality yet.
 
 If you add `-M false`, it will redefine the \\us and \\gs markers so that no markers are produced in the file. This is also configurable in the `cv.cfg` file with the entry includestudentmarkers.
 

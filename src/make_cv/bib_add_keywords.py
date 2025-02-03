@@ -72,7 +72,7 @@ def add_keyword(paperbibentry):
 	if "keywords" in paperbibentry.keys():
 		response = input('Should I erase current keywords [Y/N] default is [Y]')
 		if (response == 'N'):
-			paperbibentry["keywords"] += '; ' +keyword
+			paperbibentry["keywords"] += ', ' +keyword
 		else:
 			paperbibentry["keywords"] = keyword
 	else:

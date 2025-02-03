@@ -1,65 +1,140 @@
-\input{cv_header.tex}
-\boldname{Lastname}{F}
+%%%%%%%%%%%%%%%
+% This CV example/template is based on my own
+% CV which I (lamely attempted) to clean up, so that
+% it's less of an eyesore and easier for others to use.
+%
+% LianTze Lim (liantze@gmail.com)
+% 23 Oct, 2022
+% 24 Aug, 2024 -- Updated X (Twitter) icon
+%
+% 27 Jan. 2025 -- I took what LianTze had done and added
+% some additional features (headers in the bibliography & some more table examples, and a pdf table of contents)
+% add made this compatible with my make_cv python utility that auto-generates the a lot of the rubric data
+% https://pypi.org/project/make-cv/
+% Brian Helenbrook (bhelenbr@clarkson.edu)
+
+\documentclass[letterpaper,11pt,english]{curve}
+
+% Uncomment to enable Chinese; needs XeLaTeX
+% \usepackage{ctex}
+
+% Default biblatex style used for the publication list is APA6. If you wish to use a different style or pass other options to biblatex you can change them here. 
+\PassOptionsToPackage{style=ieee,sorting=ydnt,uniquename=init,defernumbers=true,giveninits=true,maxnames=20,eprint=false,isbn=false}{biblatex}
+
+% Most commands and style definitions are in settings.sty.
+\usepackage{settings}
+
+%% Only needed if you want a Publication List
+\addbibresource{../Scholarship/scholarship.bib}
+
+\input{contact_info}
+
+\rightheader{~}
+\ifthenelse{\boolean{usePhoto}}{
+\photo[r]{photo}
+\photoscale{0.13}
+}{}
 
 \begin{document}
+\makeheaders[c]
 
-\begin{center}
-\Large{\bf My Name}      % make the name stand out
-\end{center}
+% education
+\keyalignment{l}
+\IfFileExists{education.tex}{\makerubric{education}}
 
-\begin{center}
-MAE Department Box 5725\\
-Clarkson University\\
-Potsdam, NY 13699-5725\\
-(315) 268-2204\\
-\em{myemail@clarkson.edu}
-\end{center}
+% employment
+\keyalignment{l}
+\IfFileExists{employment.tex}{\makerubric{employment}}
 
-\section*{EDUCATION}
-{\bf Some University} \hspace*{\fill}
-{ Some Place, XX}
-\par
-{\em January 19XX - November 1997}
-\par
-Doctoral degree in the Mechanical and Aerospace Engineering program,
-with concentration in the areas of blah blah.  Master of Arts degree received June 1994.  Advisor: Professor D. D. Dummy.
-\par
-\vspace{\baselineskip}
-{\bf University of Somewhere} \hspace*{\fill}
-{ Somewhere, SN}
-\par
-{\em September 1987 - June 1991}
-\par
-Bachelor of Science degree in Mechanical Engineering.   
-Undergraduate research advisor: Professor Somebody.  Research topic: something.
+\keyalignment{r}
+\IfFileExists{skills.tex} {\makerubric{skills}}
 
-\section*{EXPERIENCE}
-{\bf Clarkson University}  \hspace*{\fill} Potsdam, NY
-\par
-{\em Associate Professor, Mechanical and Aeronautical Eng. Dept.} \hfill {\em March 2006 -May 2013}\\
-{\em Assistant Professor, Mechanical and Aeronautical Eng. Dept.} \hfill {\em January 2001 - March 2006 }\\
-{\em Courtesy Appointment, Math. and Computer Science Dept.} 
+\keyalignment{r}
+\IfFileExists{memberships.tex} {\makerubric{memberships}}
 
-\par
-Current research is on doing fun stuff.  
+\keyalignment{r}
+\ifthenelse{\boolean{PersonalAwards}}{\IfFileExists{personal_awards.tex}{
+\stepcounter{BookmarkCounter}
+\pdfbookmark[-1]{Personal Awards}{note\theBookmarkCounter}
+\makerubric{personal_awards}
+}}{}
 
-\par
-\vspace{\baselineskip}
-{\bf Another place I have been}  \hspace*{\fill} City, ST
-\par
-{\em Title goes here} \hfill {\em September 2008 - July 2009}
-\par
-Did a bunch of stuff. Host: D.\ D.\ Dummy 
+\makerubrichead{Research Publications}
+In the following a + indicates a graduate advisee, and a * indicates an undergraduate advisee.  The number in brackets is the number of citations as reported by Google Scholar. \par \vspace\rubricspace
 
-% The vbox command makes sure this doesn't get broken between pages
-\vbox{
-\section*{PROFESSIONAL MEMBERSHIPS}
-American Society of Mechanical Engineers (ASME) \\
-American Society of Engineering Education (ASEE) \\
-}
+\nocite{*}
 
-\input{cv_tables.tex}
-\input{timestamp.tex}
+\ifthenelse{\boolean{Journal}}{
+\printbibliography[heading={contbibnumbered},title={Journal Articles},keyword=journal]
+}{}
+
+\ifthenelse{\boolean{Refereed}}{
+\printbibliography[heading={contbibnumbered},title={Refereed Conference Papers},keyword=refereed]
+}{}
+
+\ifthenelse{\boolean{Book}}{
+\printbibliography[heading={contbibnumbered},title={Book Chapters},keyword=book]
+}{}
+
+\ifthenelse{\boolean{Patent}}{
+\printbibliography[heading={contbibnumbered},title={Patents},keyword=patent]
+}{}
+
+\ifthenelse{\boolean{Conference}}{
+\printbibliography[heading={contbibnumbered},title={Conference Presentations},keyword=conference]
+}{}
+
+\ifthenelse{\boolean{Invited}}{
+\printbibliography[heading={contbibnumbered},title={Invited Talks},keyword=invited]
+}{}
+
+\ifthenelse{\boolean{Service}}{\IfFileExists{service.tex}{
+\makerubric{service}
+}}{}
+
+\ifthenelse{\boolean{Reviews}}{\IfFileExists{reviews.tex} {
+\makerubrichead{Reviewing Activity}
+\input{reviews}
+}}{}
+
+\ifthenelse{\boolean{StudentAwards}}{\IfFileExists{student_awards.tex} {
+\stepcounter{BookmarkCounter}
+\pdfbookmark[-1]{Student Awards}{note\theBookmarkCounter}
+\makerubric{student_awards}
+}}{}
+
+\ifthenelse{\boolean{GradAdvisees}}{\IfFileExists{thesis.tex} {
+\makerubrichead{Graduate Advisees}
+\input{thesis.tex}
+}}{}
+
+\ifthenelse{\boolean{UndergradResearch}}{\IfFileExists{undergraduate_research.tex} {
+\makerubrichead{Undergraduate Research}
+\input{undergraduate_research.tex}
+}}{}
+
+\ifthenelse{\boolean{Teaching}}{\IfFileExists{teaching.tex} {
+\makerubrichead{Teaching}
+This table includes all classes taught that had reported teaching evaluations.  Question 19 is ``Overall, how would you rate this instructor?''  Question 20 is ``Overall, how would you rate this course?''. The scores are out of 5 and the University average evaluation is approximately 4.1. 
+\input{teaching.tex}
+}}{}
+
+\ifthenelse{\boolean{Grants}}{\IfFileExists{grants.tex} {
+\makerubrichead{Grants}
+\input{grants}
+}}{}
+
+\ifthenelse{\boolean{Proposals}}{\IfFileExists{proposals.tex} {
+\makerubrichead{Proposals}
+\input{proposals}
+}}{}
+
+%\makerubric{referee}
+
+\IfFileExists{timestamp.tex}{\input{timestamp.tex}}
 
 \end{document}
+
+
+
 

@@ -39,20 +39,22 @@ def publons2latex(f,years,inputfile):
 	#print(table)
 	
 	nrows = table.shape[0] 
-	if (nrows > 0):
+	if (nrows > 0):		
 		table.columns=['Journal','Reviews','Rounds']
-		f.write("\\begin{tabularx}{\\linewidth}{Xl}\nJournal & Reviews(Rounds)  \\\\\n\\hline\n")
+		
+		nreviews = table["Reviews"].sum()
+		nrounds = table["Rounds"].sum()
+		f.write("Reviewing activity as reported by Web of Science since " +str(yearmin)+ ": " +str(nreviews) +" reviews (" +str(nrounds) +" total review rounds)\\par\\vspace\\baselineskip\n")
+
+
+		f.write("\\begin{tabularx}{\\linewidth}{Xl}\nJournal & Reviews(Rounds) \\endfirsthead\n")
+		f.write("\\multicolumn{2}{l}{\\conthead{Reviewing Activity}} \\endhead \\hline\n")
 
 		count = 0
-		total_reviews = 0
-		total_rounds = 0
 		while count < nrows:
 			f.write(str2latex(table.loc[count,"Journal"]) + " & " +str(table.loc[count,"Reviews"]) +"(" +str(table.loc[count,"Rounds"]) +")" +"\\\\\n")
-			total_reviews += table.loc[count,"Reviews"]
-			total_rounds += table.loc[count,"Rounds"]
 			count += 1
 		f.write("\\end{tabularx}\n")
-		f.write("Reviews since " +str(yearmin)+ ": " +str(total_reviews) +"(" +str(total_rounds) +")")
 	return(nrows)
 	
 if __name__ == "__main__":

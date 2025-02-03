@@ -5,6 +5,7 @@ import pandas as pd
 import os
 import sys
 from datetime import date
+import datetime as dt
 import argparse
 
 from .stringprotect import str2latex
@@ -18,8 +19,7 @@ def grants2latex_far(f,years,inputfile):
 		return(0)
 		
 
-
-	props = props.fillna('')
+	props.fillna(value={"Sponsor": "", "Title": "", "Allocated Amt": 0, "Total Cost": 0, "Funded?": "N", "Begin Date": dt.datetime(1900,1,1),"End Date": dt.datetime(1900,1,1)},inplace=True)
 	grants = props[props['Funded?'].str.match('Y')]
 	grants.reset_index(inplace=True,drop=True)
 
@@ -42,10 +42,11 @@ def grants2latex_far(f,years,inputfile):
 		
 		f.write("Personal Allocation: " +"\\${:,.0f}k".format(allocated/1000) +"  Total: " +"\\${:,.0f}k\n".format(total/1000))
 	
-		f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXllll}\n& Sponsor: Title & Alloc/Total & Dates  \\\\\n\\hline\n")
+		f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXllll}\n& Sponsor: Title & Alloc/Total & Dates  \\endfirsthead\n")
+		f.write("\\multicolumn{4}{l}{\\conthead{Grants}} \\endhead \\cline{2-4}\n")
 		count = 0
 		while count < nrows:
-			f.write("& " +str2latex(grants.loc[count,"Sponsor"].upper())+": " +str2latex(grants.loc[count,"Long Descr"]) + " & " + "\\${:,.0f}k".format(grants.loc[count,"Allocated Amt"]/1000) + "/" +"\\${:,.0f}k".format(grants.loc[count,"Total Cost"]/1000))
+			f.write("& " +str2latex(grants.loc[count,"Sponsor"].upper())+": " +str2latex(grants.loc[count,"Title"]) + " & " + "\\${:,.0f}k".format(grants.loc[count,"Allocated Amt"]/1000) + "/" +"\\${:,.0f}k".format(grants.loc[count,"Total Cost"]/1000))
 			f.write(" & " +grants.loc[count,"Begin Date"].strftime("%m/%Y") +"-" +grants.loc[count,"End Date"].strftime("%m/%Y") +"\\\\\n")
 			count += 1
 	
