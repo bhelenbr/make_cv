@@ -342,11 +342,10 @@ def process_default_args(config,args):
 
 
 def add_timestamp_to_cv():
-    # Get current timestamp
-    current_time = datetime.datetime.now().strftime("%B %d, %Y")
-    
-    # Create timestamp in LaTeX format
-    timestamp_tex = f"""
+	# Get current timestamp
+	current_time = datetime.datetime.now().strftime("%B %d, %Y")
+	# Create timestamp in LaTeX format
+	timestamp_tex = f"""
 		% Add timestamp to bottom of CV
 		\\vspace*{{\\fill}}
 		\\begin{{center}}
@@ -354,10 +353,10 @@ def add_timestamp_to_cv():
 		Last updated: {current_time}
 		\\end{{center}}
 		"""
-    
-    # Write timestamp to a separate file
-    with open('timestamp.tex', 'w') as f:
-        f.write(timestamp_tex)
+	
+	# Write timestamp to a separate file
+	with open('timestamp.tex', 'w') as f:
+		f.write(timestamp_tex)
 		
 def typeset(config,filename,command):
 	# Create exclusion file
@@ -383,9 +382,13 @@ def typeset(config,filename,command):
 	bcffile = filename +".bcf"
 	pdffile = filename +".pdf"
 	#subprocess.run([command, "cv.tex"],stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT) 
-	subprocess.run(command) 
+	print("\ntypesetting pass 1\n")
+	subprocess.run(command,stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT) 
+	
+	print("\ncreating bibliography\n")
 	subprocess.run(["biber", bcffile]) 
-	subprocess.run(command)
+	print("\ntypesetting pass 2\n")
+	subprocess.run(command,stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
 	print("Trying to delete " +filename +".pdf file.  If this gets stuck, delete " +filename +".pdf yourself and the compilation should continue")
 	print("If it doesn't, hit ctrl-c, delete " +filename +".pdf and try again")
 	while True:
@@ -395,8 +398,10 @@ def typeset(config,filename,command):
 			break
 		except OSError as err:
 			continue
-	subprocess.run(command) 
-	subprocess.run(command) 
+	print("\ntypesetting pass 3\n")
+	subprocess.run(command,stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT) 
+	print("\ntypesetting pass 4\n")
+	ps = subprocess.run(command)
 	
 	# cleanup
 	for file in [filename +".aux",filename +".bbl",filename +".bcf",filename +".blg",filename +".log",filename +".out",filename +".run.xml","biblatex-dm.cfg","exclusions.tex",filename +".toc","timestamp.tex"]:
@@ -416,7 +421,7 @@ def main(argv = None):
 	process_default_args(config,args)
 	
 	make_cv_tables(config,'Tables_cv',0)
-	typeset(config,'cv',['xelatex','cv.tex'])
+	typeset(config,'cv',['xelatex','-interaction=batchmode','cv.tex'])
 
 if __name__ == "__main__":
 	SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
