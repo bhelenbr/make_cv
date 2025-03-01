@@ -42,7 +42,7 @@ def bib_add_citations(bibfile,author_id,outputfile,scraper_id=None):
 	tbparser.homogenize_fields = False  # no dice
 	tbparser.alt_dict['url'] = 'url'    # this finally prevents change 'url' to 'link'
 	with open(bibfile,encoding='utf-8') as bibtex_file:
-		bib_database = bibtexparser.load(bibfile, tbparser)
+		bib_database = bibtexparser.load(bibtex_file, tbparser)
 	entries = bib_database.entries
 	
 	# Create list of titles in bibfile compressing out nonalphanumeric characters
