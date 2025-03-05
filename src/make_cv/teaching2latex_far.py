@@ -28,7 +28,9 @@ def teaching2latex_far(f,years,inputfile,private=False):
 		year = today.year
 		begin_year = year - years	
 		df = df[df['term'].apply(lambda x: int(x[-4:])) >= begin_year]
-		
+	
+	df = df[(df['question']==19) | (df['question'] == 20)]
+	
 	table = df.pivot_table(index=['STRM','term','combined_course_num','course_section'],columns=['question'],aggfunc={'enrollment': 'sum','Weighted Average': 'sum', 'count_evals': 'sum'})	
 	#table = df.pivot_table(index=['STRM','term','course_num','course_section','enrollment'],columns=['question'],values=['Calculated Mean','Particip'],aggfunc={'Calculated Mean': np.mean, 'Particip':'sum'})
 	

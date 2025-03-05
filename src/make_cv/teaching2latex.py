@@ -35,6 +35,7 @@ def teaching2latex(f,years,inputfile):
 	if not('course_title' in df.columns):
 		df['course_title'] = ""
 		
+	df = df[(df['question']==19) | (df['question'] == 20)]
 	df.sort_values(by=['combined_course_num','STRM','course_section','course_title'],inplace=True)
 	df.reset_index(inplace=True)
 	
@@ -46,7 +47,7 @@ def teaching2latex(f,years,inputfile):
 	nrows = df.shape[0] 
 	
 	if (nrows > 0):	
-		f.write("\\begin{tabularx}{\\linewidth}{Xlllll}\nCourse  & Term & Section & Enrollment & Q19 & Q20 \\endfirsthead\n")
+		f.write("\\begin{tabularx}{\\linewidth}{Xlllll}\nCourse  & Term & Sec & Enrl & Q19 & Q20 \\endfirsthead\n")
 		f.write("\\multicolumn{6}{l}{\\conthead{Teaching}} \\endhead \\hline\n")
 		count = 0
 		while count < nrows:
