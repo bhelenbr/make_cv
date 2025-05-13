@@ -131,7 +131,8 @@
 \stepcounter{BookmarkCounter}%
 \pdfbookmark[-1]{#1}{note\theBookmarkCounter} %
 \needspace{4\baselineskip}
-\vskip\baselineskip\@@rubrichead{#1} }
+\vskip\baselineskip\@@rubrichead{#1}\newline
+}
 
 % Command to make page continuation header
 \newcommand{\conthead}[1]{
@@ -141,6 +142,8 @@
   \end{tikzpicture}%
   \vspace\rubricspace%
 }
+\newcommand{\tablecontinue}[1]{\multicolumn{4}{l}{\conthead{#1}}\endhead\cline{2-4}}
+\newcommand{\tablehead}{\endfirsthead}
 
 % Override subrubric command to eliminate leading space bug
 \def\@@subrubric#1{%

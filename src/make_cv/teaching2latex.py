@@ -47,14 +47,17 @@ def teaching2latex(f,years,inputfile):
 	nrows = df.shape[0] 
 	
 	if (nrows > 0):	
+
 		f.write("\\begin{tabularx}{\\linewidth}{Xlllll}\nCourse  & Term & Sec & Enrl & Q19 & Q20 \\endfirsthead\n")
 		f.write("\\multicolumn{6}{l}{\\conthead{Teaching}} \\endhead \\hline\n")
 		count = 0
+		newline=""
 		while count < nrows:
-			f.write(str2latex(df.iloc[count]['combined_course_num',    '', '']) +" " +str2latex(df.iloc[count]['course_title',    '', '']) + " & " +str2latex(df.iloc[count]['term',    '', '']) + " & " +str2latex(df.iloc[count]['course_section',    '', '']) +" & " +str2latex(df.iloc[count]['enrollment', 'sum', 20])+ " & " +"{:3.2f}".format(df.iloc[count]['Weighted Average', 'sum', 19]/df.iloc[count]['count_evals', 'sum', 19])+ " & " +"{:3.2f}".format(df.iloc[count]['Weighted Average', 'sum', 20]/df.iloc[count]['count_evals', 'sum', 20]) +"\\\\\n")
+			f.write(newline)
+			f.write(str2latex(df.iloc[count]['combined_course_num',    '', '']) +" " +str2latex(df.iloc[count]['course_title',    '', '']) + " & " +str2latex(df.iloc[count]['term',    '', '']) + " & " +str2latex(df.iloc[count]['course_section',    '', '']) +" & " +str2latex(df.iloc[count]['enrollment', 'sum', 20])+ " & " +"{:3.2f}".format(df.iloc[count]['Weighted Average', 'sum', 19]/df.iloc[count]['count_evals', 'sum', 19])+ " & " +"{:3.2f}".format(df.iloc[count]['Weighted Average', 'sum', 20]/df.iloc[count]['count_evals', 'sum', 20]))
+			newline="\\\\\n"
 			count += 1
-	
-		f.write("\\end{tabularx}\n")
+		f.write("\n\\end{tabularx}\n")
 
 	return(nrows)
 	

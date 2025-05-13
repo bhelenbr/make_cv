@@ -10,6 +10,7 @@ import shutil
 import configparser
 import argparse
 
+from .make_far import make_far_tables
 from .make_cv import make_cv_tables
 from .make_cv import add_default_args
 from .make_cv import process_default_args
@@ -29,9 +30,9 @@ def main(argv = None):
 	config = configuration['WEB']
 	process_default_args(config,args)
 	
-	make_cv_tables(config,'Tables_web',0)
+	make_far_tables(config,'Tables_web')
 	
-	typeset(config,'web',["mk4ht", "htlatex","web.tex","xhtml,charset=utf-8,pmathml","-cunihtf -utf8 -cvalidate"])
+	typeset(config,'web',["mk4ht", "htlatex","web.tex","xhtml,3,next,charset=utf-8,pmathml","-cunihtf -utf8 -cvalidate"])
 	
 	# extra cleanup
 	for file in ["web.4ct","web.4tc","web.dvi","web.idv","web.tmp","web.xref","web.bdf.bbl","web.bdf.blg","web.lg"]:

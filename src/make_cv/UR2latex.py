@@ -42,14 +42,17 @@ def UR2latex(f,years,inputfile):
 		df = df.reset_index()
 		#print(df)
 		
-		f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXll}\n & Name: Title  & Program & Date(Semesters) \\endfirsthead\n")
-		f.write("\\multicolumn{4}{l}{\\conthead{Undergraduate Research}} \\endhead \\cline{2-4}\n")
+		f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXll}\n & Name: Title  & Program & Date(Semesters) \\tablehead\n")
+		f.write("\\tablecontinue{Undergraduate Research}\n")
 		count = 0
+		newline=""
 		while count < nrows:
-			f.write(" & " +abbreviate_name_list(df.loc[count,"Students"])+": " +str2latex(df.loc[count,"Title"]) + " & " +str2latex(df.loc[count,"Program Type"]) + " & " +str2latex(df.loc[count,"Calendar Year"]) +"("+str2latex(df.loc[count,"Term"]) +")\\\\\n")
+			f.write(newline)
+			f.write(" & " +abbreviate_name_list(df.loc[count,"Students"])+": " +str2latex(df.loc[count,"Title"]) + " & " +str2latex(df.loc[count,"Program Type"]) + " & " +str2latex(df.loc[count,"Calendar Year"]) +"("+str2latex(df.loc[count,"Term"]) +")")
+			newline="\\\\\n"
 			count += 1
 	
-		f.write("\\end{tabularx}\n")
+		f.write("\n\\end{tabularx}\n")
 	
 	return(nrows)
 

@@ -53,22 +53,26 @@ def thesis2latex_far(f,years,studentfile,thesisfile):
 	
 	
 	if (nrows+nrows2 > 0):
-		f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXll}\n & Name: Title  & Date & Degree \\endfirsthead\n")
-		f.write("\\multicolumn{4}{l}{\\conthead{Graduate Advisees}} \\endhead \\cline{2-4}\n")
-		
+		f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXll}\n & Name: Title  & Date & Degree \\tablehead\n")
+		f.write("\\tablecontinue{Graduate Advisees}\n")
+		newline=""
 		if nrows > 0:
 			count = 0
 			while count < nrows:
-				f.write(" & " +abbreviate_name(df.loc[count,"Student Name"])+": in progress"  + " &  & " +str2latex(df.loc[count,"Current Program"][(df.loc[count,"Current Program"].find("-")+1):]) +"\\\\\n")
+				f.write(newline)
+				f.write(" & " +abbreviate_name(df.loc[count,"Student Name"])+": in progress"  + " &  & " +str2latex(df.loc[count,"Current Program"][(df.loc[count,"Current Program"].find("-")+1):]))
+				newline="\\\\\n"
 				count += 1
 		
 		if nrows2 > 0:
 			count = 0
 			while count < nrows2:
-				f.write(" & " +abbreviate_name(df2.loc[count,"Student"])+": " +str2latex(df2.loc[count,"Title"]) + " & " +'{0:d}'.format(int(df2.loc[count,"Year"])) + " & " +str2latex(df2.loc[count,"Degree"]) +"\\\\\n")
+				f.write(newline)
+				f.write(" & " +abbreviate_name(df2.loc[count,"Student"])+": " +str2latex(df2.loc[count,"Title"]) + " & " +'{0:d}'.format(int(df2.loc[count,"Year"])) + " & " +str2latex(df2.loc[count,"Degree"]))
+				newline="\\\\\n"
 				count += 1
 	
-		f.write("\\end{tabularx}\n")
+		f.write("\n\\end{tabularx}\n")
 		
 	return(nrows+nrows2)
 

@@ -37,10 +37,13 @@ def publons2latex_far(f,years,inputfile):
 		f.write("\\begin{tabularx}{\linewidth}{Xll}\nJournal & Start Date & Rounds \\\\\n\\hline\n")
 
 		count = 0
+		newline=""
 		while count < nrows:
-			f.write(str2latex(table.loc[count,"Journal"]) + " & " +str(table.loc[count,"Start"].strftime('%b %Y')) +" & " +str(table.loc[count,"Rounds"]) +"\\\\\n")
+			f.write(newline)
+			f.write(str2latex(table.loc[count,"Journal"]) + " & " +str(table.loc[count,"Start"].strftime('%b %Y')) +" & " +str(table.loc[count,"Rounds"]))
+			newline = "\\\\\n"
 			count += 1
-	f.write("\\end{tabularx}\n")
+	f.write("\n\\end{tabularx}\n")
 	
 	return(nrows)
 	

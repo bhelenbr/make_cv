@@ -36,13 +36,16 @@ def personal_awards2latex_far(f,years,inputfile):
 		#print(df)
 		#print(df.columns)
 	
-		f.write("\\begin{tabularx}{\linewidth}{llX}\nYear & Type  & Title \\\\\n\\hline\n")
+		f.write("\\begin{tabularx}{\\linewidth}{llX}\nYear & Type  & Title \\\\\n\\hline\n")
 		count = 0
+		newline = ""
 		while count < nrows:
-			f.write(str(df.loc[count,"Year"]) + " & " +df.loc[count,"Type"] + " & " +str2latex(df.loc[count,"Title"]) +"\\\\\n")
+			f.write(newline)
+			f.write(str(df.loc[count,"Year"]) + " & " +df.loc[count,"Type"] + " & " +str2latex(df.loc[count,"Title"]))
+			newline = "\\\\\n"
 			count += 1
 	
-		f.write("\\end{tabularx}\n")
+		f.write("\n\\end{tabularx}\n")
 	
 	return(nrows)
 	

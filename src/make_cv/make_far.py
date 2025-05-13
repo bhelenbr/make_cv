@@ -20,6 +20,7 @@ from .bib_add_citations import bib_add_citations
 from .bib_get_entries import bib_get_entries
 from .bib_add_student_markers import bib_add_student_markers
 from .bib_add_keywords import bib_add_keywords
+from .bib2latex_far import bib2latex_far
 
 from .make_cv import make_cv_tables
 from .make_cv import typeset
@@ -47,6 +48,18 @@ def make_far_tables(config,table_dir):
 	
 	# override faculty source to be relative to CV folder
 	faculty_source = config['data_dir']
+
+	# Scholarly Works
+	print('Updating scholarship tables')
+	pubfiles = ["journal.tex","conference.tex","patent.tex","book.tex","invited.tex","refereed.tex"]
+	fpubs = [open(table_dir +os.sep +name, 'w') for name in pubfiles]
+	filename = os.path.join(faculty_source,config['ScholarshipFile'])
+	if os.path.isfile(filename):
+		nrecords = bib2latex_far(fpubs,years,filename)
+		for counter in range(len(pubfiles)):
+			fpubs[counter].close()
+			if not(nrecords[counter]):
+				os.remove(table_dir+os.sep +pubfiles[counter])
 
 	# Personal Awards
 	if config.getboolean('PersonalAwards'):

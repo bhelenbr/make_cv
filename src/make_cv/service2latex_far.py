@@ -33,11 +33,14 @@ def service2latex_far(f,years,inputfile):
 	if nrows > 0:
 		f.write("\\begin{tabularx}{\\linewidth}{lllXl}\nYear & Term & Type & Description & Hours \\\\\n\\hline\n")
 		count = 0
+		newline=""
 		while count < nrows:
 			# make date string
-			f.write(str2latex(df.loc[count,"Calendar Year"]) + " & " +str2latex(df.loc[count,"Term"]) + " & " +str2latex(df.loc[count,"Type"]) + " & " +str2latex(df.loc[count,"Description"]) + " & " +str2latex(df.loc[count,"Hours/Semester"])+"\\\\\n")
+			f.write(newline)
+			f.write(str2latex(df.loc[count,"Calendar Year"]) + " & " +str2latex(df.loc[count,"Term"]) + " & " +str2latex(df.loc[count,"Type"]) + " & " +str2latex(df.loc[count,"Description"]) + " & " +str2latex(df.loc[count,"Hours/Semester"]))
+			newline="\\\\\n"
 			count += 1
-		f.write("\\end{tabularx}\n")
+		f.write("\n\\end{tabularx}\n")
 		
 	return(nrows)
 	

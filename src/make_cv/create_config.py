@@ -2,7 +2,7 @@
 
 import configparser
 
-sections = {'Journal','Refereed','Book','Conference','Patent','Invited','PersonalAwards','StudentAwards','Service','Reviews','GradAdvisees','UndergradResearch','Teaching','Grants','Proposals'} 
+sections = {'PersonalAwards','Journal','Refereed','Book','Patent','Conference','Invited','Service','Reviews','StudentAwards','GradAdvisees','UndergradResearch','Teaching','Grants','Proposals'} 
 
 defaults = {'data_dir': '..',
 				'GoogleID': '',
@@ -36,7 +36,8 @@ far_keys = {'Years': '3',
 			'IncludeStudentMarkers': 'true',
 			'IncludeCitationCounts': 'true'}
 			
-web_keys = {'IncludeStudentMarkers': 'true',
+web_keys = {'Years': '-1',
+			'IncludeStudentMarkers': 'true',
 			'IncludeCitationCounts': 'true'}
 
 def verify_config(config):

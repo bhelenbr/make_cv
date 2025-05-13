@@ -1,101 +1,91 @@
-\input{cv_header.tex}
+\input{web_header.tex}
 
-\title{Faculty Activity Report}
+\title{My Web Page}
 \author{}
 
 \begin{document}
 \maketitle
 \tableofcontents
 
+\nocite{*}
+
 \ifthenelse{\boolean{Journal}}{
-\IfFileExists{Tables_web/journal.tex} {
-\section{JOURNAL ARTICLES}
-\input{Tables_web/journal.tex}
-}}{}
+\printbibliography[heading={contbibnumbered},title={Journal Articles},keyword=journal]
+}{}
 
 \ifthenelse{\boolean{Refereed}}{
-\IfFileExists{Tables_web/refereed.tex} {
-\section{REFEREED CONFERENCE PAPERS}
-\input{Tables_web/refereed.tex}
-}}{}
+\printbibliography[heading={contbibnumbered},title={Refereed Conference Papers},keyword=refereed]
+}{}
+
 
 \ifthenelse{\boolean{Book}}{
-\IfFileExists{Tables_web/book.tex} {
-\section{BOOK CHAPTERS}
-\input{Tables_web/book.tex}
-}}{}
-
-\ifthenelse{\boolean{Conference}}{
-\IfFileExists{Tables_web/conference.tex} {
-\section{CONFERENCES}
-\input{Tables_web/conference.tex}
-}}{}
+\printbibliography[heading={contbibnumbered},title={Book Chapters},keyword=book]
+}{}
 
 \ifthenelse{\boolean{Patent}}{
-\IfFileExists{Tables_web/patent.tex} {
-\section{PATENTS}
-\input{Tables_web/patent.tex}
-}}{}
+\printbibliography[heading={contbibnumbered},title={Patents},keyword=patent]
+}{}
+
+\ifthenelse{\boolean{Conference}}{
+\printbibliography[heading={contbibnumbered},title={Conference Presentations},keyword=conference]
+}{}
 
 \ifthenelse{\boolean{Invited}}{
-\IfFileExists{Tables_web/invited.tex} {
-\section{INVITED TALKS}
-\input{Tables_web/invited.tex}
-}}{}
-
+\printbibliography[heading={contbibnumbered},title={Invited Talks},keyword=invited]
+}{}
 
 \ifthenelse{\boolean{PersonalAwards}}{
 \IfFileExists{Tables_web/personal_awards.tex} {
-\section{PERSONAL AWARDS}
+\section{Personal Awards\label{Personal Awards}}
 \input{Tables_web/personal_awards.tex}
 }}{}
 
 \ifthenelse{\boolean{StudentAwards}}{
 \IfFileExists{Tables_web/student_awards.tex} {
-\section{STUDENT AWARDS}
+\section{Student Awards\label{Student Awards}}
 \input{Tables_web/student_awards.tex}
 }}{}
 
 \ifthenelse{\boolean{Service}}{
 \IfFileExists{Tables_web/service.tex} {
-\section{SERVICE}
+\section{Service\label{Service}}
 \input{Tables_web/service.tex}
 }}{}
 
 \ifthenelse{\boolean{Reviews}}{
 \IfFileExists{Tables_web/reviews.tex} {
-\section{REVIEWING}
+\section{Reviewing\label{Reviewing}}
 \input{Tables_web/reviews.tex}
 }}{}
 
 \ifthenelse{\boolean{GradAdvisees}}{
 \IfFileExists{Tables_web/thesis.tex} {
-\section{GRADUATE ADVISEES}
+\section{Graduate Advisees\label{Graduate Advisees}}
 \input{Tables_web/thesis.tex}
 }}{}
 
 \ifthenelse{\boolean{UndergradResearch}}{
 \IfFileExists{Tables_web/undergraduate_research.tex} {
-\section{UNDERGRADUATE RESEARCH}
+\section{Undergraduate Research\label{Undergraduate Research}}
 \input{Tables_web/undergraduate_research.tex}
 }}{}
 
 \ifthenelse{\boolean{Teaching}}{
 \IfFileExists{Tables_web/teaching.tex} {
-\section{TEACHING}
+\section{Teaching\label{Teaching}}
 This table includes all classes taught that had reported teaching evaluations.  Question 19 is ``Overall, how would you rate this instructor?''  Question 20 is ``Overall, how would you rate this course?''. The scores are out of 5 and the University average evaluation is approximately 4.1. 
 \input{Tables_web/teaching.tex}
 }}{}
 
 \ifthenelse{\boolean{Grants}}{
 \IfFileExists{Tables_web/grants.tex} {
-\section{GRANTS}
+\section{Grants\label{Grants}}
 \input{Tables_web/grants.tex}
 }}{}
 
 \ifthenelse{\boolean{Proposals}}{
 \IfFileExists{Tables_web/proposals.tex} {
-\section{PROPOSALS}
+\section{Proposals\label{Proposals}}
 \input{Tables_web/proposals.tex}
 }}{}
 

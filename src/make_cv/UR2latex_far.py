@@ -36,13 +36,15 @@ def UR2latex_far(f,years,inputfile):
 	nrows = df.shape[0]
 	
 	if (nrows > 0):	
-		f.write("\\begin{tabularx}{\linewidth}{Xll}\nName: Title  & Program & Term \\\\\n\\hline\n")
+		f.write("\\begin{tabularx}{\\linewidth}{Xll}\nName: Title  & Program & Term \\\\\n\\hline\n")
 		count = 0
+		newline=""
 		while count < nrows:
+			f.write(newline)
 			f.write(abbreviate_name_list(df.loc[count,"Students"])+": " +str2latex(df.loc[count,"Title"]) + " & " +df.loc[count,"Program Type"] + " & " +df.loc[count,"Term"] +" " +str(df.loc[count,"Calendar Year"])+"\\\\\n")
+			newline="\\\\\n"
 			count += 1
-
-		f.write("\\end{tabularx}\n")
+		f.write("\n\\end{tabularx}\n")
 		
 	return(nrows)
 
