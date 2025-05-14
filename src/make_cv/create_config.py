@@ -2,7 +2,21 @@
 
 import configparser
 
-sections = {'PersonalAwards','Journal','Refereed','Book','Patent','Conference','Invited','Service','Reviews','StudentAwards','GradAdvisees','UndergradResearch','Teaching','Grants','Proposals'} 
+sections = {'PersonalAwards': 'true',
+				'Journal': 'true',
+				'Refereed': 'true',
+				'Book': 'true',
+				'Patent': 'true',
+				'Conference': 'true',
+				'Invited': 'true',
+				'Service': 'true',
+				'Reviews': 'true',
+				'StudentAwards': 'true',
+				'GradAdvisees': 'true',
+				'UndergradResearch': 'true',
+				'Teaching': 'true',
+				'Grants': 'true',
+				'Proposals': 'true'} 
 
 defaults = {'data_dir': '..',
 				'GoogleID': '',
@@ -79,39 +93,28 @@ def verify_config(config):
 	return True
 
 def create_config(filename, old_config=None):
-    config = configparser.ConfigParser()
-    config['DEFAULT'] = defaults        
-    for key, value in files.items():
-        config['DEFAULT'][key] = value
-        
-    config['CV'] = cv_keys
-    for section in sections:
-        config['CV'][section] = 'true'    
-        
-    config['FAR'] = far_keys
-    for section in sections:
-        config['FAR'][section] = 'true'     
-        
-    config['WEB'] = web_keys
-    for section in sections:
-        config['WEB'][section] = 'false' 
-    
-    config['WEB']['Journal'] = 'true'
+	config = configparser.ConfigParser()
+	config['DEFAULT'] = defaults | files	
+	config['CV'] = cv_keys | sections
+	config['FAR'] = far_keys | sections
+	config['WEB'] = web_keys | sections
 
-    for section in old_config.sections():
-        if not config.has_section(section):
-            config.add_section(section)
-        for key, value in old_config.items(section):
-            config[section][key] = value
-    for key, value in old_config['DEFAULT'].items():
-        config['DEFAULT'][key] = value 
-    
-    
-    
-    with open(filename, 'w') as configfile:
-        config.write(configfile)
-    
-    return config
+	if not old_config == None:
+		if old_config.has_section('CV'):
+			for key in old_config['CV']:
+					if key in config['DEFAULT']:
+						config['DEFAULT'][key] = old_config['CV'][key]
+						
+		for section in config.sections():
+			if old_config.has_section(section):
+				for key in old_config[section]:
+					if key in config[section] and not key in config['DEFAULT']:
+						config[section][key] = old_config[section][key]
+	
+	with open(filename, 'w') as configfile:
+		config.write(configfile)
+	
+	return config
   
 if __name__ == "__main__":
 	create_config('cv.cfg')
