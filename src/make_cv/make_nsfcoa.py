@@ -94,8 +94,14 @@ def get_collaborator_list(config, years, output_format):
 	cur_grad_names['Start Date'] = cur_grad_names['Start Date'].apply(lambda x: x.year)
 	cur_grad_names['Year'] = year
 	
-	grad_list = pd.concat([cur_grad_names, grad_names], ignore_index=True, join="inner")
+	grad_list = pd.concat([cur_grad_names,grad_names], ignore_index=True, join="inner")	
+	
+	cnames= grad_list.columns
 	grad_list = grad_list[grad_list["Degree"].apply(lambda x: "PhD" in x)]
+	# Check if the filtered DataFrame is empty
+	if grad_list.empty:
+		# Reassign the column names from the original DataFrame
+		grad_list = pd.DataFrame(columns=cnames)
 	
 	converter = LatexNodes2Text()
 	for index, row in grad_list.iterrows():
