@@ -1,0 +1,20 @@
+% Specify you last name/first initial to have it be bold in the author list
+% if you have changed your name or if you need to highlight multiple authors, you can specify multiple names separated by a comma {Doe/J,Smith/J} 
+\mynames{Doe/J}
+
+%% Photo is only shown if "usePhoto" is true
+\setboolean{usePhoto}{true}
+
+\leftheader{%
+  {\Large\bfseries\sffamily Jane U.\ Doe, Ph.D.}\\
+ Somewhere University, Somewhere, XX 16753, (xxx) xxx-xxxx\\
+  \makefield{\faEnvelope[regular]}{\href{mailto:myemail@somewhere.edu}{myemail@somewhere.edu}}
+  \makefield{\faLinkedin}{\href{https://www.linkedin.com/in/copylinkhere/}{LinkedIn}}
+  \makefield{\faGlobe}{\href{https://mysite/}{Webpage}}
+}
+
+\rightheader{~}
+\ifthenelse{\boolean{usePhoto}}{
+\photo[r]{../PersonalData/photo} % Not sure why this can't be automatically found
+\photoscale{0.08}
+}{}

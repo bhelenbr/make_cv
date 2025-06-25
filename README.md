@@ -13,35 +13,33 @@ Once make\_cv is installed, you need to create the data directories and default 
 
 `make_cv -b <folder name>`
 
-The `-b` flag tells make\_cv to create a new data directory.  For example “`make_cv -b myData”` creates the default data folders and files in a folder called `myData` in the current working directory.
-
-The file `CV/cv.cfg` in the `myData` folder contains all of the configuration information.  This is a text file that can be edited with any text editor.  To use the Google Scholar features, you have to enter your Google ID.  To find this go to [Google Scholar](https://scholar.google.com) and click on “My profile” in the top left.  (If you don't have a public Google Scholar profile, follow [these instructions](https://scholar.google.com/intl/en/scholar/citations.html)). If you examine the url for your profile page it should have a section that looks like: user=m\_of3wYAAAAJ\&hl=en.  Your user id is the string after the \= sign up to but not including the &.  So in this case it is “m\_of3wYAAAAJ”.  Put this value into the `cv.cfg` file under “googleid”.
+The `-b` flag tells make\_cv to create a new data directory.  For example “`make_cv -b myData”` creates the default data folders and files in a folder called `myData` in the current working directory.  The folder “`make_cv”`in the `myData` folder contains subfolders for several different outputs.  To make the example cv, cd to “`make_cv/CV”`. In this folder is a text file called “`make_cv.cfg”.` This is a text file that can be edited with any text editor.  To use the Google Scholar features, you have to enter your Google ID.  To find this go to [Google Scholar](https://scholar.google.com) and click on “My profile” in the top left.  (If you don't have a public Google Scholar profile, follow [these instructions](https://scholar.google.com/intl/en/scholar/citations.html)). If you examine the url for your profile page it should have a section that looks like: user=m\_of3wYAAAAJ\&hl=en.  Your user id is the string after the \= sign up to but not including the &.  So in this case it is “m\_of3wYAAAAJ”.  Put this value into the `make_cv.cfg` file under “googleid”.
 
 Look through the folders and files created and add any additional data that you would like or leave it blank and that section will be ignored.  The format and usage of these files is described below.
 
-At the top of the file `CV/cv.tex` change the command \\boldname{Lastname}{F} to your last name and first initial to have your name bolded in the bibliography.  This file is also where you add your education and employment history.
+Edit the personal data in the files in the folder “`PersonalData”.` At the top of the file “`ContactInfo.tex”` change the command \\boldname{Lastname}{F} to your last name and first initial to have your name bolded in the bibliography.  The files “`Education.tex”`  and “`Employment.tex”` are where you add your education and employment history.
 
 Now use Google Scholar to get the bibliographic and citation information for your scholarly works:
 
-`make_cv -g -1 -c true`
+`make_cv -g -1`
 
-This will get everything and might take a while.  There are other import options (see below), but this is the easiest.  When it is finished it will create the file `CV/cv.pdf` that you should open to see the results.
+This will get everything and might take a while if you have a lot of publications.  There are other import options that might be faster (see below), but this is the easiest.  The flag “`-g -1”` tells make\_cv to get all years of citations using Google Scholar.   When it is finished it will create the file `CV/cv.pdf` that you should open to see the results.
 
 ### The Data
 
-The files created within the `mydata/CV` folder are  
-`contact_info.tex` – personal info for cv creation *(fill in your data)*  
-`cv.cfg` – configuration file  
-`cv.tex` – document that gets compiled by XeLaTeX to create (cv)  
-`education.tex` – educational history  *(fill in your data)*  
-`employment.tex` – employment history  *(fill in your data)*  
-`far_header.tex` – header file for activity report  
-`far.tex` – document that gets compiled by XeLaTeX to create activity report  
-`nsf2page.tex` – document to make a 2-page NSF cv (cannot be submitted to NSF anymore)   
-`photo.jpg` – personal photo *(provide photo or set usePhoto to false in contact\_info.tex)*  
-`referee.tex` – file to include list of references (delete file or rename if you don’t want that)  
-`settings.sty` – settings and commands for the cv creation (fonts, colors, symbols, etc…)  
-`web.tex` – file to create an .html list of publications with make\_web (not very tested yet)
+The files created within the `mydata/make_cv/` folder are  
+`PersonalData/ContactInfo.tex` – personal info for cv creation *(fill in your data)*  
+`PersonalData/Education.tex` – educational history  *(fill in your data)*  
+`PersonalData/Employment.tex` – employment history  *(fill in your data)*  
+`PersonalData/photo.jpg` – personal photo *(provide photo or set usePhoto to false in ContactInfo.tex)*  
+`PersonalData/reference.tex` – file to include list of references
+
+`CV/cv.tex` – document that gets compiled by `make_cv` to create cv  
+`FAR/far.tex` – document that gets compiled `make_far` to create faculty activity report  
+`Web/web.tex` – file to create web pages using `make_web`  
+`Collaborator/` folder to create an NSF collaborator list using `make_nsfcoa`
+
+`make_cv.cfg` – configuration file (in each folder).  The other files in the folders contain settings for XeLaTex that do not need to be modified.
 
 The data files created within the `mydata` folder are  
 `Awards/personal awards data.xlsx`  
@@ -63,7 +61,7 @@ Awards
 
 Proposals & Grants
 
-2. There is one excel file here `proposals & grants.xlsx`.  The only necessary fields are “Proposal\_ID”, “Sponsor”, “Allocated Amt”, “Total Cost”, “Funded?”, “Title”, and “Begin Date”, and “End Date”.   “Proposal” must be a unique identifier for each proposal.  “Sponsor” is the name of the funding agency.  “Allocated Amt” is the percent that should be allocated to you and “Total Cost” is the total dollar amount of the grant.  “Funded?” is a Y or N field that states whether the proposal was funded or not.  "Begin Date" is the start date for the proposed work.  “Submit Date” is the submission date.   The proposals are organized by proposal start date in the c.v. and faculty activity report.   make\_cv will sum up your allocated and total grant dollars and put that at the bottom of the grant section of the c.v.  It will do the same for the proposal dollars.  The field "Principal Investigators" is used when making an NSF collaborator list.
+2. There is one excel file here `proposals & grants.xlsx`.  The only necessary fields for the cv are “Proposal\_ID”, “Sponsor”, “Allocated Amt”, “Total Cost”, “Funded?”, “Title”, and “Begin Date” .  The field “Principal Investigators” is necessary if you want to make a NSF collaborator list.   “Proposal” must be a unique identifier for each proposal.  “Sponsor” is the name of the funding agency.  “Allocated Amt” is the percent that should be allocated to you and “Total Cost” is the total dollar amount of the grant.  “Funded?” is a Y or N field that states whether the proposal was funded or not.  "Begin Date" is the start date for the proposed work.  The proposals are organized by proposal begin date in the c.v. and faculty activity report.   make\_cv will sum up your allocated and total grant dollars and put that at the bottom of the grant section of the c.v.  It will do the same for the proposal dollars. 
 
 Scholarship
 
@@ -146,7 +144,7 @@ Teaching
 
 ### Configuration & Customization
 
-To use all of the features of make\_cv, some additional information must be provided.  The file `CV/cv.cfg` contains all of the configuration information.  As discussed above, you should put your Google Scholar ID here.  You can also add your ORCID and use the ORCID data to find publications.
+To use all of the features of make\_cv, some additional information must be provided.  The file `CV/make_cv.cfg` contains all of the configuration information.  As discussed above, you should put your Google Scholar ID here.  You can also add your ORCID and use the ORCID data to find publications.
 
 The other significant configuration that can be done with this file is to set the defaults for what sections of the cv make\_cv controls.  These are controlled by the entries under “CV”.  If a data file is empty or missing, make\_cv will automatically exclude it so you don’t need to turn off empty sections.  I often leave all the sections on, then use command line options (discussed below) to create a shorter c.v. when I need that.
 
@@ -165,7 +163,7 @@ The `make_cv` tool provides a range of command-line options to customize and aut
 | `-I {true,false}` | Use `bibtexautocomplete` to search for and add missing DOIs to the `.bib` file. |
 | `-e {SECTION}` | Exclude a section from the CV. Sections include: `Grants`, `PersonalAwards`, `Conference`, `GradAdvisees`, `Proposals`, `UndergradResearch`, `Reviews`, `Refereed`, `Invited`, `Service`, `Teaching`, `Book`, `Patent`, `StudentAwards`, `Journal`. |
 | `-d {PATH TO DATA DIRECTORY}` | Override the default data directory location specified in the config file. |
-| `-f {PATH TO CONFIGURATION FILE}` | Specify a configuration file. Defaults to `cv.cfg`. |
+| `-f {PATH TO CONFIGURATION FILE}` | Specify a configuration file. Defaults to `make_cv.cfg`. |
 | `-F {NAME}` | Override data file location in config file for specific sections.  Format is `-F NAME=<file name>` where NAME can be `Scholarship`, `PersonalAwards`, `StudentAwards`, `Service`, `Reviews`, `CurrentGradAdvisees`, `GradTheses`, `UndergradResearch`, `Teaching`, `Proposals`, `Grants`. |
 | `-S {SCRAPERID}` | Specify the `ScraperID` (optional, but helps avoid Google blocking requests). |
 | `-s {true,false}` | Use scraper to avoid Google blocking. |
@@ -174,12 +172,14 @@ The `make_cv` tool provides a range of command-line options to customize and aut
 | `-T`  | Include the last update timestamp at the bottom of the CV. If the flag is passed, it adds a timestamp to indicate the last update of the CV. |
 | `-orc {NUMBER OF YEARS}` | Search for and add new entries from ORCID to the `.bib` file for the past specified number of years.  Use `-orc -1` to search for all available entries. Defaults to 1 if used without specifying a number. |
 | `-orcid {ORCID}` | Override `ORCID` specified in config file. |
+| `-y` | Set number of years of data to use in generating cv or far or collaborator list |
+| `-n` | No clean up \- leave files generated by XeLaTeX (for debugging purposes) |
 
 For example, the following will look for any new google scholar entries in the 4 last years, help you categorize them, then update the citation counts using google scholar, update the student markers, and exclude the proposals and conferences section when making a c.v.
 
 `make_cv -g 4 -c true -m true -e Conference -e Proposals`
 
-Most of the advanced features are by default off, but you can turn them on by default by editing the cv.cfg file in your CV folder.  I usually only use the advanced features intermittently so I leave the advanced features off by default and then use the command line options when I need to use them.
+Most of the advanced features are by default off, but you can turn them on by default by editing the make\_cv.cfg file in your CV folder.  I usually only use the advanced features intermittently so I leave the advanced features off by default and then use the command line options when I need to use them.
 
 The first time you run make\_cv it will find unclassified entries in your .bib file and ask you to classify them.  This will also happen if you add an entry from some other search source and it is not classified.  This modifies the keywords in the .bib file.  The categories determine in what sections that item will appear in the c.v.  If there is something appearing in the wrong section, use Bibdesk or Jabref to put the entry in the correct category.  (A drag and drop operation in BibDesk.  See Appendix F for Jabref instructions).  One of the categories is ignore, which should be chosen if you want to keep the entry in the .bib file but you don’t want it to appear in the c.v.
 
@@ -187,13 +187,13 @@ If you add `-g`, it will use Google Scholar to find any entries that have appear
 
 If you add `-m true`, it uses the files “undergraduate research data.xlsx”, “thesis data.xlsx” and “current student data.xlsx” to find the first initial and last names of all of your student advisees.  It then adds a marker after those names in the .bib file.  The two markers are \\us for undergraduate student and \\gs for graduate student.  The actual symbol that these commands create is defined in the `settings.sty` file.  Currently, make\_cv is configured to mark these authors in perpetuity, meaning that if you have a student who was an undergraduate advisee that became a graduate advisee, then you published with them 10 years later, that author will still receive both an undergraduate and a graduate advisee student marker.  On occasion, you may have students with the same last name & first initial.  To disambiguate these situations, you can append the latex command \\un{\<letter\>} to the last name wherever it appears (typically in the bib file & the above .xls files) where letter is just a unique letter.  This will disappear on typesetting but allows one to force a unique match i.e J Smith\\un{a} will only match to lastnames of Smith\\un{a} in the .bib file.
 
-If you add `-M false`, it will redefine the \\us and \\gs markers so that no markers are produced in the file. This is also configurable in the `cv.cfg` file with the entry includestudentmarkers.
+If you add `-M false`, it will redefine the \\us and \\gs markers so that no markers are produced in the file. This is also configurable in the `make_cv.cfg` file with the entry includestudentmarkers.
 
 If you add `-c true`, it will use google scholar to update/add the field “citations” in the .bib file.  This is the number of times this article has been cited.  It will appear in brackets after the bibliographic entry in the c.v.  i.e.
 
 19. N. Bagheri-Sadeghi+, B. T. Helenbrook, and K. D. Visser. “Ducted Wind Turbine Optimization and Sensitivity to Rotor Position”, Wind Energy Science 3, no. 1 (Apr. 2018), pp. 221–229. doi: 10.5194/wes-3-221-2018. \[42\]
 
-This can also be turned on and off with `-C` flag or by using the entry includecitationcounts in the `cv.cfg` file.
+This can also be turned on and off with `-C` flag or by using the entry includecitationcounts in the `make_cv.cfg` file.
 
 `-I true` will use bibtexautocomplete to search for DOI’s that are missing from the .bib file.  It will add the doi then add a record btacqueried to the .bib file so it will never try to find the doi for that entry again.
 

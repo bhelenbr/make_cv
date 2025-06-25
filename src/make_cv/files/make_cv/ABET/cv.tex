@@ -1,0 +1,102 @@
+%%%%%%%%%%%%%%%
+% LianTze Lim (liantze@gmail.com)
+% This CV example/template is based on my own
+% CV which I (lamely attempted) to clean up, so that
+% it's less of an eyesore and easier for others to use.
+%
+% 23 Oct, 2022
+% 24 Aug, 2024 -- Updated X (Twitter) icon
+%
+% Brian Helenbrook (bhelenbr@clarkson.edu)
+% 27 Jan. 2025 -- I took what LianTze had done and added
+% some additional features (headers in the bibliography & some more table examples, and a pdf table of contents)
+% add made this compatible with my make_cv python utility that auto-generates the a lot of the rubric data
+% https://pypi.org/project/make-cv/
+
+%%%%%%%%%%%%%%%
+%APPENDIX B – ABET FACULTY VITAE
+%The following is a suggested format for the faculty vitae.  A different format may be used if all identified content areas are included in a format that is consistent for all vitae within the Self-Study Report.  Maximum length is three pages per vita.
+
+%Vitae must be readily readable and digitally accessible with one-inch or larger margins, six or fewer lines of text per inch, and a readable font such as Arial (not Arial Narrow), Courier New, or Palatino Linotype at a font size of 10 points or larger; Times New Roman at a font size of 11 points or larger; or Computer Modern family of fonts at a font size of 11 points or larger.
+
+%Required Content Areas
+
+%Name 
+
+%Education – degree, discipline, institution, year
+
+%Academic and Professional Experience – institution or entity, rank (if relevant), title, when (e.g., 2002-2007), full-time or part-time
+
+%Professional credentials, certifications, or licensing
+
+%Professional development activities (includes conference attendance)
+
+%Contributions to the discipline (e.g., service, publications or presentations)
+
+\documentclass[letterpaper,11pt,english]{curve}
+
+% Uncomment to enable Chinese; needs XeLaTeX
+% \usepackage{ctex}
+
+% Default biblatex style used for the publication list is APA6. If you wish to use a different style or pass other options to biblatex you can change them here. 
+\PassOptionsToPackage{style=ieee,sorting=ydnt,uniquename=init,defernumbers=true,giveninits=true,maxnames=20,eprint=false,isbn=false}{biblatex}
+
+% Most commands and style definitions are in settings.sty.
+\usepackage{settings}
+
+%% Add Publication List
+\addbibresource{../../Scholarship/scholarship.bib}
+
+\flavor{abet}
+
+\input{ContactInfo.abet.tex}
+
+\begin{document}
+% Turn on logging
+\scrollmode
+
+\makeheaders[c]
+
+\makerubric{Education}
+
+\makerubric{Employment}
+
+\makerubric{Credentials}
+
+\includeCheck{ProfDevelopment}{
+\makerubric{ProfDevelopment}
+}
+
+\includeCheck{Conference}{
+{\sffamily Recent Conference Presentations}
+\input{Tables_cv/Conference.tex}
+}
+
+\includeCheck{Service}{
+\makerubric{Service}
+}
+
+\makerubrichead{Recent Contributions to the Discipline}
+
+\includeCheck{Journal}{
+{\sffamily Journal Papers}
+\input{Tables_cv/Journal.tex}
+}
+
+\includeCheck{Book}{
+{\sffamily Books \& Book Chapters}
+\input{Tables_cv/Book.tex}
+}
+
+\includeCheck{Patent}{
+{\sffamily Patents}
+\input{Tables_cv/Patent.tex}
+}
+
+\IfFileExists{timestamp.tex}{\input{timestamp.tex}}
+
+\end{document}
+
+
+
+

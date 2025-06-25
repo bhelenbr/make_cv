@@ -13,7 +13,7 @@ from .stringprotect import str2latex
 
 names = ["Department","School","University","Professional","Community"]
 
-def personal_awards2latex(f,years,inputfile):
+def personal_awards2latex(f,years,inputfile,max_rows=-1):
 	source = inputfile # file to read
 	try:
 		source_data = pd.read_excel(source,sheet_name="Data")
@@ -41,6 +41,10 @@ def personal_awards2latex(f,years,inputfile):
 		#print(df.columns)
 		nrows = df.shape[0]
 		ncols = df.shape[1]
+		
+		if max_rows > 0 and nrows > max_rows:
+			nrows = max_rows
+			
 		total += nrows
 		if nrows > 0: 
 			f.write("\\subrubric{" +name +"}\n")

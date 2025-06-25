@@ -11,6 +11,7 @@ sections = {'PersonalAwards': 'true',
 				'Invited': 'true',
 				'Service': 'true',
 				'Reviews': 'true',
+				'ProfDevelopment': 'false',
 				'StudentAwards': 'true',
 				'GradAdvisees': 'true',
 				'UndergradResearch': 'true',
@@ -18,7 +19,8 @@ sections = {'PersonalAwards': 'true',
 				'Grants': 'true',
 				'Proposals': 'true'} 
 
-defaults = {'data_dir': '..',
+defaults = {'data_dir': '../..',
+				'bio_dir': '../PersonalData',
 				'GoogleID': '',
 				'ScraperID': '',
 				'UseScraper': 'false',
@@ -26,14 +28,15 @@ defaults = {'data_dir': '..',
 				'UpdateStudentMarkers': 'false',
 				'GetNewScholarshipEntries': '0',
 				'SearchForDOIs': 'false',
-	   			'ORCID': '',
-	   			'GetNewScholarshipEntriesusingOrcid':'0'}
+				'ORCID': '',
+				'GetNewScholarshipEntriesusingOrcid':'0'}
 
 files = {'ScholarshipFile': 'Scholarship/scholarship.bib',
 			'PersonalAwardsFile': 'Awards/personal awards data.xlsx',
 			'StudentAwardsFile': 'Awards/student awards data.xlsx',
 			'ServiceFile': 'Service/service data.xlsx',
 			'ReviewsFile': 'Service/reviews data.json',
+			'ProfDevelopmentFile': 'Service/professional development data.xlsx',
 			'CurrentGradAdviseesFile':'Scholarship/current student data.xlsx',
 			'GradThesesFile': 'Scholarship/thesis data.xlsx',
 			'UndergradResearchFile': 'Service/undergraduate research data.xlsx',
@@ -41,18 +44,13 @@ files = {'ScholarshipFile': 'Scholarship/scholarship.bib',
 			'ProposalsFile': 'Proposals & Grants/proposals & grants.xlsx',
 			'GrantsFile': 'Proposals & Grants/proposals & grants.xlsx'} 
 			
-cv_keys = {'IncludeStudentMarkers': 'true',
+cv_keys = {'Years': '-1',
+			'LaTexFile':'cv.tex',
+			'IncludeStudentMarkers': 'true',
 			'IncludeCitationCounts': 'true',
-	   		'ShortTeachingTable' : 'true', 
-	   		'Timestamp': 'false'}
-			
-far_keys = {'Years': '3',
-			'IncludeStudentMarkers': 'true',
-			'IncludeCitationCounts': 'true'}
-			
-web_keys = {'Years': '-1',
-			'IncludeStudentMarkers': 'true',
-			'IncludeCitationCounts': 'true'}
+			'ShortTeachingTable' : 'true', 
+			'Timestamp': 'false',
+			}
 
 def verify_config(config):
 	for key in defaults:
@@ -65,7 +63,7 @@ def verify_config(config):
 			print(key +' is missing from config file')
 			return False
 	
-	for sec in ['CV','FAR','WEB']:	
+	for sec in ['CV']:	
 		if not config.has_section(sec):
 			print(sec +' is missing from config file') 
 			return False
@@ -74,19 +72,16 @@ def verify_config(config):
 				if not key in config[sec].keys():
 					print(key +' is missing from config file')
 					return False
+				if not key +"Years" in config[sec].keys():
+					print(key +'Years is missing from config file')
+					return False
+				if not key +"Count" in config[sec].keys():
+					print(key +'Count is missing from config file')
+					return False
+				
 			
 	for key in cv_keys:
 		if not key in config['CV'].keys():
-			print(key +' is missing from config file')
-			return False
-	
-	for key in far_keys:
-		if not key in config['FAR'].keys():
-			print(key +' is missing from config file')
-			return False
-			
-	for key in web_keys:
-		if not key in config['WEB'].keys():
 			print(key +' is missing from config file')
 			return False
 	
@@ -95,9 +90,9 @@ def verify_config(config):
 def create_config(filename, old_config=None):
 	config = configparser.ConfigParser()
 	config['DEFAULT'] = defaults | files	
-	config['CV'] = cv_keys | sections
-	config['FAR'] = far_keys | sections
-	config['WEB'] = web_keys | sections
+	sectionYears = {str(key) + 'Years': "-1" for key in sections}
+	sectionCounts = {str(key) + 'Count': "-1" for key in sections}
+	config['CV'] = cv_keys | sections | sectionYears | sectionCounts
 
 	if not old_config == None:
 		if old_config.has_section('CV'):

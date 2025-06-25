@@ -1,17 +1,17 @@
 %%%%%%%%%%%%%%%
+% LianTze Lim (liantze@gmail.com)
 % This CV example/template is based on my own
 % CV which I (lamely attempted) to clean up, so that
 % it's less of an eyesore and easier for others to use.
 %
-% LianTze Lim (liantze@gmail.com)
 % 23 Oct, 2022
 % 24 Aug, 2024 -- Updated X (Twitter) icon
 %
+% Brian Helenbrook (bhelenbr@clarkson.edu)
 % 27 Jan. 2025 -- I took what LianTze had done and added
 % some additional features (headers in the bibliography & some more table examples, and a pdf table of contents)
 % add made this compatible with my make_cv python utility that auto-generates the a lot of the rubric data
 % https://pypi.org/project/make-cv/
-% Brian Helenbrook (bhelenbr@clarkson.edu)
 
 \documentclass[letterpaper,11pt,english]{curve}
 
@@ -24,43 +24,36 @@
 % Most commands and style definitions are in settings.sty.
 \usepackage{settings}
 
-%% Only needed if you want a Publication List
-\addbibresource{../Scholarship/scholarship.bib}
+%% For publication List
+\addbibresource{../../Scholarship/scholarship.bib}
 
-\input{contact_info}
-
-\rightheader{~}
-\ifthenelse{\boolean{usePhoto}}{
-\photo[r]{photo}
-\photoscale{0.13}
-}{}
+\input{ContactInfo}
 
 \begin{document}
 % Turn on logging
-\scrollmode
+%\scrollmode
 
 \makeheaders[c]
 
 % education
-\keyalignment{l}
-\IfFileExists{education.tex}{\makerubric{education}}
+\makerubric{Education}
 
 % employment
-\keyalignment{l}
-\IfFileExists{employment.tex}{\makerubric{employment}}
+\makerubric{Employment}
 
-\keyalignment{r}
-\IfFileExists{skills.tex} {\makerubric{skills}}
+\includeCheck{Admin}{
+\makerubrichead{Administrative Accomplishments}
+These are primarily accomplishments from my time as chair, and also as a member of the ``Task Force for Reimagining Clarkson''.
+\input{admin.tex}
+}
 
-\keyalignment{r}
-\IfFileExists{memberships.tex} {\makerubric{memberships}}
+\includeCheck{Credentials}{
+\makerubric{Credentials}}
 
+\includeCheck{PersonalAwards}{
 \keyalignment{r}
-\ifthenelse{\boolean{PersonalAwards}}{\IfFileExists{personal_awards.tex}{
-\stepcounter{BookmarkCounter}
-\pdfbookmark[-1]{Personal Awards}{note\theBookmarkCounter}
-\makerubric{personal_awards}
-}}{}
+\makerubric{PersonalAwards}
+}
 
 \makerubrichead{Research Publications}
 In the following a + indicates a graduate advisee, and a * indicates an undergraduate advisee.  The number in brackets is the number of citations as reported by Google Scholar. \par \vspace\rubricspace
@@ -91,48 +84,47 @@ In the following a + indicates a graduate advisee, and a * indicates an undergra
 \printbibliography[heading={contbibnumbered},title={Invited Talks},keyword=invited]
 }{}
 
-\ifthenelse{\boolean{Service}}{\IfFileExists{service.tex}{
-\makerubric{service}
-}}{}
+\includeCheck{Service}{
+\makerubric{Service}
+}
 
-\ifthenelse{\boolean{Reviews}}{\IfFileExists{reviews.tex} {
+\includeCheck{Reviews}{
 \makerubrichead{Reviewing Activity}
-\input{reviews}
-}}{}
+\input{Reviews}
+}
 
-\ifthenelse{\boolean{StudentAwards}}{\IfFileExists{student_awards.tex} {
-\stepcounter{BookmarkCounter}
-\pdfbookmark[-1]{Student Awards}{note\theBookmarkCounter}
-\makerubric{student_awards}
-}}{}
+\includeCheck{StudentAwards}{
+\makerubric{StudentAwards}
+}
 
-\ifthenelse{\boolean{GradAdvisees}}{\IfFileExists{thesis.tex} {
+\includeCheck{GradAdvisees}{
 \makerubrichead{Graduate Advisees}
-\input{thesis.tex}
-}}{}
+\input{GradAdvisees.tex}
+}
 
-\ifthenelse{\boolean{UndergradResearch}}{\IfFileExists{undergraduate_research.tex} {
+\includeCheck{UndergradResearch}{
 \makerubrichead{Undergraduate Research}
-\input{undergraduate_research.tex}
-}}{}
+\input{UndergradResearch.tex}
+}
 
-\ifthenelse{\boolean{Teaching}}{\IfFileExists{teaching.tex} {
+\includeCheck{Teaching}{
 \makerubrichead{Teaching}
-This table includes all classes taught that had reported teaching evaluations.  Question 19 is ``Overall, how would you rate this instructor?''  Question 20 is ``Overall, how would you rate this course?''. The scores are out of 5 and the University average evaluation is approximately 4.1. 
-\input{teaching.tex}
-}}{}
+This table includes all classes taught that had reported teaching evaluations.  Question 19 is ``Overall, how would you rate this instructor?''  %Question 20 is ``Overall, how would you rate this course?''. 
+The scores are out of 5 and the University average evaluation is approximately 4.1. 
+\input{Teaching.tex}
+}
 
-\ifthenelse{\boolean{Grants}}{\IfFileExists{grants.tex} {
+\includeCheck{Grants}{
 \makerubrichead{Grants}
-\input{grants}
-}}{}
+\input{Grants}
+}
 
-\ifthenelse{\boolean{Proposals}}{\IfFileExists{proposals.tex} {
+\includeCheck{Proposals}{
 \makerubrichead{Proposals}
-\input{proposals}
-}}{}
+\input{Proposals}
+}
 
-%\makerubric{referee}
+%\makerubric{references}
 
 \IfFileExists{timestamp.tex}{\input{timestamp.tex}}
 

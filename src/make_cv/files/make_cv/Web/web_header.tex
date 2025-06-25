@@ -1,14 +1,15 @@
 \documentclass[10pt]{article}
 \pagestyle{empty}               % no page numbers, thanks.
-\usepackage{hyperref}
-\usepackage{ltablex}
+%\usepackage{hyperref}
+\usepackage{tabularx}
 \usepackage{ifthen}
 \usepackage[tiny]{titlesec}
-\usepackage[backend=biber,style=numeric-comp,sorting=none,giveninits=true,maxnames=20,eprint=false,isbn=false]{biblatex}
+\usepackage[backend=biber,style=numeric-comp,sorting=none,giveninits=true,maxnames=20,eprint=false,isbn=false,defernumbers=true]{biblatex}
 \usepackage{xstring}
+\usepackage{textalpha} % <--- Greek letters in text
 
 % Add bib file to make bibliography information
-\addbibresource{../Scholarship/scholarship.bib}
+\addbibresource{../../Scholarship/scholarship.bib}
 
 
 % Set page size
@@ -20,11 +21,6 @@
 \headheight = 0.0 in
 \headsep = 0.0 in
 \parindent= 0 in  
-
-% Make sure tables always span the page width
-\keepXColumns
-% Remove annoying line space before table
-\setlength\LTpre{0in}
 
 % This puts a little extra space in the  tables
 \setlength{\extrarowheight}{2.5pt}
@@ -48,9 +44,22 @@
 
 \newcommand{\printhead}[1]{#1}
 \newcommand{\conthead}[1]{#1 (continued)}
+%\defbibheading{contbibnumbered}{{\bf #1\label{#1}}}
+\defbibheading{contbibnumbered}{\section{#1\label{#1}}}
+\newcommand{\tablecontinue}[1]{}
+\newcommand{\tablehead}{\\}
 
-\newcommand{\tablecontinue}[1]{\multicolumn{4}{l}{\conthead{#1}}\endhead\cline{2-4}}
-\newcommand{\tablehead}{\endfirsthead}
+ % Implement the colored circle in the bibliography
+\newcounter{bibitem}
+\AtBeginBibliography{\setcounter{bibitem}{1}}
+\iffieldformatundef{labelnumberwidth}{%
+  % if author-year style
+  \AtEveryBibitem{\thebibitem. \stepcounter{bibitem}}%
+}{%
+  % if numeric style
+  \DeclareFieldFormat{labelnumberwidth}{\thebibitem.}%
+  \AtEveryBibitem{\stepcounter{bibitem}}%
+}
 
 % Remove some fields from journal articles
 \AtEveryCitekey{\ifentrytype{article}{\clearfield{url}\clearfield{issn}\clearfield{review}\clearfield{series}\clearfield{eprint}}{}}
@@ -88,6 +97,37 @@
 \printfield{citations}%
 \finentry}
 \DeclareFieldFormat{citations}{\mkbibbrackets{#1}}
+
+% Change enumerate environment so that item's don't break across pages
+\let\saveenumerate\enumerate
+\let\saveendenumerate\endenumerate
+
+\renewenvironment{enumerate}{%
+    \saveenumerate
+    \let\olditem\item
+    \newcommand{\closestep}{}%
+    \renewcommand{\item}{%
+        \closestep
+        \olditem
+        \minipage[t]{\linewidth}%
+        \renewcommand{\closestep}{\endminipage}%
+    }%
+}{%
+    \closestep\saveendenumerate%
+}
+
+% Define the cvsection command
+% optional argument is name of boolean and filename (defaults to second argument)
+% second argument is the text to put in the pdf table of contents
+% Third argument is the content to include  
+\NewDocumentCommand\includeCheck{O{#2} m m}{
+\ifthenelse{\boolean{#1}}{%
+  \IfFileExists{#2.tex}{%
+        #3%
+  }%
+  }{}%
+ }
+
 
 \newboolean{Journal}
 \newboolean{Refereed}

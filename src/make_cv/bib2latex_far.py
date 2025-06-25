@@ -15,8 +15,6 @@ from datetime import date
 import argparse
 import numpy as np
 
-categories = ["journal","conference","patent","book","invited","refereed"]
-
 def getyear(paperbibentry):
 	if "year" in paperbibentry.keys(): 
 		return(int(paperbibentry["year"]))
@@ -24,10 +22,12 @@ def getyear(paperbibentry):
 		return(int(paperbibentry["date"][:4]))
 	return(0)
 
-def bib2latex_far(f,years,inputfile):
+def bib2latex_far(f,inputfile,keywords,years=-1,max_pubs=-1):
 
-	nrecord = np.zeros(len(categories))
-
+	nrecord = 0
+	if max_pubs < 0:
+		max_pubs = sys.maxsize
+		
 	# homogenize_fields: Sanitize BibTeX field names, for example change `url` to `link` etc.
 	tbparser = BibTexParser(common_strings=True)
 	tbparser.homogenize_fields = False  # no dice
@@ -48,8 +48,7 @@ def bib2latex_far(f,years,inputfile):
 	else:
 		begin_year = 0
 
-	for count,etype in enumerate(categories):
-		f[count].write("\\begin{enumerate}\n")
+	f.write("\\begin{enumerate}\n")
 
 	for icpbe, paperbibentry in enumerate(bib_database.entries):
 		year = getyear(paperbibentry)
@@ -58,14 +57,17 @@ def bib2latex_far(f,years,inputfile):
 	
 		if "keywords" in paperbibentry.keys():
 			kword = str(paperbibentry["keywords"])
-			for count,etype in enumerate(categories):
+			for count,etype in enumerate(keywords):
+				etype = etype.strip()
 				if kword.find(etype) > -1:
-					f[count].write("\\item\n\\fullcite{"+paperbibentry["ID"]+"}\n")
-					nrecord[count] += 1
-
-	for count,etype in enumerate(categories):
-		f[count].write("\\end{enumerate}\n")
-
+					f.write("\\item\n\\fullcite{"+paperbibentry["ID"]+"}\n")
+					nrecord += 1
+					break
+		
+		if (nrecord == max_pubs):
+			break
+	
+	f.write("\\end{enumerate}\n")
 	return(nrecord)
 	
 if __name__ == "__main__":

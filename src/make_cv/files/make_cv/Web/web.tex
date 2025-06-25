@@ -1,0 +1,79 @@
+\input{web_header.tex}
+
+\title{My Web Page}
+\author{}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\nocite{*}
+
+\ifthenelse{\boolean{Journal}}{
+\printbibliography[heading={contbibnumbered},title={Journal Articles},keyword=journal]
+}{}
+
+\ifthenelse{\boolean{Refereed}}{
+\printbibliography[heading={contbibnumbered},title={Refereed Conference Papers},keyword=refereed]
+}{}
+
+
+\ifthenelse{\boolean{Book}}{
+\printbibliography[heading={contbibnumbered},title={Book Chapters},keyword=book]
+}{}
+
+\ifthenelse{\boolean{Patent}}{
+\printbibliography[heading={contbibnumbered},title={Patents},keyword=patent]
+}{}
+
+\ifthenelse{\boolean{Conference}}{
+\printbibliography[heading={contbibnumbered},title={Conference Presentations},keyword=conference]
+}{}
+
+\ifthenelse{\boolean{Invited}}{
+\printbibliography[heading={contbibnumbered},title={Invited Talks},keyword=invited]
+}{}
+
+\includeCheck{StudentAwards}{
+\section{STUDENT AWARDS}
+\input{StudentAwards.tex}
+}
+
+\includeCheck{Service}{
+\section{SERVICE}
+\input{Service.tex}
+}
+
+\includeCheck{Reviews}{
+\section{REVIEWING}
+\input{Reviews.tex}
+}
+
+\includeCheck{GradAdvisees}{
+\section{GRADUATE ADVISEES}
+\input{GradAdvisees.tex}
+}
+
+\includeCheck{UndergradResearch}{
+\section{UNDERGRADUATE RESEARCH}
+\input{UndergradResearch.tex}
+}
+
+\includeCheck{Teaching}{
+\section{TEACHING}
+This table includes all classes taught that had reported teaching evaluations.  Question 19 is ``Overall, how would you rate this instructor?''  Question 20 is ``Overall, how would you rate this course?''. The scores are out of 5 and the University average evaluation is approximately 4.1. 
+\input{Teaching.tex}
+}
+
+\includeCheck{Grants}{
+\section{GRANTS}
+\input{Grants.tex}
+}
+
+\includeCheck{Proposals}{
+\section{PROPOSALS}
+\input{Proposals.tex}
+}
+
+\end{document}
+

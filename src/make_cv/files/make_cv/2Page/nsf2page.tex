@@ -1,0 +1,114 @@
+%\chapter{Introduction} \label{Chap:Intro}
+\documentclass[11pt]{article}
+\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{tabularx}
+\usepackage{ltablex}
+\usepackage{hyperref}
+\usepackage[backend=biber,style=numeric-comp,sorting=none,giveninits=true,maxnames=20]{biblatex}
+\def\R2Lurl#1#2{\mbox{\href{#1}{\tt #2}}} 
+
+\textwidth = 6.5 in
+\textheight = 9 in
+\oddsidemargin = 0.0 in
+\evensidemargin = 0.0 in
+\topmargin = 0.0 in
+\headheight = 0.0 in
+\headsep = 0.0 in
+\baselineskip = 0.0in
+
+\keepXColumns
+\AtEveryCitekey{\ifentrytype{article}{\clearfield{url}\clearfield{issn}\clearfield{review}\clearfield{series}\clearfield{eprint}}{}}
+\AtEveryCitekey{\ifentrytype{misc}{\clearfield{url}\clearfield{issn}\clearfield{review}\clearfield{series}\clearfield{eprint}}{}}
+\renewbibmacro{in:}{}
+
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+\newcolumntype{P}{>{\centering\arraybackslash}p}
+
+\addbibresource{../Scholarship/scholarship.bib}
+
+\begin{document}
+\begin{tabularx}{\textwidth}{@{\hspace{0pt}}>{\raggedright\arraybackslash}X >{\centering\arraybackslash}X >{\raggedleft\arraybackslash}X}
+\tiny Effective 01/30/2023 & \tiny NSF BIOGRAPHICAL SKETCH &\tiny OMB-3145-0058
+\end{tabularx}
+\vspace{-0.8\baselineskip}
+\begin{tabularx}{\linewidth}{@{\hspace{0pt}}X}
+{\bf \underline{IDENTIFYING INFORMATION}:} \\ \hline
+NAME: Crabby, Patty \\ \hline
+POSITION TITLE: Professor \\ \hline
+\underline{PRIMARY ORGANIZATION AND LOCATION}: Somewhere University, Cityville, NY, United States \\ \hline
+\end{tabularx}
+\vspace{-0.8\baselineskip}
+\noindent
+{\bf \underline{Professional Preparation}:}
+\vspace{-0.8\baselineskip}
+\begin{tabularx}{\linewidth}{Y|P{0.165\linewidth}|c|P{0.213\linewidth}} \hline
+\tiny
+ORGANIZATION AND LOCATION &  \tiny   \centerline{DEGREE} \centerline{(if applicable)}  & \tiny RECEIPT DATE        &  \tiny FIELD OF STUDY          \\ \hline
+MyLast University, Boron, CA, United States & Postdoctoral Fellow &  1998 - 2000 & Two-Phase Flow \\
+MySecond University, Princeton, NJ United States & PhD & 1992 - 1998 & lasers and stuff  \\
+MyFirst University, UTown, IN, United States & BS & 05/1991 & Mechanical Engineering \\
+\end{tabularx}
+
+\noindent
+{\bf \underline{Appointments and Positions}}
+\vspace{-0.8\baselineskip}
+\begin{tabularx}{\linewidth}{@{\hspace{0pt}}lX}
+2000 - present & Professor, ATinyGreat University, Mechanical and Aeronautical Engineering, CO, United States \\
+2018 - present & Chair, Smith, Mechanical and Aeronautical Engineering, Potsdam, NY, United States \\
+1991 - 1992 & Design Engineer, Trinkets Co., Laramie, WY, United States 
+\end{tabularx}
+
+\noindent
+{\bf \underline{Products}} \\
+{\em \underline{Products Most Closely Related to the Proposed Project}}
+\begin{enumerate}
+\item
+\fullcite{Meyer:2017}
+\item
+\fullcite{Jia:2016}
+\item
+\fullcite{Jia:2014a}
+\item
+\fullcite{Venters:2012}
+\item
+\fullcite{Zhang:2009}
+\end{enumerate}
+
+\noindent
+{\em \underline{Other Significant Products, Whether or Not Related to the Proposed Project}}
+\begin{enumerate}
+\item
+\fullcite{Cheng:2013}
+\item
+\fullcite{Bagheri-Sadeghi:2022d}
+\item
+\fullcite{Fabiyi:2022}
+\item
+\fullcite{Bagheri-Sadeghi:2022c}
+\item
+\fullcite{Pirnia:2021}
+\end{enumerate}
+
+\noindent
+{\bf \underline{Synergistic Activities}}
+\vspace{-0.4\baselineskip}
+\begin{enumerate}
+\item Helping people across the street.
+\item I don't know what
+\item Creating world peace.
+\item Cooking dinner.
+\end{enumerate}
+
+\noindent
+{\bf Certification:}\\
+When the individual signs the certification on behalf of themselves, they are certifying that the information is current, accurate, and complete. This includes, but is not limited to, information related to domestic and foreign appointments and positions. Misrepresentations and/or omissions may be subject to prosecution and liability pursuant to, but not limited to, 18 U.S.C. §§ 287, 1001, 1031 and 31 U.S.C. §§ 3729-3733 and 3802.
+
+\vspace{\baselineskip}
+\noindent
+Certified by Crabby, Patty in SciENcv on 2023-09-04 13:13:36
+
+
+\end{document}

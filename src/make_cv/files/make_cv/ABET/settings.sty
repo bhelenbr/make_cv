@@ -1,12 +1,3 @@
-%%%%%%%%%%%%%%%
-% This CV example/template is based on my own
-% CV which I (lamely attempted) to clean up, so that
-% it's less of an eyesore and easier for others to use.
-%
-% LianTze Lim (liantze@gmail.com)
-% 23 Oct, 2022
-% 24 Aug, 2024 -- added simpleicons to provide X-twitter icon
-
 \usepackage{ifxetex,ifluatex}
 \newif\ifxetexorluatex
 \ifxetex
@@ -38,9 +29,6 @@
 \RequirePackage{csquotes} % for formatting quotes (recommended for babel)
 \RequirePackage[colorlinks=true,allcolors=blue,breaklinks=true]{hyperref} % I link the links to be blue so people know they are links make black if you don't like that
 
-\def\input@path{{Tables_cv/}} % Add folder to file search path
-%or: \def\input@path{{/path/to/folder/}{/path/to/other/folder/}}
-
 % \geometry{left=1cm,right=1cm,top=1.5cm,bottom=1.5cm} % Change the page margins if you want
 
 %%%%%%%%%% STYLE CHANGES TO CURVE FORMATTING %%%%%
@@ -48,14 +36,11 @@
 \ifxetexorluatex % If you're using XeLaTeX or LuaLaTeX
   \usepackage{fontspec} 
   %% You can use \setmainfont etc; I'm just using these font packages here because they provide OpenType fonts for use by XeLaTeX/LuaLaTeX anyway
-  %\usepackage[p,osf,swashQ]{cochineal}
   \usepackage[medium,bold]{cabin}
-  \usepackage[varqu,varl,scale=0.9]{zi4}
 \else % If you're using pdfLaTeX or latex
   \usepackage[T1]{fontenc}
   \usepackage[p,osf,swashQ]{cochineal}
   \usepackage{cabin}
-  \usepackage[varqu,varl,scale=0.9]{zi4}
 \fi
 
 % Change the colours if you want
@@ -80,6 +65,10 @@
 \newcounter{rowcnt}
 \newcommand\rownum{\ifnumequal{\value{rowcnt}}{0}{}{\circlesmall{\therowcnt}}\stepcounter{rowcnt}}
 \AtEndEnvironment{tabularx}{\setcounter{rowcnt}{0}}
+% Make sure tables always span the page width
+%\keepXColumns
+% Remove annoying line space before table
+%\setlength\LTpre{0in}
 
 % Implement the rubric style font & spacing
 \headerscale{1}
@@ -90,16 +79,22 @@
 \setlength{\rubricafterspace}{-3pt}
 \setlength{\subrubricspace}{0pt}
 \setlength{\subrubricbeforespace}{20pt}
-\def\@@rubrichead#1{%
-  \begin{tikzpicture}[baseline]%\
-  \shade[left color=SwishLineColour!60!white, right color=white] rectangle (\@almosttextwidth,2.5pt);
-  \node[font={\@rubricfont},inner sep=0pt,text ragged,anchor=south west,text depth=.5ex,text height=1.5ex] at (1pt,2pt) {#1};
-  \end{tikzpicture}%
+
+%\def\@@rubrichead#1{%
+%  \begin{tikzpicture}[baseline]%\
+%  \shade[left color=SwishLineColour!60!white, right color=white] rectangle (\@almosttextwidth,2.5pt);
+%  \node[font={\@rubricfont},inner sep=0pt,text ragged,anchor=south west,text depth=.5ex,text height=1.5ex] at (1pt,2pt) {#1};
+%  \end{tikzpicture}% 
+%  \vspace\rubricspace%
+%}
+
+\def\@@rubrichead#1{\large{\bf \underline{#1}}% 
   \vspace\rubricspace%
 }
 
 % Modify subrubric font
 \subrubricfont{\large\bfseries\sffamily}
+\subrubricfont{\sffamily}
 \subrubricalignment{l}
 
 % Convenience command to make the links in the header
@@ -107,7 +102,7 @@
 
 % Some further style tweaks
 \rubricalignment{l}
-\renewcommand{\arraystretch}{1.25}
+\renewcommand{\arraystretch}{1.15}
 \urlstyle{tt}
 
 % Command to set  the prefix marker to the cute little bookmark icon
@@ -117,14 +112,18 @@
 % \prefixmarker{$\diamond$}
 
 % Modification to include the prefixmaker
+%\prefix{%
+%  \hspace*{-1ex}
+%  \color{MarkerColour!80!black}\@prefixmarker%
+%  \hspace*{1ex}%
+%}
+
 \prefix{%
-  \hspace*{-1ex}
-  \color{MarkerColour!80!black}\@prefixmarker%
-  \hspace*{1ex}%
 }
 
+
 % in case someone wants to use the itemize environment change bullet
-\renewcommand{\labelitemi}{\tikz\draw[MarkerColour!80!black,fill=MarkerColour!80!black] (0,0) circle (0.75ex);}
+%\renewcommand{\labelitemi}{\tikz\draw[MarkerColour!80!black,fill=MarkerColour!80!black] (0,0) circle (0.75ex);}
 
 % Command to print rubric head (original)
 \newcommand{\makerubrichead}[1]{
@@ -135,15 +134,18 @@
 }
 
 % Command to make page continuation header
-\newcommand{\conthead}[1]{
-  \begin{tikzpicture}[baseline]%\
-  \shade[left color=SwishLineColour!60!white, right color=white] rectangle (\@almosttextwidth,2.5pt);
-  \node[font={\@rubricfont},inner sep=0pt,text ragged,anchor=south west,text depth=.5ex,text height=1.5ex] at (1pt,2pt) {#1\@continuedname};
-  \end{tikzpicture}%
-  \vspace\rubricspace%
-}
-\newcommand{\tablecontinue}[1]{\multicolumn{4}{l}{\conthead{#1}}\endhead\cline{2-4}}
+%\newcommand{\conthead}[1]{
+%  \begin{tikzpicture}[baseline]%\
+%  \shade[left color=SwishLineColour!60!white, right color=white] rectangle (\@almosttextwidth,2.5pt);
+%  \node[font={\@rubricfont},inner sep=0pt,text ragged,anchor=south west,text depth=.5ex,text height=1.5ex] at (1pt,2pt) {#1\@continuedname};
+%  \end{tikzpicture}%
+%  \vspace\rubricspace%
+%}
+%\newcommand{\tablecontinue}[1]{\multicolumn{4}{l}{\conthead{#1}}\endhead\cline{2-4}}
 \newcommand{\tablehead}{\endfirsthead}
+\newcommand{\tablecontinue}[1]{}
+\newcommand{\conthead}[1]{}
+
 
 % Override subrubric command to eliminate leading space bug
 \def\@@subrubric#1{%
@@ -151,7 +153,35 @@
 {\@subrubricfont#1}
 \@subrubricmark{#1}}
 
-
+% This is to eliminate the continuation headers and add pdf bookmarks
+\renewenvironment{rubric}[1]{%
+\stepcounter{BookmarkCounter}%
+\pdfbookmark[-1]{#1}{note\theBookmarkCounter} %
+    \def\raggedright{%
+        \@rightskip\@flushglue\rightskip\@rightskip\leftskip\z@skip}%
+    \def\raggedleft{%
+        \rightskip\z@skip\leftskip\@flushglue\parfillskip\z@skip}%
+    \gdef\@beforespace{0pt}%
+    \gdef\@nextentry{}%
+    \gdef\@previouskey{}%
+    \global\let\old@newpage\newpage%
+    \global\let\old@pagebreak\pagebreak%
+    \global\let\old@nopagebreak\nopagebreak
+    \begin{longtable}{@{}kl@{~}X@{}}
+        \@rubrichead{#1}\\*[\rubricspace]
+        \endfirsthead
+        \noalign{\@rubricmark{#1}%
+            \global\let\in@newpage\newpage%
+            \global\let\in@pagebreak\pagebreak%
+            \global\let\in@nopagebreak\nopagebreak%
+            \gdef\newpage{\@nextentry\noalign{\gdef\@nextentry{}}\in@newpage}
+            \gdef\pagebreak{\@nextentry\noalign{\gdef\@nextentry{}}\in@pagebreak}
+            \gdef\nopagebreak{\@nextentry\noalign{\gdef\@nextentry{}}\in@nopagebreak}}}{%
+        \@nextentry
+    \end{longtable}\par\vspace\rubricafterspace
+    \global\let\newpage\old@newpage%
+    \global\let\pagebreak\old@pagebreak%
+    \global\let\nopagebreak\old@nopagebreak}
   
  %%%%% CHANGE TO BIBLIOGRAPHY OUTPUT %%%%%%%%%%%%%%%%%%
  % If you need to further customise your biblatex setup e.g. with \DeclareFieldFormat etc 
@@ -174,6 +204,8 @@
 
 % Remove url field if doi is defined
 \AtEveryBibitem{\iffieldundef{doi}{}{\clearfield{url}}}
+\AtEveryCite{\iffieldundef{doi}{}{\clearfield{url}}}
+\AtEveryCitekey{\iffieldundef{doi}{}{\clearfield{url}}}
 
 % Put the little link icon in the bibliography for urls & dois
 \RequirePackage{xpatch}
@@ -299,8 +331,39 @@
 %\renewbibmacro*{url+urldate}{}
 %\renewbibmacro*{eprint}{}
 
+% Change enumerate environment so that item's don't break across pages
+\let\saveenumerate\enumerate
+\let\saveendenumerate\endenumerate
+
+\renewenvironment{enumerate}{%
+    \saveenumerate
+    \let\olditem\item
+    \newcommand{\closestep}{}%
+    \renewcommand{\item}{%
+        \closestep
+        \olditem
+        \minipage[t]{\linewidth}%
+        \renewcommand{\closestep}{\endminipage}%
+    }%
+}{%
+    \closestep\saveendenumerate%
+}
+
+% Define the cvsection command
+% optional argument is name of boolean and filename (defaults to second argument)
+% second argument is the text to put in the pdf table of contents
+% Third argument is the content to include  
+\NewDocumentCommand\includeCheck{O{#2} m m}{
+\ifthenelse{\boolean{#1}}{%
+  \IfFileExists{#2.tex}{%
+        #3%
+  }%
+  }{}%
+ }
+
 % Booleans for turning things on/off
 \newboolean{usePhoto}
+\newboolean{Credentials}
 \newboolean{Journal}
 \newboolean{Refereed}
 \newboolean{Book}
@@ -311,14 +374,17 @@
 \newboolean{StudentAwards}
 \newboolean{Service}
 \newboolean{Reviews}
+\newboolean{ProfDevelopment}
 \newboolean{GradAdvisees}
 \newboolean{UndergradResearch}
 \newboolean{Teaching}
 \newboolean{Grants}
 \newboolean{Proposals}
+\newboolean{Admin}
 
 % Defaults for booleans (don't change here)
 \setboolean{usePhoto}{false}
+\setboolean{Credentials}{true}
 \setboolean{Journal}{true}
 \setboolean{Refereed}{true}
 \setboolean{Book}{true}
@@ -329,17 +395,19 @@
 \setboolean{StudentAwards}{true}
 \setboolean{Service}{true}
 \setboolean{Reviews}{true}
+\setboolean{ProfDevelopment}{true}
 \setboolean{GradAdvisees}{true}
 \setboolean{UndergradResearch}{true}
 \setboolean{Teaching}{true}
 \setboolean{Grants}{true}
 \setboolean{Proposals}{true}
+\setboolean{Admin}{true}
+
+%\renewbibmacro*{begentry}
 
 % Load file to change booleans
 \IfFileExists{exclusions.tex} {
 \input{exclusions.tex}
 }
-
-
 
 

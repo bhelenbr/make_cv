@@ -14,7 +14,7 @@ from datetime import date
 
 from .stringprotect import str2latex
 
-def publons2latex(f,years,inputfile):
+def publons2latex(f,years,inputfile,max_rows=-1):
 	source = inputfile  # file to read
 	try:
 		reviews = pd.read_excel(source,header=0)
@@ -39,6 +39,10 @@ def publons2latex(f,years,inputfile):
 	#print(table)
 	
 	nrows = table.shape[0] 
+	
+	if max_rows > 0 and nrows > max_rows:
+		nrows = max_rows
+			
 	if (nrows > 0):		
 		table.columns=['Journal','Reviews','Rounds']
 		

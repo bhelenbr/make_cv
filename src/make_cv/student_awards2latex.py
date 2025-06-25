@@ -13,7 +13,7 @@ from datetime import date
 from .stringprotect import str2latex
 from .stringprotect import abbreviate_name_list
 
-def student_awards2latex(f,years,inputfile):
+def student_awards2latex(f,years,inputfile,max_rows=-1):
 	source = inputfile # file to read
 	try:
 		source_data = pd.read_excel(source,sheet_name="Data")
@@ -32,7 +32,10 @@ def student_awards2latex(f,years,inputfile):
 	df = source_data.fillna('')
 	df.sort_values(by=['Year','Title','Student'], inplace=True, ascending = [False,True,True])
 	df.reset_index(drop=True,inplace=True)
-	nrows = df.shape[0] 
+	nrows = df.shape[0]
+	
+	if max_rows > 0 and nrows > max_rows:
+		nrows = max_rows
 
 	if (nrows > 0):
 		#print(df.columns)

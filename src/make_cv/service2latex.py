@@ -11,7 +11,7 @@ from datetime import date
 
 from .stringprotect import str2latex
 
-def service2latex(f,years,inputfile):
+def service2latex(f,years,inputfile,name,max_rows=-1):
 	source = inputfile # file to read
 	try:
 		source_data = pd.read_excel(source,sheet_name="Data")
@@ -28,8 +28,11 @@ def service2latex(f,years,inputfile):
 	if source_data.shape[0] == 0:
 		return(0)
 	
-	f.write("\\begin{rubric}{Service}\n")
-	names = ["Department","University","Professional","Community"]
+	
+	
+	f.write("\\begin{rubric}{" +name +"}\n")
+	source_data['Type'] = source_data['Type'].str.strip()
+	names = source_data.Type.unique()
 	totalrows = 0
 	for name in names:
 		table = source_data[source_data.Type == name].pivot_table(columns=['Calendar Year'], values=['Term'], index=['Type', 'Description'], aggfunc={'Term': 'count'},observed=False)
@@ -41,7 +44,6 @@ def service2latex(f,years,inputfile):
 		if nrows == 0:
 			continue
 		
-		totalrows += nrows
 		ncols = df.shape[1]
 		maxyear = [0] * nrows
 		for count in range(0,nrows):
@@ -52,6 +54,11 @@ def service2latex(f,years,inputfile):
 		df.sort_values(by=["maxyear","Description"],inplace=True,ascending=[False,True])
 		df.reset_index()
 		# print(df)
+		
+		if max_rows > 0 and nrows > max_rows:
+			nrows = max_rows
+			
+		totalrows += nrows
 
 		f.write("\\subrubric{" +name +"}\n")
 		count = 0
@@ -89,7 +96,7 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 	
 	f = open(args.outputfile, args.append) # file to write
-	nrows = service2latex(f,args.years,args.inputfile)
+	nrows = service2latex(f,args.years,args.inputfile,'Service')
 	f.close()
 	
 	if (nrows == 0):

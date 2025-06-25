@@ -14,7 +14,7 @@ import argparse
 from .stringprotect import str2latex
 from .stringprotect import abbreviate_name
 
-def thesis2latex_far(f,years,studentfile,thesisfile):
+def thesis2latex_far(f,years,studentfile,thesisfile,max_rows=-1):
 	try:
 		source = pd.read_excel(studentfile,sheet_name="Data",parse_dates=['Start Date'])
 		student_found = True
@@ -64,6 +64,9 @@ def thesis2latex_far(f,years,studentfile,thesisfile):
 				newline="\\\\\n"
 				count += 1
 		
+		if max_rows > 0 and nrows2 > max_rows:
+			nrows2 = max_rows
+			
 		if nrows2 > 0:
 			count = 0
 			while count < nrows2:

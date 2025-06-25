@@ -13,7 +13,7 @@ import argparse
 from .stringprotect import str2latex
 
 
-def props2latex_far(f,years,inputfile):
+def props2latex_far(f,years,inputfile,max_rows=-1):
 	source = inputfile # file to read
 	try:
 		props = pd.read_excel(source,sheet_name="Data",header=0,dtype={'Sponsor':str,'Long Descr':str,'Allocated Amt':float,'Total Cost':float})
@@ -34,6 +34,8 @@ def props2latex_far(f,years,inputfile):
 	props = props.reset_index()
 	nrows = props.shape[0] 
 
+	if max_rows > 0 and nrows > max_rows:
+		nrows = max_rows
 	
 	if (nrows > 0):	
 		f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXllll}\n& Sponsor: Title & Alloc/Total & Dates  \\tablehead\n")

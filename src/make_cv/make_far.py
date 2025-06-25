@@ -12,6 +12,8 @@ import platform
 import shutil
 import configparser
 import argparse
+import warnings
+
 
 from .create_config import create_config
 from .create_config import verify_config
@@ -36,104 +38,89 @@ from .publons2latex_far import publons2latex_far
 from .teaching2latex_far import teaching2latex_far
 	
 
-sections = {'Journal','Refereed','Book','Conference','Patent','Invited','PersonalAwards','StudentAwards','Service','Reviews','GradAdvisees','UndergradResearch','Teaching','Grants','Proposals'} 
-files = {'Scholarship','PersonalAwards','StudentAwards','Service','Reviews','CurrentGradAdvisees','GradTheses','UndergradResearch','Teaching','Proposals','Grants'} 
-
+pubfiles = ['Journal','Refereed','Book','Conference','Patent','Invited']
 
 def make_far_tables(config,table_dir):
 	# default to writing entire history
 	years = config.getint('years')
 	
-	make_cv_tables(config,table_dir,years)
+	make_cv_tables(config,table_dir)
 	
 	# override faculty source to be relative to CV folder
 	faculty_source = config['data_dir']
 
-	# Scholarly Works
-	print('Updating scholarship tables')
-	pubfiles = ["journal.tex","conference.tex","patent.tex","book.tex","invited.tex","refereed.tex"]
-	fpubs = [open(table_dir +os.sep +name, 'w') for name in pubfiles]
-	filename = os.path.join(faculty_source,config['ScholarshipFile'])
-	if os.path.isfile(filename):
-		nrecords = bib2latex_far(fpubs,years,filename)
-		for counter in range(len(pubfiles)):
-			fpubs[counter].close()
-			if not(nrecords[counter]):
-				os.remove(table_dir+os.sep +pubfiles[counter])
-
 	# Personal Awards
 	if config.getboolean('PersonalAwards'):
 		print('Updating personal awards table')
-		fpawards = open(table_dir +os.sep +'personal_awards.tex', 'w') # file to write
+		fpawards = open(table_dir +os.sep +'PersonalAwards.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['PersonalAwardsFile'])
 		nrows = personal_awards2latex_far(fpawards,years,filename)
 		fpawards.close()
 		if not(nrows):
-			os.remove(table_dir+os.sep +'personal_awards.tex')
+			os.remove(table_dir+os.sep +'PersonalAwards.tex')
 	
 	# Student Awards
 	if config.getboolean('StudentAwards'):
 		print('Updating student awards table')
-		fsawards = open(table_dir +os.sep +'student_awards.tex', 'w') # file to write
+		fsawards = open(table_dir +os.sep +'StudentAwards.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['StudentAwardsFile'])
 		nrows = student_awards2latex_far(fsawards,years,filename)	
 		fsawards.close()
 		if not(nrows):
-			os.remove(table_dir+os.sep +'student_awards.tex')
+			os.remove(table_dir+os.sep +'StudentAwards.tex')
 	
 	# Service Activities
 	if config.getboolean('Service'):
 		print('Updating service table')
-		fservice = open(table_dir +os.sep +'service.tex', 'w') # file to write
+		fservice = open(table_dir +os.sep +'Service.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['ServiceFile'])
 		nrows = service2latex_far(fservice,years,filename)	
 		fservice.close()
 		if not(nrows):
-			os.remove(table_dir+os.sep +'service.tex')
+			os.remove(table_dir+os.sep +'Service.tex')
 	
 	if config.getboolean('Reviews'):
 		print('Updating reviews table')
-		freviews = open(table_dir +os.sep +'reviews.tex', 'w') # file to write
+		freviews = open(table_dir +os.sep +'Reviews.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['ReviewsFile'])
 		nrows = publons2latex_far(freviews,years,filename)
 		freviews.close()
 		if not(nrows):
-			os.remove(table_dir+os.sep +'reviews.tex')
+			os.remove(table_dir+os.sep +'Reviews.tex')
 	
 	# Undergraduate Research
 	if config.getboolean('UndergradResearch'):
 		print('Updating undergraduate research table')
-		fur = open(table_dir +os.sep +'undergraduate_research.tex', 'w') # file to write
+		fur = open(table_dir +os.sep +'UndergraduateResearch.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['UndergradResearchFile'])
 		nrows = UR2latex_far(fur,years,filename)	
 		fur.close()
 		if not(nrows):
-			os.remove(table_dir +os.sep +'undergraduate_research.tex')
+			os.remove(table_dir +os.sep +'UndergraduateResearch.tex')
 	
 	# Teaching
 	if config.getboolean('Teaching'):
 		print('Updating teaching table')
-		fteaching = open(table_dir +os.sep +'teaching.tex', 'w') # file to write
+		fteaching = open(table_dir +os.sep +'Teaching.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['TeachingFile'])
 		nrows = teaching2latex_far(fteaching,years,filename)	
 		fteaching.close()
 		if not(nrows):
-			os.remove(table_dir+os.sep +'teaching.tex')
+			os.remove(table_dir+os.sep +'Teaching.tex')
 
 def main(argv = None):
+	warnings.filterwarnings('ignore', category=UserWarning, module='openpyxl')
 	parser = argparse.ArgumentParser(description='This script creates a far using python and LaTeX plus provided data')
 	add_default_args(parser)
-	parser.add_argument('-y','--years', help='number of years to include in far',type=int)
 
 	[configuration,args] = read_args(parser,argv)
-	
-	config = configuration['FAR']
-	
+	config = configuration['CV']
 	process_default_args(config,args)
-	if args.years is not None: config['Years'] = args.years
-
-	make_far_tables(config,'Tables_far')
-	typeset(config,'far',['xelatex','far.tex'])
+	
+	stem = config['LaTexFile'][:-4]
+	folder = "Tables_" +stem
+	make_far_tables(config,folder)
+	typeset(config,stem,['xelatex',config['LaTexFile']])
 
 if __name__ == "__main__":
 	main()

@@ -16,6 +16,7 @@ import argparse
 import datetime
 from datetime import date
 import csv
+import warnings
 
 from .create_config import create_config
 from .create_config import verify_config
@@ -43,7 +44,9 @@ def getyear(paperbibentry):
 		return int(paperbibentry["date"][:4])
 	return 0
 
-def get_collaborator_list(config, years, output_format):
+def get_collaborator_list(config, output_format):
+	years = config.getint('years')
+
 	faculty_source = config['data_dir']
 	
 	bibfile = os.path.join(faculty_source, config['ScholarshipFile'])
@@ -175,17 +178,17 @@ def get_collaborator_list(config, years, output_format):
 			print("collaborators.xlsx created")
 
 def main(argv=None):
+	warnings.filterwarnings('ignore', category=UserWarning, module='openpyxl')
 	parser = argparse.ArgumentParser(description='This script creates an NSF Advisee & Collaborator List')
 	add_default_args(parser)
-	parser.add_argument('-y', '--years', help='number of years to include in list (default is 4)', type=int, default=4)
 	parser.add_argument('-fmt', '--format', choices=['csv', 'xlsx'], default='xlsx', help='output format (csv or xlsx)')
 	
 	[configuration, args] = read_args(parser, argv)
 	
-	config = configuration['FAR']
+	config = configuration['CV']
 	process_default_args(config, args)
 
-	get_collaborator_list(config, args.years, args.format)
+	get_collaborator_list(config, args.format)
 
 if __name__ == "__main__":
 	main()

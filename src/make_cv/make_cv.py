@@ -15,6 +15,7 @@ import argparse
 import inspect
 from pathlib import Path
 import datetime
+import warnings
 
 from .create_config import create_config
 from .create_config import verify_config
@@ -37,12 +38,21 @@ from .teaching2latex import teaching2latex
 from .shortformteaching import shortformteaching
 	
 	
+pub_categories = ['journal','conference','patent','book','invited','refereed']
+other_sections = ['PersonalAwards','StudentAwards','Service','Reviews','GradAdvisees','UndergradResearch','Teaching','Grants','Proposals'] 
+sections = pub_categories +other_sections
+datafiles = ['Scholarship','PersonalAwards','StudentAwards','Service','Reviews','CurrentGradAdvisees','GradTheses','UndergradResearch','Teaching','Grants','Proposals']
 
-sections = {'Journal','Refereed','Book','Conference','Patent','Invited','PersonalAwards','StudentAwards','Service','Reviews','GradAdvisees','UndergradResearch','Teaching','Grants','Proposals'} 
-files = {'Scholarship','PersonalAwards','StudentAwards','Service','Reviews','CurrentGradAdvisees','GradTheses','UndergradResearch','Teaching','Proposals','Grants'} 
-
-
-def make_cv_tables(config,table_dir,years):
+def getSectionVals(config,section):
+	include = config.getboolean(section)
+	years = config.getint(section +'Years')
+	max_pubs = config.getint(section +'Count')
+	defaultyears = config.getint('Years')
+	if years < 0:
+		years = defaultyears
+	return([include,years,max_pubs])
+	
+def make_cv_tables(config,table_dir):
 	# override faculty source to be relative to CV folder
 	faculty_source = config['data_dir']
 	
@@ -50,82 +60,101 @@ def make_cv_tables(config,table_dir,years):
 		os.makedirs(table_dir)
 	
 # 	# Scholarly Works
-# 	print('Updating scholarship tables')
-# 	pubfiles = ["journal.tex","conference.tex","patent.tex","book.tex","invited.tex","refereed.tex"]
-# 	fpubs = [open(table_dir +os.sep +name, 'w') for name in pubfiles]
-# 	filename = os.path.join(faculty_source,config['ScholarshipFile'])
-# 	if os.path.isfile(filename):
-# 		nrecords = bib2latex_far(fpubs,years,filename)
-# 		for counter in range(len(pubfiles)):
-# 			fpubs[counter].close()
-# 			if not(nrecords[counter]):
-# 				os.remove(table_dir+os.sep +pubfiles[counter])
-
+	print('Updating scholarship tables')
+	filename = os.path.join(faculty_source,config['ScholarshipFile'])
+	if os.path.isfile(filename):
+		for name in pub_categories:
+			[include,years,max_pubs] = getSectionVals(config,name)
+			if include:
+				# allow possibility of overriding category name 
+				category = name
+				if name +"Key" in config.keys():
+					category = config[name +"Key"]
+				with open(table_dir +os.sep +name +".tex", 'w') as fpubs:
+					nrecords = bib2latex_far(fpubs,filename,[category],years=years,max_pubs=max_pubs)
+				if not(nrecords > 0):
+					os.remove(table_dir+os.sep +name +".tex")
 	
 	# Personal Awards
-	if config.getboolean('PersonalAwards'):
+	[include,years,max_rows] = getSectionVals(config,'PersonalAwards')
+	if include:
 		print('Updating personal awards table')
-		fpawards = open(table_dir +os.sep +'personal_awards.tex', 'w') # file to write
+		fpawards = open(table_dir +os.sep +'PersonalAwards.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['PersonalAwardsFile'])
-		nrows = personal_awards2latex(fpawards,years,filename)
+		nrows = personal_awards2latex(fpawards,years,filename,max_rows=max_rows)
 		fpawards.close()
 		if not(nrows):
-			os.remove(table_dir+os.sep +'personal_awards.tex')
+			os.remove(table_dir+os.sep +'PersonalAwards.tex')
 	
 	# Student Awards
-	if config.getboolean('StudentAwards'):
+	[include,years,max_rows] = getSectionVals(config,'StudentAwards')
+	if include:
 		print('Updating student awards table')
-		fsawards = open(table_dir +os.sep +'student_awards.tex', 'w') # file to write
+		fsawards = open(table_dir +os.sep +'StudentAwards.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['StudentAwardsFile'])
-		nrows = student_awards2latex(fsawards,years,filename)	
+		nrows = student_awards2latex(fsawards,years,filename,max_rows=max_rows)	
 		fsawards.close()
 		if not(nrows):
-			os.remove(table_dir+os.sep +'student_awards.tex')
+			os.remove(table_dir+os.sep +'StudentAwards.tex')
 	
 	# Service Activities
-	if config.getboolean('Service'):
+	[include,years,max_rows] = getSectionVals(config,'Service')
+	if include:
 		print('Updating service table')
-		fservice = open(table_dir +os.sep +'service.tex', 'w') # file to write
+		fservice = open(table_dir +os.sep +'Service.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['ServiceFile'])
-		nrows = service2latex(fservice,years,filename)	
+		nrows = service2latex(fservice,years,filename,'Service',max_rows=max_rows)	
 		fservice.close()
 		if not(nrows):
-			os.remove(table_dir+os.sep +'service.tex')
+			os.remove(table_dir+os.sep +'Service.tex')
+		
+	[include,years,max_rows] = getSectionVals(config,'ProfDevelopment')	
+	if include:
+		print('Updating professional development table')
+		fprof_development = open(table_dir +os.sep +'ProfDevelopment.tex', 'w') # file to write
+		filename = os.path.join(faculty_source,config['ProfDevelopmentFile'])
+		nrows = service2latex(fprof_development,years,filename,'Professional Development',max_rows=max_rows)	
+		fprof_development.close()
+		if not(nrows):
+			os.remove(table_dir+os.sep +'ProfDevelopment.tex')
 	
-	if config.getboolean('Reviews'):
+	[include,years,max_rows] = getSectionVals(config,'Reviews')	
+	if include:
 		print('Updating reviews table')
-		freviews = open(table_dir +os.sep +'reviews.tex', 'w') # file to write
+		freviews = open(table_dir +os.sep +'Reviews.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['ReviewsFile'])
-		nrows = publons2latex(freviews,years,filename)
+		nrows = publons2latex(freviews,years,filename,max_rows=max_rows)
 		freviews.close()
 		if not(nrows):
-			os.remove(table_dir+os.sep +'reviews.tex')
+			os.remove(table_dir+os.sep +'Reviews.tex')
 	
 	# Thesis Publications & Graduate Advisees
-	if config.getboolean('GradAdvisees'):
+	[include,years,max_rows] = getSectionVals(config,'GradAdvisees')	
+	if include:
 		print('Updating graduate advisees table')
-		fthesis = open(table_dir +os.sep +'thesis.tex', 'w') # file to write
+		fthesis = open(table_dir +os.sep +'GradAdvisees.tex', 'w') # file to write
 		filename1 = os.path.join(faculty_source,config['CurrentGradAdviseesFile'])
 		filename2 = os.path.join(faculty_source,config['GradThesesFile'])
-		nrows = thesis2latex_far(fthesis,years,filename1,filename2)
+		nrows = thesis2latex_far(fthesis,years,filename1,filename2,max_rows=max_rows)
 		fthesis.close()
 		if not(nrows):
-			os.remove(table_dir+os.sep +'thesis.tex')
+			os.remove(table_dir+os.sep +'GradAdvisees.tex')
 	
 	# Undergraduate Research
-	if config.getboolean('UndergradResearch'):
+	[include,years,max_rows] = getSectionVals(config,'UndergradResearch')	
+	if include:
 		print('Updating undergraduate research table')
-		fur = open(table_dir +os.sep +'undergraduate_research.tex', 'w') # file to write
+		fur = open(table_dir +os.sep +'UndergradResearch.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['UndergradResearchFile'])
-		nrows = UR2latex(fur,years,filename)	
+		nrows = UR2latex(fur,years,filename,max_rows=max_rows)	
 		fur.close()
 		if not(nrows):
-			os.remove(table_dir +os.sep +'undergraduate_research.tex')
+			os.remove(table_dir +os.sep +'UndergradResearch.tex')
 	
 	# Teaching
 	if config.getboolean('Teaching'):
 		print('Updating teaching table')
-		fteaching = open(table_dir +os.sep +'teaching.tex', 'w') # file to write
+		fteaching = open(table_dir +os.sep +'Teaching.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['TeachingFile'])
 		if config.getboolean('ShortTeachingTable'):
 			nrows = shortformteaching(fteaching,years,filename)
@@ -133,32 +162,34 @@ def make_cv_tables(config,table_dir,years):
 			nrows = teaching2latex(fteaching,years,filename)	
 		fteaching.close()
 		if not(nrows):
-			os.remove(table_dir+os.sep +'teaching.tex')
+			os.remove(table_dir+os.sep +'Teaching.tex')
 	
-	if config.getboolean('Grants'):
+	[include,years,max_rows] = getSectionVals(config,'Grants')	
+	if include:
 		print('Updating grants table')
-		fgrants = open(table_dir +os.sep +'grants.tex', 'w') # file to write
+		fgrants = open(table_dir +os.sep +'Grants.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['GrantsFile'])
-		nrows = grants2latex_far(fgrants,years,filename)
+		nrows = grants2latex_far(fgrants,years,filename,max_rows=max_rows)
 		fgrants.close()
 		if not(nrows):
-			os.remove(table_dir +os.sep +'grants.tex')
+			os.remove(table_dir +os.sep +'Grants.tex')
 	
 	# Proposals
-	if config.getboolean('Proposals'):
+	[include,years,max_rows] = getSectionVals(config,'Proposals')	
+	if include:
 		print('Updating proposals table')
-		fprops = open(table_dir +os.sep +'proposals.tex', 'w') # file to write
+		fprops = open(table_dir +os.sep +'Proposals.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['ProposalsFile'])
-		nrows = props2latex_far(fprops,years,filename)	
+		nrows = props2latex_far(fprops,years,filename,max_rows=max_rows)	
 		fprops.close()
 		if not(nrows):
-			os.remove(table_dir +os.sep +'proposals.tex')
+			os.remove(table_dir +os.sep +'Proposals.tex')
 	
 
 def add_default_args(parser):
 	parser.add_argument('-b','--begin', help='create default directory structure & files named <>',)
 	parser.add_argument('-d','--data_dir', help='the name of root directory containing the data folders')
-	parser.add_argument('-f','--configfile', default='cv.cfg', help='the configuration file, default is cv.cfg')
+	parser.add_argument('-f','--configfile', default='make_cv.cfg', help='the configuration file, default is make_cv.cfg')
 	parser.add_argument('-F','--file', help='override data file location in config file.  Format is NAME=<file name> where NAME can be: Scholarship, PersonalAwards, StudentAwards, Service, Reviews, CurrentGradAdvisees, GradTheses, UndergradResearch, Teaching, Proposals, Grants', action='append')
 	parser.add_argument('-S','--ScraperID', help='ScraperID (not necessary, but avoids Google blocking requests)')
 	parser.add_argument('-s','--UseScraper', help='Use scraper to avoid blocking by Google',  choices=['true','false'])
@@ -170,10 +201,11 @@ def add_default_args(parser):
 	parser.add_argument('-m','--UpdateStudentMarkers', help='update the student author markers', choices=['true','false'])
 	parser.add_argument('-M','--IncludeStudentMarkers', help='put student author markers in cv', choices=['true','false'])
 	parser.add_argument('-e','--exclude', help='exclude section from cv', choices=sections,action='append')
-	parser.add_argument('-T','--Timestamp', help='Include Last update timestamp at the bottom of cv', nargs='?', const='true')
+	parser.add_argument('-T','--Timestamp', help='Include last update timestamp at the bottom of cv', nargs='?', const='true')
 	parser.add_argument('-orc','--GetNewScholarshipEntriesusingOrcid', help='search for and add new entries from the last N (default 1) years to the .bib file', nargs='?', const='1')
 	parser.add_argument('-orcid','--ORCID', help='ORCID (used for finding new publications()')
-	
+	parser.add_argument('-y','--years', help='number of years of data to include in tables',type=int)
+	parser.add_argument('-n','--NoCleanUp', help='Don''t delete autogenerated LaTex files after typset', nargs='?', const='true')
 
 def read_args(parser,argv):
 	if argv is None:
@@ -192,7 +224,7 @@ def read_args(parser,argv):
 			#dst = path.parent.absolute()
 			myDir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) # script directory
 			shutil.copytree(myDir +os.sep +"files",dst)
-			print("Directory created.  Now change to the CV folder in that directory and type make_cv to create sample")
+			print('Directory created.  Now type "cd ' +args.begin +'/make_cv/CV" to change to that folder and type "make_cv" to create sample')
 			exit()
 
 	configuration = configparser.ConfigParser()
@@ -201,9 +233,9 @@ def read_args(parser,argv):
 	ok = verify_config(configuration)
 	if (not ok):
 		print("Incomplete or Unreadable configuration file " +args.configfile +".\n") 
-		YN = input('Would you like to update configuration file named cv.cfg [Y/N]?')
+		YN = input('Would you like to update configuration file named make_cv.cfg [Y/N]?')
 		if YN == 'Y' or YN =='y':
-			newconfig = create_config('cv.cfg',configuration)
+			newconfig = create_config('make_cv.cfg',configuration)
 			return(newconfig,args)
 		elif YN =='N' or YN =='n':
 			print("Couldn't proceed due to Incomplete or Unreadable configuration file")
@@ -228,6 +260,12 @@ def process_default_args(config,args):
 	if args.Timestamp is not None: config['Timestamp'] = args.Timestamp
 	if args.GetNewScholarshipEntriesusingOrcid is not None: config['GetNewScholarshipEntriesusingOrcid'] = args.GetNewScholarshipEntriesusingOrcid
 	if args.ORCID is not None: config['ORCID'] = args.ORCID
+	if args.years is not None: config['Years'] = args.years
+	
+	if args.NoCleanUp is not None: 
+		config['NoCleanUp'] = args.NoCleanUp
+	else:
+		config['NoCleanUp'] = 'false'
 	
 	if args.exclude is not None:
 		for section in args.exclude:
@@ -236,7 +274,7 @@ def process_default_args(config,args):
 	if args.file is not None:
 		for file in args.file:
 			strings = file.split('=')
-			if len(strings) == 2 and strings[0] in files:
+			if len(strings) == 2 and strings[0] in datafiles:
 				config[strings[0]+'File'] = strings[1]
 			else:
 				print('Unable to parse filename ' + file)
@@ -361,12 +399,15 @@ def add_timestamp_to_cv():
 def typeset(config,filename,command):
 	# Create exclusion file
 	with open('exclusions.tex', 'w') as exclusions:
+		exclusions.write('\\makeatletter\n\\def\\input@path{{Tables_' +filename +'/}{' +config['bio_dir'] +'/}} % Add folder to file search path\n\\makeatother\n')
 		for section in sections:
 			if not config.getboolean(section): exclusions.write('\\setboolean{' +section +'}{false}\n')
 		if not config.getboolean('IncludeCitationCounts'): exclusions.write('\\DeclareFieldFormat{citations}{}\n')
 		if not config.getboolean('IncludeStudentMarkers'):
 			exclusions.write('\\renewcommand{\\us}{}\n')
 			exclusions.write('\\renewcommand{\\gs}{}\n')
+		exclusions.write('\n')
+
 	
 	if "Timestamp" in config.keys() and config.getboolean("Timestamp"):
 		# Create timestamp
@@ -404,14 +445,16 @@ def typeset(config,filename,command):
 	ps = subprocess.run(command)
 	
 	# cleanup
-	for file in [filename +".aux",filename +".bbl",filename +".bcf",filename +".blg",filename +".log",filename +".out",filename +".run.xml","biblatex-dm.cfg","exclusions.tex",filename +".toc","timestamp.tex"]:
-		try:
-			os.remove(file)
-		except OSError as err:
-			pass
+	if "NoCleanUp" in config.keys() and not(config.getboolean("NoCleanUp")):
+		for file in [filename +".aux",filename +".bbl",filename +".bcf",filename +".blg",filename +".log",filename +".out",filename +".run.xml","biblatex-dm.cfg","exclusions.tex",filename +".toc","timestamp.tex"]:
+			try:
+				os.remove(file)
+			except OSError as err:
+				pass
 
 
 def main(argv = None):
+	warnings.filterwarnings('ignore', category=UserWarning, module='openpyxl')
 	parser = argparse.ArgumentParser(description='This script creates a cv using python and LaTeX plus provided data')
 	add_default_args(parser)
 	
@@ -420,8 +463,10 @@ def main(argv = None):
 	config = configuration['CV']
 	process_default_args(config,args)
 	
-	make_cv_tables(config,'Tables_cv',0)
-	typeset(config,'cv',['xelatex','-interaction=batchmode','cv.tex'])
+	stem = config['LaTexFile'][:-4]
+	folder = "Tables_" +stem
+	make_cv_tables(config,folder)
+	typeset(config,stem,['xelatex','-interaction=batchmode',config['LaTexFile']])
 
 if __name__ == "__main__":
 	SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))

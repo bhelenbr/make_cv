@@ -1,0 +1,381 @@
+\usepackage{ifxetex,ifluatex}
+\newif\ifxetexorluatex
+\ifxetex
+  \xetexorluatextrue
+\else
+  \ifluatex
+    \xetexorluatextrue
+  \else
+    \xetexorluatexfalse
+  \fi
+\fi
+
+\RequirePackage{silence}
+\WarningsOff[longtable]
+\WarningsOff[array]
+\RequirePackage{graphicx} % to include images
+\RequirePackage{babel} % for managing multiple language formats
+\RequirePackage{ltablex} % longtable/tabularx
+\RequirePackage{needspace} % to get the correct pagination of headers
+\RequirePackage{xstring} % to compare strings 
+\RequirePackage[fixed]{fontawesome5} % icons
+%\RequirePackage{simpleicons}. Needed only if you want a X icon
+\RequirePackage[nohead,nofoot,hmargin=2.25cm,vmargin=2cm]{geometry}
+\RequirePackage{relsize} % package to change font sizes
+\RequirePackage[dvipsnames,svgnames]{xcolor} % package to include color
+\RequirePackage{tikz} % drawing package
+\usetikzlibrary{shapes,shadows} % subpackages 
+\RequirePackage{biblatex} % need for bibliographic paper lists
+\RequirePackage{csquotes} % for formatting quotes (recommended for babel)
+\RequirePackage[colorlinks=true,allcolors=blue,breaklinks=true]{hyperref} % I link the links to be blue so people know they are links make black if you don't like that
+
+% \geometry{left=1cm,right=1cm,top=1.5cm,bottom=1.5cm} % Change the page margins if you want
+
+%%%%%%%%%% STYLE CHANGES TO CURVE FORMATTING %%%%%
+% Change the fonts if you want
+\ifxetexorluatex % If you're using XeLaTeX or LuaLaTeX
+  \usepackage{fontspec} 
+  %% You can use \setmainfont etc; I'm just using these font packages here because they provide OpenType fonts for use by XeLaTeX/LuaLaTeX anyway
+  %\usepackage[p,osf,swashQ]{cochineal}
+  \usepackage[medium,bold]{cabin}
+  \usepackage[varqu,varl,scale=0.9]{zi4}
+\else % If you're using pdfLaTeX or latex
+  \usepackage[T1]{fontenc}
+  \usepackage[p,osf,swashQ]{cochineal}
+  \usepackage{cabin}
+  \usepackage[varqu,varl,scale=0.9]{zi4}
+\fi
+
+% Change the colours if you want
+\definecolor{SwishLineColour}{HTML}{88AC0B}
+\definecolor{MarkerColour}{HTML}{B6073F}
+% \definecolor{SwishLineColour}{HTML}{00FFFF}
+% \definecolor{MarkerColour}{HTML}{0000CC}
+
+% Change the size of colored numbering markers
+\RequirePackage{tikz}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+   \node[shape=circle,text=white,fill=MarkerColour!80!black,font=\sffamily\scriptsize\bfseries,inner sep=1pt,text height=1.35ex,minimum width=1.5em,text centered] (char) {#1};}}
+ 
+ \newcommand*\circlesmall[1]{\tikz[baseline=(char.base)]{
+   \node[shape=circle,text=white,fill=MarkerColour!80!black,font=\sffamily\scriptsize\bfseries,inner sep=1pt,text height=1.15ex,minimum width=1.5em,text centered] (char) {#1};}}
+
+% Counter for creating pdf bookmarks
+\newcounter{BookmarkCounter}
+\renewcommand*{\theBookmarkCounter}{\the\value{BookmarkCounter}}
+
+% Row counter for tabularx enrvironment
+\newcounter{rowcnt}
+\newcommand\rownum{\ifnumequal{\value{rowcnt}}{0}{}{\circlesmall{\therowcnt}}\stepcounter{rowcnt}}
+\AtEndEnvironment{tabularx}{\setcounter{rowcnt}{0}}
+
+% Implement the rubric style font & spacing
+\headerscale{1}
+%\setlength{\headerspace}{6pt}
+\rubricfont{\Large\bfseries\sffamily}
+\setlength{\rubricspace}{2pt}
+%\setlength{\rubricafterspace}{-9pt}
+\setlength{\rubricafterspace}{-3pt}
+\setlength{\subrubricspace}{0pt}
+\setlength{\subrubricbeforespace}{20pt}
+\def\@@rubrichead#1{%
+  \begin{tikzpicture}[baseline]%\
+  \shade[left color=SwishLineColour!60!white, right color=white] rectangle (\@almosttextwidth,2.5pt);
+  \node[font={\@rubricfont},inner sep=0pt,text ragged,anchor=south west,text depth=.5ex,text height=1.5ex] at (1pt,2pt) {#1};
+  \end{tikzpicture}%
+  \vspace\rubricspace%
+}
+
+% Modify subrubric font
+\subrubricfont{\large\bfseries\sffamily}
+\subrubricalignment{l}
+
+% Convenience command to make the links in the header
+\newcommand{\makefield}[2]{\makebox[1.5em]{\color{MarkerColour!80!black}#1} #2}
+
+% Some further style tweaks
+\rubricalignment{l}
+\renewcommand{\arraystretch}{1.25}
+\urlstyle{tt}
+
+% Command to set  the prefix marker to the cute little bookmark icon
+\newcommand{\prefixmarker}[1]{\def\@prefixmarker{#1}}
+\def\@prefixmarker{\relscale{.9}\faBookmark}
+% Change the item prefix marker if you want
+% \prefixmarker{$\diamond$}
+
+% Modification to include the prefixmaker
+\prefix{%
+  \hspace*{-1ex}
+  \color{MarkerColour!80!black}\@prefixmarker%
+  \hspace*{1ex}%
+}
+
+% in case someone wants to use the itemize environment change bullet
+\renewcommand{\labelitemi}{\tikz\draw[MarkerColour!80!black,fill=MarkerColour!80!black] (0,0) circle (0.75ex);}
+
+% Command to print rubric head (original)
+\newcommand{\makerubrichead}[1]{
+\stepcounter{BookmarkCounter}%
+\pdfbookmark[-1]{#1}{note\theBookmarkCounter} %
+\needspace{4\baselineskip}
+\vskip\baselineskip\@@rubrichead{#1}\newline
+}
+
+% Command to make page continuation header
+\newcommand{\conthead}[1]{
+  \begin{tikzpicture}[baseline]%\
+  \shade[left color=SwishLineColour!60!white, right color=white] rectangle (\@almosttextwidth,2.5pt);
+  \node[font={\@rubricfont},inner sep=0pt,text ragged,anchor=south west,text depth=.5ex,text height=1.5ex] at (1pt,2pt) {#1\@continuedname};
+  \end{tikzpicture}%
+  \vspace\rubricspace%
+}
+\newcommand{\tablecontinue}[1]{\multicolumn{4}{l}{\conthead{#1}}\endhead\cline{2-4}}
+\newcommand{\tablehead}{\endfirsthead}
+
+% Override subrubric command to eliminate leading space bug
+\def\@@subrubric#1{%
+\rule{0bp}{\@beforespace}%
+{\@subrubricfont#1}
+\@subrubricmark{#1}}
+
+\let\saverubric\rubric
+\let\saveendrubric\endrubric
+
+% Add pdf bookmarks to rubric environment
+\renewenvironment{rubric}[1]{%
+   \stepcounter{BookmarkCounter}%
+   \pdfbookmark[-1]{#1}{note\theBookmarkCounter}%
+   \saverubric{#1}%
+}{%
+   \saveendrubric%
+}
+
+ %%%%% CHANGE TO BIBLIOGRAPHY OUTPUT %%%%%%%%%%%%%%%%%%
+ % If you need to further customise your biblatex setup e.g. with \DeclareFieldFormat etc 
+ % please add them here AFTER loading settings.sty. 
+ % For example, to remove the default   "[Online] Available:" prefix before URLs when using the IEEE style:
+\DefineBibliographyStrings{english}{url={\textsc{url}}}
+
+ % Implement the colored circle in the bibliography
+\newcounter{bibitem}
+\AtBeginBibliography{\setcounter{bibitem}{1}}
+\iffieldformatundef{labelnumberwidth}{%
+  % if author-year style
+  \AtEveryBibitem{\makebox[2.5em][l]{\circled{\thebibitem}\stepcounter{bibitem}}}%
+}{%
+  % if numeric style
+  \DeclareFieldFormat{labelnumberwidth}{\makebox[2.5em][l]{\circled{\thebibitem}}}%
+  \setlength{\biblabelsep}{0pt}%
+  \AtEveryBibitem{\stepcounter{bibitem}}%
+}
+
+% Remove url field if doi is defined
+\AtEveryBibitem{\iffieldundef{doi}{}{\clearfield{url}}}
+\AtEveryCite{\iffieldundef{doi}{}{\clearfield{url}}}
+\AtEveryCitekey{\iffieldundef{doi}{}{\clearfield{url}}}
+
+% Put the little link icon in the bibliography for urls & dois
+\RequirePackage{xpatch}
+\xpretofieldformat{doi}
+  {\textcolor{MarkerColour!80!black}{\scriptsize\faLink}}
+  {}{}
+\xpretofieldformat{url}
+  {\textcolor{MarkerColour!80!black}{\scriptsize\faLink}}
+  {}{}
+  
+% Stylistic changes to bibliography
+% \renewcommand{\bibfont}{\small}
+\setlength{\bibitemsep}{1.5ex}
+\setlength{\bibhang}{2.5em}
+
+% Some commands to print bibliography by type (not used)
+\defbibheading{subbibliography}{\vskip\subrubricbeforespace{\@subrubricfont\hspace{3pt}#1}\par}
+\defbibfilter{booksandchapters}{%
+( type=book or type=incollection )
+}
+
+% Modifications to allow bolding of names in bibliography
+% Modified to select by lastname, firstinitial 
+\RequirePackage{pgffor}
+\newcommand{\mynames}[1]{\def\my@namelist{#1}}
+\newtoggle{boldname}
+\renewcommand*{\mkbibnamefamily}[1]{%
+  \global\togglefalse{boldname}%
+  \foreach \my@fname / \my@gname in \my@namelist {%
+    \ifboolexpr{ test {\ifdefstrequal{\namepartfamily}{\my@fname}}
+                 and
+                 test {\IfBeginWith{\namepartgiven}{\my@gname}}}  % test {\ifdefstrequal{\namepartgiven}{\my@gname}}}. % If you need more control
+      {\global\toggletrue{boldname}}{}%
+  }%
+  \iftoggle{boldname}{\textbf{#1}}{#1}%
+}
+
+\renewcommand*{\mkbibnamegiven}[1]{%
+  \global\togglefalse{boldname}%
+  \foreach \my@fname / \my@gname in \my@namelist{%
+    \ifboolexpr{ test {\ifdefstrequal{\namepartfamily}{\my@fname}}
+                 and
+                 test {\IfBeginWith{\namepartgiven}{\my@gname}}}  %  test {\ifdefstrequal{\namepartgiven}{\my@gname}}} % If you need more control
+      {\global\toggletrue{boldname}\breakforeach}{}%
+  }%
+  \iftoggle{boldname}{\textbf{#1} }{#1}%
+}
+
+% Avoid the problem of the heading get moved to the next page and doubling up with the continued heading
+% From https://tex.stackexchange.com/questions/148043/how-to-generate-a-section-continued-heading-after-page-break?noredirect=1&lq=1
+% This doesn't really work correctly, but it's better than nothing....
+% Longtable is  doing something smarter, but more complicated than I had time to figure out
+\newif\if@bibpage %Conditional to see if we are on the page where a bibliography has been started
+\newif\if@bibhead@pagebreak %Conditional to check if a adding header will cause a pagebreak
+\newdimen\neededheight
+\newdimen\pt@saved
+% Modification to bibtex to allow headers on continued pages
+\defbibheading{contbibnumbered}{%
+ \neededheight=15\baselineskip % I just played with this factor until it seemed to work ok
+ \pt@saved=\the\pagetotal% store the current pagetotal value
+ \advance\pt@saved by \neededheight
+ \ifdim\pt@saved>\pagegoal% the tabular will cause a pagebreak
+    \global\@bibhead@pagebreaktrue
+  \fi
+ \@bibpagetrue
+ %\message{neededheight =\the\neededheight\space ptsaved=\the\pt@saved \space pagegoal=\the\pagegoal \space \if@bibhead@pagebreak{TRUE}\else{FALSE}\fi}
+ \needspace{4\baselineskip}
+ \stepcounter{BookmarkCounter}%
+ \pdfbookmark[0]{#1}{note\theBookmarkCounter} %
+ \vskip\subrubricbeforespace{\@subrubricfont\hspace{3pt}#1}%
+  \gdef\@cont@heading{%
+    \if@twocolumn
+        \@topnewpage[\@subrubricfont\hspace{3pt}#1\@continuedname\par]%
+      \else
+      	\@subrubricfont\hspace{3pt}#1\@continuedname\par%
+      \fi
+      \@afterheading
+  }
+  \AddToHook{shipout/before}[myhook]{%
+    \if@bibpage
+      \if@bibhead@pagebreak\else\aftergroup\@cont@heading\fi
+    \else
+     \aftergroup\@cont@heading
+    \fi
+  \global\@bibpagefalse
+  \global\@bibhead@pagebreakfalse}
+  }
+
+% Cleanup to removed header when bibliography is done
+\def\blx@endbibliography{%
+  \csuse{blx@endenv@\blx@theenv}%
+  \RemoveFromHook {shipout/before} [myhook]
+  \blx@noitem
+  \endgroup
+  \blx@bibnote\blx@thepostnote
+  \endgroup}
+
+% Avoid breaking of references across pages
+\usepackage{etoolbox}  % <============================ to patch penaltys
+\patchcmd{\thebibliography}{\clubpenalty4000}{\clubpenalty10000}{}{}     % no orphans
+\patchcmd{\thebibliography}{\widowpenalty4000}{\widowpenalty10000}{}{}   % no widows
+\patchcmd{\bibsetup}{\interlinepenalty=5000}{\interlinepenalty=10000}{}{} % no break of entry
+
+% This adds the field citations to the bibliography data so I can add the number of citaitons
+\begin{filecontents}{biblatex-dm.cfg}
+\DeclareDatamodelFields[type=field, datatype=integer, nullok=true]{citations}
+\DeclareDatamodelEntryfields{citations}
+\end{filecontents}
+
+\renewbibmacro*{finentry}{
+\printfield{citations}%
+\finentry}
+\DeclareFieldFormat{citations}{\mkbibbrackets{#1}}
+
+% command to label students in bibliography
+\providecommand{\us}{\textsuperscript{*}}
+\providecommand{\gs}{\textsuperscript{+}}
+\providecommand{\un}[1]{}
+
+%% Remove some fields from journal articles
+%\AtEveryCitekey{\ifentrytype{article}{\clearfield{url}\clearfield{issn}\clearfield{review}\clearfield{series}\clearfield{eprint}}{}}
+%\AtEveryCitekey{\ifentrytype{misc}{\clearfield{url}\clearfield{issn}\clearfield{review}\clearfield{series}\clearfield{eprint}}{}}
+%\renewbibmacro*{url+urldate}{}
+%\renewbibmacro*{eprint}{}
+
+% Change enumerate environment so that item's don't break across pages
+\let\saveenumerate\enumerate
+\let\saveendenumerate\endenumerate
+
+\renewenvironment{enumerate}{%
+    \saveenumerate
+    \let\olditem\item
+    \newcommand{\closestep}{}%
+    \renewcommand{\item}{%
+        \closestep
+        \olditem
+        \minipage[t]{\linewidth}%
+        \renewcommand{\closestep}{\endminipage}%
+    }%
+}{%
+    \closestep\saveendenumerate%
+}
+
+% Define the cvsection command
+% optional argument is name of boolean and filename (defaults to second argument)
+% second argument is the text to put in the pdf table of contents
+% Third argument is the content to include  
+\NewDocumentCommand\includeCheck{O{#2} m m}{
+\ifthenelse{\boolean{#1}}{%
+  \IfFileExists{#2.tex}{%
+        #3%
+  }%
+  }{}%
+ }
+
+% Booleans for turning things on/off
+\newboolean{usePhoto}
+\newboolean{Journal}
+\newboolean{Refereed}
+\newboolean{Book}
+\newboolean{Conference}
+\newboolean{Patent}
+\newboolean{Invited}
+\newboolean{PersonalAwards}
+\newboolean{StudentAwards}
+\newboolean{Service}
+\newboolean{Reviews}
+\newboolean{ProfDevelopment}
+\newboolean{GradAdvisees}
+\newboolean{UndergradResearch}
+\newboolean{Teaching}
+\newboolean{Grants}
+\newboolean{Proposals}
+\newboolean{Admin}
+\newboolean{Credentials}
+
+% Defaults for booleans (don't change here)
+\setboolean{usePhoto}{false}
+\setboolean{Journal}{true}
+\setboolean{Refereed}{true}
+\setboolean{Book}{true}
+\setboolean{Conference}{true}
+\setboolean{Patent}{true}
+\setboolean{Invited}{true}
+\setboolean{PersonalAwards}{true}
+\setboolean{StudentAwards}{true}
+\setboolean{Service}{true}
+\setboolean{Reviews}{true}
+\setboolean{ProfDevelopment}{true}
+\setboolean{GradAdvisees}{true}
+\setboolean{UndergradResearch}{true}
+\setboolean{Teaching}{true}
+\setboolean{Grants}{true}
+\setboolean{Proposals}{true}
+\setboolean{Admin}{true}
+\setboolean{Credentials}{true}
+
+% Load file to change booleans
+\IfFileExists{exclusions.tex} {
+\input{exclusions.tex}
+}
+
+
+
+

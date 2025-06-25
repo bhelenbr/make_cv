@@ -11,7 +11,7 @@ import argparse
 from .stringprotect import str2latex
 
 
-def grants2latex_far(f,years,inputfile):
+def grants2latex_far(f,years,inputfile,max_rows=-1):
 	try:
 		props = pd.read_excel(inputfile,sheet_name="Data",header=0)
 	except OSError:
@@ -34,7 +34,10 @@ def grants2latex_far(f,years,inputfile):
 		
 	grants = grants.sort_values(by=['Begin Date'],ascending = [False])
 	grants.reset_index(inplace=True,drop=True)
-	nrows = grants.shape[0] 
+	nrows = grants.shape[0]
+	
+	if max_rows > 0 and nrows > max_rows:
+		nrows = max_rows
 
 	if (nrows > 0):
 		total = grants["Total Cost"].sum()

@@ -12,7 +12,7 @@ from datetime import date
 from .stringprotect import str2latex
 from .stringprotect import abbreviate_name_list
 
-def UR2latex(f,years,inputfile):
+def UR2latex(f,years,inputfile,max_rows=-1):
 	source = inputfile # file to read
 	try:
 		df = pd.read_excel(source,sheet_name="Data")
@@ -37,6 +37,10 @@ def UR2latex(f,years,inputfile):
 		df = table.reset_index()
 		#print(df.columns)
 		nrows = df.shape[0]
+		
+		if max_rows > 0 and nrows > max_rows:
+			nrows = max_rows
+		
 		#df.sort_values(by=[('Calendar Year',   'max')], inplace=True, ascending = [False])
 		df.sort_values(by=['Calendar Year'], inplace=True, ascending = [False])
 		df = df.reset_index()
