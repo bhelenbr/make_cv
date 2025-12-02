@@ -38,7 +38,7 @@ from .teaching2latex import teaching2latex
 from .shortformteaching import shortformteaching
 	
 	
-pub_categories = ['journal','conference','patent','book','invited','refereed']
+pub_categories = ['Journal','Conference','Patent','Book','Invited','Refereed']
 other_sections = ['PersonalAwards','StudentAwards','Service','Reviews','GradAdvisees','UndergradResearch','Teaching','Grants','Proposals'] 
 sections = pub_categories +other_sections
 datafiles = ['Scholarship','PersonalAwards','StudentAwards','Service','Reviews','CurrentGradAdvisees','GradTheses','UndergradResearch','Teaching','Grants','Proposals']
