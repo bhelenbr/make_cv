@@ -115,7 +115,7 @@
 \ifthenelse{\boolean{#1}}{%
   \IfFileExists{#2.tex}{%
         #3%
-  }%
+  }{}%
   }{}%
  }
 
@@ -154,7 +154,7 @@
 
 \IfFileExists{exclusions.tex} {
 \input{exclusions.tex}
-}
+}{}
 
 \def\makenamesetup{%
   \def\bibnamedelima{~}%

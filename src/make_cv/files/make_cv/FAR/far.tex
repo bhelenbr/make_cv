@@ -39,7 +39,7 @@
 
 
 \includeCheck{PersonalAwards}{
-=\section{PERSONAL AWARDS}
+\section{PERSONAL AWARDS}
 \input{PersonalAwards.tex}
 }
 
@@ -52,16 +52,27 @@
 \section{SERVICE}
 \input{Service.tex}
 }
+\IfFileExists{ProspectiveVisits.tex}{
+\input{ProspectiveVisits.tex}
+}{}
 
 \includeCheck{Reviews}{
 \section{REVIEWING}
 \input{Reviews.tex}
 }
 
-\includeCheck{GradAdvisees}{
+\IfFileExists{AdviseeCounts.tex}{
+\section{UNDERGRADUATE ADVISING}
+\input{AdviseeCounts.tex}
+\IfFileExists{AdvisingEvals.tex}{
+\input{AdvisingEvals.tex}
+}{}
+}
+
+\IfFileExists{GradAdvisees.tex}{
 \section{GRADUATE ADVISEES}
 \input{GradAdvisees.tex}
-}
+}{}
 
 \includeCheck{UndergradResearch}{
 \section{UNDERGRADUATE RESEARCH}

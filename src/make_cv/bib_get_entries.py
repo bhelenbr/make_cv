@@ -11,6 +11,7 @@ from bibtexparser.customization import convert_to_unicode
 from bibtexparser.bparser import BibTexParser
 from bibtexautocomplete.core import main as btac
 
+
 import re
 import string
 import argparse
@@ -21,6 +22,8 @@ from .bib_add_keywords import add_keyword
 
 from bs4 import BeautifulSoup
 import requests
+
+from . import global_prefs
 
 # copied from http://myhttpheader.com
 myRequestHeader = {
@@ -43,7 +46,9 @@ def process_entry(paperbibentry,pub_id,year):
 	add_keyword(paperbibentry)
 	IDstring = re.search('^[A-z]+', paperbibentry['author']).group(0)
 	IDstring += year
-	IDstring += re.search('^[A-z]+', paperbibentry['title']).group(0)
+	hasletter = re.search('^[A-z]+', paperbibentry['title'])
+	if hasletter:
+		IDstring += re.search('^[A-z]+', paperbibentry['title']).group(0)
 	paperbibentry['ID'] = IDstring
 
 def getyear(paperbibentry):
@@ -121,17 +126,22 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 		with open('btac.bib',encoding='utf-8') as bibtex_file:
 			bibtex_str = bibtex_file.read()
 		
-		if bibtex_str.find('author') > -1:
+		if bibtex_str.find('author') > -1  and bibtex_str.find('title') > -1:
+			print(bibtex_str)
+			bibtex_str = re.sub("&amp;", "\\&", bibtex_str)
+			print(bibtex_str)
 			bib_database = bibtexparser.loads(bibtex_str, tbparser)
 			print(BibTexWriter()._entry_to_bibtex(bib_database.entries[-1]))
-			YN = input('Is this entry correct and ready to be added?\nOnce an entry is added any changes must be done manually.\n[Y/N]?')
+			YN = 'Y'
+			if not global_prefs.quiet:
+				YN = input('Is this entry correct and ready to be added?\nOnce an entry is added any changes must be done manually.\n[Y/N]?')
 			if YN.upper() == 'Y':
 				process_entry(bib_database.entries[-1],pub_id,year)
 				continue
 			else:
 				bib_database.entries.pop()
 		else:
-			print('BibTeX Autocomplete failed: missing author')
+			print('BibTeX Autocomplete failed: missing author or title')
 		
 		##################  Using Google Scholar #############################
 		print('Trying to complete this record using Google Scholar (Sometimes this gets blocked):')
@@ -173,7 +183,9 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 			# Process response
 			bibtex_str = response.text
 			print(bibtex_str)
-			YN = input('Is this entry correct and ready to be added?\nOnce an entry is added any changes must be done manually.\n[Y/N]?')
+			YN = 'Y'
+			if not global_prefs.quiet:
+				YN = input('Is this entry correct and ready to be added?\nOnce an entry is added any changes must be done manually.\n[Y/N]?')
 			if YN.upper() == 'Y':
 				bib_database = bibtexparser.loads(bibtex_str, tbparser)
 				process_entry(bib_database.entries[-1],pub_id,year)				

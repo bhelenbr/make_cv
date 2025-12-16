@@ -15,6 +15,7 @@ from bibtexparser.bibdatabase import BibDatabase
 from bibtexparser.customization import convert_to_unicode
 from bibtexparser.bparser import BibTexParser
 import argparse
+from . import global_prefs
 
 def guess_type(paperbibentry):
 	entrytype = str(paperbibentry["ENTRYTYPE"])
@@ -52,18 +53,20 @@ def guess_type(paperbibentry):
 keyword_list =['journal','refereed','conference', 'book', 'patent', 'invited','arXiv','techreport','ignore']
 
 def input_keyword(keyword):
-	while True:
-		print('Guessing type is ' +keyword +'.  If so hit return, otherwise enter:')
-		for (n,key) in enumerate(keyword_list):
-			print(str(n) +' for ' +key)
-		response = input()
-		if response.isdigit():
-			intr = int(response)
-			if intr >= 0 and intr < len(keyword_list):
-				keyword = keyword_list[intr]
+	print('Guessing type is ' +keyword +'.')
+	if not global_prefs.quiet:
+		print(' If so hit return, otherwise enter:')
+		while True:
+			for (n,key) in enumerate(keyword_list):
+				print(str(n) +' for ' +key)
+			response = input()
+			if response.isdigit():
+				intr = int(response)
+				if intr >= 0 and intr < len(keyword_list):
+					keyword = keyword_list[intr]
+					break
+			elif response == '':
 				break
-		elif response == '':
-			break
 	return(keyword)
 
 def add_keyword(paperbibentry):

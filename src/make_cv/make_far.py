@@ -13,7 +13,7 @@ import shutil
 import configparser
 import argparse
 import warnings
-
+from pathlib import Path
 
 from .create_config import create_config
 from .create_config import verify_config
@@ -36,7 +36,7 @@ from .student_awards2latex_far import student_awards2latex_far
 from .service2latex_far import service2latex_far
 from .publons2latex_far import publons2latex_far
 from .teaching2latex_far import teaching2latex_far
-	
+from .advising2latex_far import advising2latex_far	
 
 pubfiles = ['Journal','Refereed','Book','Conference','Patent','Invited']
 
@@ -78,7 +78,38 @@ def make_far_tables(config,table_dir):
 		fservice.close()
 		if not(nrows):
 			os.remove(table_dir+os.sep +'Service.tex')
+			
+	# Undergraduate Advising Counts
+	filename = faculty_source +os.sep +"Service" +os.sep + "advisee counts.xlsx"
+	if Path(filename).is_file():
+		print('Updating advisee counts')
+		df = pd.read_excel(filename,skiprows=0)
+		nadvisees = df["Count Distinct Name"].iloc[-1]
+		fadv = open(table_dir +os.sep +'AdviseeCounts.tex', 'w') # file to write
+		fadv.write("Current undergraduate advisees: " +str(nadvisees) +" \\par\n")
+		fadv.close()
+
+	#Undergraduate Advising Evaluations
+	filename = faculty_source +os.sep +"Service" +os.sep + "advising evaluation data.xlsx"
+	if Path(filename).is_file():
+		print('Updating advisee evals')
+		f = open(table_dir +os.sep +'AdvisingEvals.tex', 'w') # file to write
+		advising2latex_far(f,years,filename,private=False)
+		f.close()
+		
+	# Prospective Visit Counts
+	filename = faculty_source +os.sep +"Service" +os.sep + "prospective visit data.xlsx"
+	if Path(filename).is_file():
+		print('Updating prospective visit counts')
+		df = pd.read_excel(filename,skiprows=0)
+		nvisits = df["Visits"].iloc[-1]
+		ndeposits = df["Deposits"].iloc[-1]
+		nyear = df["Year"].iloc[-1]
+		f = open(table_dir +os.sep +'ProspectiveVisits.tex', 'w') # file to write
+		f.write(f"Prospective visits in {nyear}: {nvisits} with {ndeposits} deposits \\par\n")
+		f.close()
 	
+	#Reviewing
 	if config.getboolean('Reviews'):
 		print('Updating reviews table')
 		freviews = open(table_dir +os.sep +'Reviews.tex', 'w') # file to write
