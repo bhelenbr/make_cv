@@ -27,6 +27,17 @@ def read_thesis_bib(thesisfile):
 	import bibtexparser
 	from bibtexparser.bparser import BibTexParser
 
+	# Create dataframe
+	df = pd.DataFrame(columns=[
+		"Student",
+		"Start Date",
+		"Year",
+		"Degree",
+		"Advisor",
+		"Title",
+		"Comments"
+	])
+	
 	# Try common encodings
 	for enc in ("utf-8", "cp1252", "latin-1"):
 		try:
@@ -38,27 +49,16 @@ def read_thesis_bib(thesisfile):
 			continue
 		except OSError:
 			print(f"Could not open/read file: {thesisfile}")
-			return 0
+			return df
 	else:
 		print(f"Could not decode file: {thesisfile}")
-		return 0
+		return df
 
 	bib_database.entries = sorted(
 		bib_database.entries,
 		key=lambda k: getyear(k),
 		reverse=True
 	)
-
-	# Create dataframe
-	df = pd.DataFrame(columns=[
-		"Student",
-		"Start Date",
-		"Year",
-		"Degree",
-		"Advisor",
-		"Title",
-		"Comments"
-	])
 
 	for paperbibentry in bib_database.entries:
 		row = {}

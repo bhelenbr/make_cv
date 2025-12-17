@@ -144,52 +144,53 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 			print('BibTeX Autocomplete failed: missing author or title')
 		
 		##################  Using Google Scholar #############################
-		print('Trying to complete this record using Google Scholar (Sometimes this gets blocked):')
-		pub_filled = scholarly.fill(pub)		
-		if 'url_related_articles' in pub_filled.keys():
-			scholar_id = pub_filled['url_related_articles'].split("q=related:")[1].split(":")[0]
-			output_query = f"https://scholar.google.com/scholar?hl=en&q=info:{scholar_id}:scholar.google.com/&output=cite&scirp=0&hl=en"
-			response = requests.get(output_query,headers=myRequestHeader)
-			soup = BeautifulSoup(response.content, 'html.parser')
-			# Find link to BibTeX
-			a_tag = soup.find("a", class_="gs_citi")
-			if a_tag and a_tag.get("href"):
-				bibtex_url = a_tag["href"]
-			elif scraper_id:
-				payload = { 'api_key': scraper_id, 'url': output_query}
-				response = requests.get('https://api.scraperapi.com/', params=payload)
+		if global_prefs.scrapeGoogle:
+			print('Trying to complete this record using Google Scholar (This gets blocked a lot):')
+			pub_filled = scholarly.fill(pub)		
+			if 'url_related_articles' in pub_filled.keys():
+				scholar_id = pub_filled['url_related_articles'].split("q=related:")[1].split(":")[0]
+				output_query = f"https://scholar.google.com/scholar?hl=en&q=info:{scholar_id}:scholar.google.com/&output=cite&scirp=0&hl=en"
+				response = requests.get(output_query,headers=myRequestHeader)
+				soup = BeautifulSoup(response.content, 'html.parser')
+				# Find link to BibTeX
+				a_tag = soup.find("a", class_="gs_citi")
 				if a_tag and a_tag.get("href"):
 					bibtex_url = a_tag["href"]
-				else:
-					print('Scraper got blocked: \n' +output_query)
-					continue
-			else:
-				print('Google blocked request, try using a scraper id from www.scraperapi.com or just download entry from google scholar yourself from: \n' +output_query)
-				continue
-			
-			# try to follow BibTeX link to get citation
-			response = requests.get(bibtex_url,headers=myRequestHeader)
-			if (response.text.find('Error 403 (Forbidden)') > -1):
-				if scraper_id:
-					payload = { 'api_key': scraper_id, 'url': bibtex_url}
+				elif scraper_id:
+					payload = { 'api_key': scraper_id, 'url': output_query}
 					response = requests.get('https://api.scraperapi.com/', params=payload)
-					if (response.text.find('Error 403 (Forbidden)') > -1) and scraper_id:
-						print('Scraper got blocked: ' +bibtex_url)
+					if a_tag and a_tag.get("href"):
+						bibtex_url = a_tag["href"]
+					else:
+						print('Scraper got blocked: \n' +output_query)
 						continue
 				else:
-					print('Google blocked request, try using a scraper id from www.scraperapi.com or just download entry from google scholar yourself from: \n' +bibtex_url)
-					continue				
-			
-			# Process response
-			bibtex_str = response.text
-			print(bibtex_str)
-			YN = 'Y'
-			if not global_prefs.quiet:
-				YN = input('Is this entry correct and ready to be added?\nOnce an entry is added any changes must be done manually.\n[Y/N]?')
-			if YN.upper() == 'Y':
-				bib_database = bibtexparser.loads(bibtex_str, tbparser)
-				process_entry(bib_database.entries[-1],pub_id,year)				
-				continue
+					print('Google blocked request, try using a scraper id from www.scraperapi.com or just download entry from google scholar yourself from: \n' +output_query)
+					continue
+				
+				# try to follow BibTeX link to get citation
+				response = requests.get(bibtex_url,headers=myRequestHeader)
+				if (response.text.find('Error 403 (Forbidden)') > -1):
+					if scraper_id:
+						payload = { 'api_key': scraper_id, 'url': bibtex_url}
+						response = requests.get('https://api.scraperapi.com/', params=payload)
+						if (response.text.find('Error 403 (Forbidden)') > -1) and scraper_id:
+							print('Scraper got blocked: ' +bibtex_url)
+							continue
+					else:
+						print('Google blocked request, try using a scraper id from www.scraperapi.com or just download entry from google scholar yourself from: \n' +bibtex_url)
+						continue				
+				
+				# Process response
+				bibtex_str = response.text
+				print(bibtex_str)
+				YN = 'Y'
+				if not global_prefs.quiet:
+					YN = input('Is this entry correct and ready to be added?\nOnce an entry is added any changes must be done manually.\n[Y/N]?')
+				if YN.upper() == 'Y':
+					bib_database = bibtexparser.loads(bibtex_str, tbparser)
+					process_entry(bib_database.entries[-1],pub_id,year)				
+					continue
 	
 	writer = BibTexWriter()
 	writer.order_entries_by = None
