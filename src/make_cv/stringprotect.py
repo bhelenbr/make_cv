@@ -77,8 +77,10 @@ def first_last(initial_name):
 		return('')
 		
 	# Deal with Jr. and Sr. last name endings
-	initial_name = re.sub('^(.*)?[ ]* Jr\\.?(.*)$','\\1_Jr\\2',initial_name)
-	initial_name = re.sub('^(.*)?[ ]* Sr\\.?(.*)$','\\1_Jr\\2',initial_name)
+	initial_name = re.sub('^(.*)?[ ]* ([J,S])r\.(.*)$','\\1_\\2r.\\3',initial_name)
+	initial_name = re.sub('^(.*)?[ ]* ([J,S])r (.*)$','\\1_\\2r.\\3',initial_name)
+	initial_name = re.sub('^(.*)?[ ]* ([J,S])r$','\\1_\\2r.',initial_name)
+	initial_name = re.sub('^(.*)?[ ]* ([J,S])r,(.*)$','\\1_\\2r.,\\3',initial_name)
 	
 	if initial_name.find(',') != -1: # If any commas are detected
 		#print("In Part 1: Commas Included")
@@ -95,8 +97,8 @@ def first_last(initial_name):
 	name = first_name +" " +last_name
 	
 	# Undo Jr. and Sr. Change
-	name = name.replace('_Jr',' Jr.')
-	name = name.replace('_Sr',' Sr.')
+	name = name.replace('_Jr',' Jr')
+	name = name.replace('_Sr',' Sr')
 	return(name)
 	
 # Smith, John S. 
@@ -106,8 +108,10 @@ def last_first(initial_name):
 		return('')
 		
 	# Deal with Jr. and Sr. last name endings
-	initial_name = re.sub('^(.*)?[ ]* Jr\\.?(.*)$','\\1_Jr\\2',initial_name)
-	initial_name = re.sub('^(.*)?[ ]* Sr\\.?(.*)$','\\1_Jr\\2',initial_name)
+	initial_name = re.sub('^(.*)?[ ]* ([J,S])r\.(.*)$','\\1_\\2r.\\3',initial_name)
+	initial_name = re.sub('^(.*)?[ ]* ([J,S])r (.*)$','\\1_\\2r.\\3',initial_name)
+	initial_name = re.sub('^(.*)?[ ]* ([J,S])r$','\\1_\\2r.',initial_name)
+	initial_name = re.sub('^(.*)?[ ]* ([J,S])r,(.*)$','\\1_\\2r.,\\3',initial_name)
 	
 	if initial_name.find(',') != -1: # If any commas are detected
 		#print("In Part 1: Commas Included")
@@ -124,8 +128,8 @@ def last_first(initial_name):
 	name = last_name +", " +first_name
 	
 	# Undo Jr. and Sr. Change
-	name = name.replace('_Jr',' Jr.')
-	name = name.replace('_Sr',' Sr.')
+	name = name.replace('_Jr',' Jr')
+	name = name.replace('_Sr',' Sr')
 	return(name)
 	
 # This function puts a single name in standard abbreviated form:
@@ -136,9 +140,13 @@ def abbreviate_name(initial_name,first_initial_only=False):
 		return('')
 		
 	# Deal with Jr. and Sr. last name endings
-	initial_name = re.sub('^(.*)?[ ]* Jr\\.?(.*)$','\\1_Jr\\2',initial_name)
-	initial_name = re.sub('^(.*)?[ ]* Sr\\.?(.*)$','\\1_Jr\\2',initial_name)
+	initial_name = re.sub('^(.*)?[ ]* ([J,S])r\.(.*)$','\\1_\\2r.\\3',initial_name)
+	initial_name = re.sub('^(.*)?[ ]* ([J,S])r (.*)$','\\1_\\2r.\\3',initial_name)
+	initial_name = re.sub('^(.*)?[ ]* ([J,S])r$','\\1_\\2r.',initial_name)
+	initial_name = re.sub('^(.*)?[ ]* ([J,S])r,(.*)$','\\1_\\2r.,\\3',initial_name)
+
 	
+	print(initial_name)
 	if initial_name.find(',') != -1: # If any commas are detected
 		#print("In Part 1: Commas Included")
 		last_first = initial_name.split(',')
@@ -163,8 +171,8 @@ def abbreviate_name(initial_name,first_initial_only=False):
 	abbreviated_name = first_abbrev +last_name
 	
 	# Undo Jr. and Sr. Change
-	abbreviated_name = abbreviated_name.replace('_Jr',' Jr.')
-	abbreviated_name = abbreviated_name.replace('_Sr',' Sr.')
+	abbreviated_name = abbreviated_name.replace('_Jr',' Jr')
+	abbreviated_name = abbreviated_name.replace('_Sr',' Sr')
 	return(abbreviated_name)
 	
 
