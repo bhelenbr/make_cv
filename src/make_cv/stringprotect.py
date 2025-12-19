@@ -77,7 +77,7 @@ def first_last(initial_name):
 		return('')
 		
 	# Deal with Jr. and Sr. last name endings
-	initial_name = re.sub('^(.*)?[ ]* ([J,S])r\.(.*)$','\\1_\\2r.\\3',initial_name)
+	initial_name = re.sub('^(.*)?[ ]* ([J,S])r\\.(.*)$','\\1_\\2r.\\3',initial_name)
 	initial_name = re.sub('^(.*)?[ ]* ([J,S])r (.*)$','\\1_\\2r.\\3',initial_name)
 	initial_name = re.sub('^(.*)?[ ]* ([J,S])r$','\\1_\\2r.',initial_name)
 	initial_name = re.sub('^(.*)?[ ]* ([J,S])r,(.*)$','\\1_\\2r.,\\3',initial_name)
@@ -108,7 +108,7 @@ def last_first(initial_name):
 		return('')
 		
 	# Deal with Jr. and Sr. last name endings
-	initial_name = re.sub('^(.*)?[ ]* ([J,S])r\.(.*)$','\\1_\\2r.\\3',initial_name)
+	initial_name = re.sub('^(.*)?[ ]* ([J,S])r\\.(.*)$','\\1_\\2r.\\3',initial_name)
 	initial_name = re.sub('^(.*)?[ ]* ([J,S])r (.*)$','\\1_\\2r.\\3',initial_name)
 	initial_name = re.sub('^(.*)?[ ]* ([J,S])r$','\\1_\\2r.',initial_name)
 	initial_name = re.sub('^(.*)?[ ]* ([J,S])r,(.*)$','\\1_\\2r.,\\3',initial_name)
@@ -140,13 +140,11 @@ def abbreviate_name(initial_name,first_initial_only=False):
 		return('')
 		
 	# Deal with Jr. and Sr. last name endings
-	initial_name = re.sub('^(.*)?[ ]* ([J,S])r\.(.*)$','\\1_\\2r.\\3',initial_name)
+	initial_name = re.sub('^(.*)?[ ]* ([J,S])r\\.(.*)$','\\1_\\2r.\\3',initial_name)
 	initial_name = re.sub('^(.*)?[ ]* ([J,S])r (.*)$','\\1_\\2r.\\3',initial_name)
 	initial_name = re.sub('^(.*)?[ ]* ([J,S])r$','\\1_\\2r.',initial_name)
 	initial_name = re.sub('^(.*)?[ ]* ([J,S])r,(.*)$','\\1_\\2r.,\\3',initial_name)
-
 	
-	print(initial_name)
 	if initial_name.find(',') != -1: # If any commas are detected
 		#print("In Part 1: Commas Included")
 		last_first = initial_name.split(',')
