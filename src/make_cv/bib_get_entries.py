@@ -129,6 +129,7 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 		if bibtex_str.find('author') > -1  and bibtex_str.find('title') > -1:
 			print(bibtex_str)
 			bibtex_str = re.sub("&amp;", "\\&", bibtex_str)
+			bibtex_str = re.sub(" #", "\\#", bibtex_str)
 			print(bibtex_str)
 			bib_database = bibtexparser.loads(bibtex_str, tbparser)
 			print(BibTexWriter()._entry_to_bibtex(bib_database.entries[-1]))
