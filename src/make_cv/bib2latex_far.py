@@ -15,6 +15,8 @@ from datetime import date
 import argparse
 import numpy as np
 
+from . import global_prefs
+
 def getyear(paperbibentry):
 	if "year" in paperbibentry.keys(): 
 		return(int(paperbibentry["year"]))
@@ -24,6 +26,10 @@ def getyear(paperbibentry):
 
 def bib2latex_far(f,inputfile,keywords,years=-1,max_pubs=-1):
 
+	citestring = "fullcite"
+	if global_prefs.usePandoc:
+		citestring = "textcite"
+		
 	nrecord = 0
 	if max_pubs < 0:
 		max_pubs = sys.maxsize
@@ -60,7 +66,7 @@ def bib2latex_far(f,inputfile,keywords,years=-1,max_pubs=-1):
 			for count,etype in enumerate(keywords):
 				etype = etype.strip().lower()
 				if kword.find(etype) > -1:
-					f.write("\\item\n\\fullcite{"+paperbibentry["ID"]+"}\n")
+					f.write("\\item\n\\" +citestring +"{"+paperbibentry["ID"]+"}\n")
 					nrecord += 1
 					break
 		

@@ -11,7 +11,7 @@ import datetime as dt
 import argparse
 
 from .stringprotect import str2latex
-
+from . import global_prefs
 
 def props2latex_far(f,years,inputfile,max_rows=-1):
 	source = inputfile # file to read
@@ -38,12 +38,17 @@ def props2latex_far(f,years,inputfile,max_rows=-1):
 		nrows = max_rows
 	
 	if (nrows > 0):	
-		f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXllll}\n& Sponsor: Title & Alloc/Total & Dates  \\tablehead\n")
-		f.write("\\tablecontinue{Proposals}\n")
+		if global_prefs.usePandoc:
+			f.write("\\begin{tabularx}{\\linewidth}{lXll}\n& Sponsor: Title & Alloc/Total & Dates  \\\\\n")
+		else:
+			f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXll}\n& Sponsor: Title & Alloc/Total & Dates  \\tablehead\n")
+			f.write("\\tablecontinue{Proposals}\n")
 		newline = ""
 		count = 0
 		while count < nrows:
 			f.write(newline)
+			if global_prefs.usePandoc:
+				f.write(str(count+1) +".")
 			f.write(" & " +str2latex(props.loc[count,"Sponsor"].upper())+": " +str2latex(props.loc[count,"Title"]) + " & " + "\\${:,.0f}k".format(props.loc[count,"Allocated Amt"]/1000) + "/" +"\\${:,.0f}k".format(props.loc[count,"Total Cost"]/1000))
 			f.write(" & " +props.loc[count,"Begin Date"].strftime("%m/%Y") +"-" +props.loc[count,"End Date"].strftime("%m/%Y"))
 			newline = "\\\\\n"

@@ -21,6 +21,7 @@ from .bib2latex_far import getyear
 from .stringprotect import split_names
 from .stringprotect import abbreviate_name
 from .stringprotect import str2latex
+from . import global_prefs
 
 def read_thesis_bib(thesisfile):
 	import pandas as pd
@@ -136,13 +137,18 @@ def thesisbib2latex_far(f,years,studentfile,thesisfile,max_rows=-1):
 		nrows2 = 0
 	
 	if (nrows+nrows2 > 0):
-		f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXll}\n & Name: Title  & Date & Degree \\tablehead\n")
-		f.write("\\tablecontinue{Graduate Advisees}\n")
+		if global_prefs.usePandoc:
+			f.write("\\begin{tabularx}{\\linewidth}{lXll}\n & Name: Title  & Date & Degree \\\\\n")
+		else:
+			f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXll}\n & Name: Title  & Date & Degree \\tablehead\n")
+			f.write("\\tablecontinue{Graduate Advisees}\n")
 		newline=""
 		if nrows > 0:
 			count = 0
 			while count < nrows:
 				f.write(newline)
+				if global_prefs.usePandoc:
+					f.write(str(count+1) +".")
 				f.write(" & " +abbreviate_name(df.loc[count,"Student Name"])+": in progress"  + " &  & " +str2latex(df.loc[count,"Current Program"][(df.loc[count,"Current Program"].find("-")+1):]))
 				newline="\\\\\n"
 				count += 1
@@ -154,6 +160,8 @@ def thesisbib2latex_far(f,years,studentfile,thesisfile,max_rows=-1):
 			count = 0
 			while count < nrows2:
 				f.write(newline)
+				if global_prefs.usePandoc:
+					f.write(str(count+nrows+1) +".")
 				f.write(" & " +abbreviate_name(df2.loc[count,"Student"])+": " +str2latex(df2.loc[count,"Title"]) + " & " +'{0:d}'.format(int(df2.loc[count,"Year"])) + " & " +str2latex(df2.loc[count,"Degree"]))
 				newline="\\\\\n"
 				count += 1

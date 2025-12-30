@@ -9,6 +9,7 @@ import datetime as dt
 import argparse
 
 from .stringprotect import str2latex
+from . import global_prefs
 
 
 def grants2latex_far(f,years,inputfile,max_rows=-1):
@@ -45,13 +46,19 @@ def grants2latex_far(f,years,inputfile,max_rows=-1):
 		
 		f.write("Personal Allocation: " +"\\${:,.0f}k".format(allocated/1000) +"  Total: " +"\\${:,.0f}k\n".format(total/1000))
 	
-		f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXllll}\n& Sponsor: Title & Alloc/Total & Dates  \\tablehead\n")
-		f.write("\\tablecontinue{Grants}\n")
+		if global_prefs.usePandoc:
+			f.write("\\begin{tabularx}{\\linewidth}{lXll}\n& Sponsor: Title & Alloc/Total & Dates  \\\\\n")
+		else:
+			f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXllll}\n& Sponsor: Title & Alloc/Total & Dates  \\tablehead\n")
+			f.write("\\tablecontinue{Grants}\n")
+		
 		count = 0
 		newline=""
 		while count < nrows:
 			f.write(newline)
-			f.write("& " +str2latex(grants.loc[count,"Sponsor"].upper())+": " +str2latex(grants.loc[count,"Title"]) + " & " + "\\${:,.0f}k".format(grants.loc[count,"Allocated Amt"]/1000) + "/" +"\\${:,.0f}k".format(grants.loc[count,"Total Cost"]/1000))
+			if global_prefs.usePandoc:
+				f.write(str(count+1) +".")
+			f.write(" & " +str2latex(grants.loc[count,"Sponsor"].upper())+": " +str2latex(grants.loc[count,"Title"]) + " & " + "\\${:,.0f}k".format(grants.loc[count,"Allocated Amt"]/1000) + "/" +"\\${:,.0f}k".format(grants.loc[count,"Total Cost"]/1000))
 			f.write(" & " +grants.loc[count,"Begin Date"].strftime("%m/%Y") +"-" +grants.loc[count,"End Date"].strftime("%m/%Y"))
 			newline="\\\\\n"
 			count += 1

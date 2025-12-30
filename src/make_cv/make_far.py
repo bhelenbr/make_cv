@@ -38,6 +38,8 @@ from .publons2latex_far import publons2latex_far
 from .teaching2latex_far import teaching2latex_far
 from .advising2latex_far import advising2latex_far	
 
+from . import global_prefs
+
 pubfiles = ['Journal','Refereed','Book','Conference','Patent','Invited']
 
 def make_far_tables(config,table_dir):
@@ -122,12 +124,12 @@ def make_far_tables(config,table_dir):
 	# Undergraduate Research
 	if config.getboolean('UndergradResearch'):
 		print('Updating undergraduate research table')
-		fur = open(table_dir +os.sep +'UndergraduateResearch.tex', 'w') # file to write
+		fur = open(table_dir +os.sep +'UndergradResearch.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['UndergradResearchFile'])
 		nrows = UR2latex_far(fur,years,filename)	
 		fur.close()
 		if not(nrows):
-			os.remove(table_dir +os.sep +'UndergraduateResearch.tex')
+			os.remove(table_dir +os.sep +'UndergradResearch.tex')
 	
 	# Teaching
 	if config.getboolean('Teaching'):
@@ -143,15 +145,22 @@ def main(argv = None):
 	warnings.filterwarnings('ignore', category=UserWarning, module='openpyxl')
 	parser = argparse.ArgumentParser(description='This script creates a far using python and LaTeX plus provided data')
 	add_default_args(parser)
+	parser.add_argument('-p','--pandoc', help='Create a .docx far using pandoc', action='store_true')
 
 	[configuration,args] = read_args(parser,argv)
 	config = configuration['CV']
 	process_default_args(config,args)
+	global_prefs.usePandoc = args.pandoc
 	
 	stem = config['LaTexFile'][:-4]
 	folder = "Tables_" +stem
 	make_far_tables(config,folder)
-	typeset(config,stem,['xelatex',config['LaTexFile']])
+	
+	if global_prefs.usePandoc:
+		docxfile = config['LaTexFile'][0:-4] +".docx"
+		subprocess.run(['pandoc','--citeproc','--csl=no-bib-full.csl',config['LaTexFile'],'-o',docxfile],check=True)
+	else:
+		typeset(config,stem,['xelatex',config['LaTexFile']])
 
 if __name__ == "__main__":
 	main()
