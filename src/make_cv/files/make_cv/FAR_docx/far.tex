@@ -1,0 +1,81 @@
+\documentclass[10pt]{article}
+\pagestyle{empty}               % no page numbers, thanks.
+\usepackage{hyperref}
+\usepackage{ltablex}
+\usepackage{ifthen}
+\usepackage[tiny]{titlesec}
+\usepackage[backend=biber,style=numeric-comp,sorting=none,giveninits=true,maxnames=20,eprint=false,isbn=false]{biblatex}
+\usepackage{xstring}
+
+% Add bib file to make bibliography information
+\addbibresource{../../Scholarship/scholarship.bib}
+
+
+% Set page size
+\textwidth = 6.5 in
+\textheight = 9 in
+\oddsidemargin = 0.0 in
+\evensidemargin = 0.0 in
+\topmargin = 0.0 in
+\headheight = 0.0 in
+\headsep = 0.0 in
+\parindent= 0 in  
+
+\title{Faculty Activity Report}
+\author{}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{JOURNAL ARTICLES}
+\input{Tables_far/Journal.tex}
+
+\section{REFEREED CONFERENCE PAPERS}
+\input{Tables_far/Refereed.tex}
+
+\section{BOOK CHAPTERS}
+\input{Tables_far/Book.tex}
+
+\section{CONFERENCES}
+\input{Tables_far/Conference.tex}
+
+\section{PATENTS}
+\input{Tables_far/Patent.tex}
+
+\section{INVITED TALKS}
+\input{Tables_far/Invited.tex}
+
+\section{PERSONAL AWARDS}
+\input{Tables_far/PersonalAwards.tex}
+
+\section{STUDENT AWARDS}
+\input{Tables_far/StudentAwards.tex}
+
+\section{SERVICE}
+\input{Tables_far/Service.tex}
+\input{Tables_far/ProspectiveVisits.tex}
+
+\section{UNDERGRADUATE ADVISING}
+\input{Tables_far/AdviseeCounts.tex}
+\input{Tables_far/AdvisingEvals.tex}
+
+\section{GRADUATE ADVISEES}
+\input{Tables_far/GradAdvisees.tex}
+
+\section{UNDERGRADUATE RESEARCH}
+\input{Tables_far/UndergradResearch.tex}
+
+\section{TEACHING}
+This table includes all classes taught that had reported teaching evaluations.  Question 19 is ``Overall, how would you rate this instructor?''  Question 20 is ``Overall, how would you rate this course?''. The scores are out of 5 and the University average evaluation is approximately 4.1. 
+\input{Tables_far/Teaching.tex}
+
+\section{GRANTS}
+\input{Tables_far/Grants.tex}
+
+\section{PROPOSALS}
+\input{Tables_far/Proposals.tex}
+%}
+
+\end{document}
+
