@@ -156,7 +156,7 @@ def main(argv = None):
 	
 	if global_prefs.usePandoc:
 		docxfile = config['LaTexFile'][0:-4] +".docx"
-		subprocess.run(['pandoc','--citeproc','--csl=no-bib-full.csl',config['LaTexFile'],'-o',docxfile],check=True)
+		subprocess.run(['pandoc','--citeproc','--csl=no-bib-full.csl','--toc',config['LaTexFile'],'-o',docxfile],check=True)
 	else:
 		typeset(config,stem,['xelatex',config['LaTexFile']])
 

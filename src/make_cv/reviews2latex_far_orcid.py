@@ -29,7 +29,6 @@ def extract_review(group):
 	summary = subgroup[0].get("peer-review-summary", {})[0]
 	
 	source = summary.get("source", {}).get("source-name", {}).get("value")
-	print(f"source {source}")
 	organization = summary.get("convening-organization", {}).get("name")
 	
 	year = (
@@ -37,7 +36,6 @@ def extract_review(group):
 		.get("year", {})
 		.get("value")
 	)
-	print(f"year {year}")
 
 	# Prefer journal title; fall back to organization
 	venue = source or organization
@@ -66,11 +64,9 @@ def collect_and_group_reviews(orcid, start_year=None):
 				continue
 
 			year = r["year"]
-			print(year)
-			print(start_year)
 			if start_year and (year is None or int(year) < int(start_year)):
 				continue
-			print("I am here")
+			
 			grouped[r["venue"]]["count"] += 1
 			if year:
 				grouped[r["venue"]]["years"].add(year)
@@ -121,9 +117,9 @@ def reviews_to_latex_longtable(records, start_year=None):
 	)
 
 	header = r"""
-\begin{longtable}{p{0.65\linewidth}rr}
+\begin{tabularx}{\linewidth}{Xrr}
 \hline
-Journal / Venue & Reviews & Most Recent \\
+Journal & Reviews & Most Recent \\
 \hline
 \endhead
 """.strip()
@@ -138,7 +134,7 @@ Journal / Venue & Reviews & Most Recent \\
 
 	footer = r"""
 \hline
-\end{longtable}
+\end{tabularx}
 """.strip()
 
 	return "\n".join([subtitle, header] + rows + [footer])
@@ -156,8 +152,6 @@ def reviews2latex_far_orcid(f,orcid,years):
 	latex = reviews_to_latex_longtable(records,start_year=begin_year)
 	f.write(latex)
 	
-	print(records)
-	print(len(records))
 	return(len(records))
 
 # ------------------------------------------------------------
