@@ -60,7 +60,7 @@ def getyear(paperbibentry):
 		return int(paperbibentry["date"][:4])
 	return 0
 
-def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
+def bib_get_entries_google(bibfile, author_id, years, outputfile, scraper_id=None):
 	
 	# Set up a ProxyGenerator object to use free proxies
 	# This needs to be done only once per session

@@ -20,9 +20,9 @@ import re
 
 from .create_config import create_config
 from .create_config import verify_config
-from .publons2excel import publons2excel
+from .reviews2excel_publons import reviews2excel_publons
 from .bib_add_citations import bib_add_citations
-from .bib_get_entries import bib_get_entries
+from .bib_get_entries_google import bib_get_entries_google
 from .bib_get_entries_orcid import bib_get_entries_orcid
 from .bib_add_student_markers import bib_add_student_markers
 from .bib_add_keywords import bib_add_keywords
@@ -35,7 +35,7 @@ from .thesisbib2latex_far import thesisbib2latex_far
 from .personal_awards2latex import personal_awards2latex
 from .student_awards2latex import student_awards2latex
 from .service2latex import service2latex
-from .publons2latex import publons2latex
+from .reviews2latex_publons import reviews2latex_publons
 from .teaching2latex import teaching2latex
 from .shortformteaching import shortformteaching
 from . import global_prefs
@@ -125,7 +125,7 @@ def make_cv_tables(config,table_dir):
 		print('Updating reviews table')
 		freviews = open(table_dir +os.sep +'Reviews.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['ReviewsFile'])
-		nrows = publons2latex(freviews,years,filename,max_rows=max_rows)
+		nrows = reviews2latex_publons(freviews,years,filename,max_rows=max_rows)
 		freviews.close()
 		if not(nrows):
 			os.remove(table_dir+os.sep +'Reviews.tex')
@@ -339,7 +339,7 @@ def process_default_args(config,args):
 		json = os.path.join(faculty_source,reviewfile)
 		if os.path.exists(json):
 			print('Converting json reviewing file')
-			publons2excel(json,xls)
+			reviews2excel_publons(json,xls)
 		config['ReviewsFile'] = name_extension_tuple[0] +'.xlsx'
 		
 	if config['UseScraper'] == 'false':
@@ -366,7 +366,7 @@ def process_default_args(config,args):
 		backupfile = os.path.join(faculty_source,'backup1.bib')
 		shutil.copyfile(filename,backupfile)
 		nyears = int(config['GetNewGoogleEntries'])
-		bib_get_entries(backupfile,config['GoogleID'],nyears,filename,scraperID)
+		bib_get_entries_google(backupfile,config['GoogleID'],nyears,filename,scraperID)
 		os.remove(backupfile)
 	
 	if config.getint('GetNewOrcidEntries') != 0:

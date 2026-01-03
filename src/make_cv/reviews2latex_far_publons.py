@@ -3,7 +3,7 @@
 # that shows a list of journals reviewed for and the number of papers reviewed for each
 # journal in the last 5 years
 # 
-# To run "publons2latex.py <filename> <outputname.txt>"
+# To run "reviews2latex_far_publons.py <filename> <outputname.txt>"
 
 # import modules
 import pandas as pd
@@ -14,7 +14,7 @@ import argparse
 
 from .stringprotect import str2latex
 
-def publons2latex_far(f,years,inputfile):
+def reviews2latex_far_publons(f,years,inputfile):
 	source = inputfile  # file to read
 	try:
 		reviews = pd.read_excel(source,header=0)
@@ -55,7 +55,7 @@ if __name__ == "__main__":
 	parser.add_argument('outputfile',help='the output latex table name')
 	args = parser.parse_args()
 	
-	f = publons2latex_far(args.outputfile, args.append) # file to write
+	f = reviews2latex_far_publons(args.outputfile, args.append) # file to write
 	nrows = main(f,args.years,args.inputfile)
 	f.close()
 	

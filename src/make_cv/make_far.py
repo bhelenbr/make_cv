@@ -15,13 +15,6 @@ import argparse
 import warnings
 from pathlib import Path
 
-from .create_config import create_config
-from .create_config import verify_config
-from .publons2excel import publons2excel
-from .bib_add_citations import bib_add_citations
-from .bib_get_entries import bib_get_entries
-from .bib_add_student_markers import bib_add_student_markers
-from .bib_add_keywords import bib_add_keywords
 from .bib2latex_far import bib2latex_far
 
 from .make_cv import make_cv_tables
@@ -34,7 +27,7 @@ from .UR2latex_far import UR2latex_far
 from .personal_awards2latex_far import personal_awards2latex_far
 from .student_awards2latex_far import student_awards2latex_far
 from .service2latex_far import service2latex_far
-from .publons2latex_far import publons2latex_far
+from .reviews2latex_far_publons import reviews2latex_far_publons
 from .teaching2latex_far import teaching2latex_far
 from .advising2latex_far import advising2latex_far	
 
@@ -116,7 +109,7 @@ def make_far_tables(config,table_dir):
 		print('Updating reviews table')
 		freviews = open(table_dir +os.sep +'Reviews.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['ReviewsFile'])
-		nrows = publons2latex_far(freviews,years,filename)
+		nrows = reviews2latex_far_publons(freviews,years,filename)
 		freviews.close()
 		if not(nrows):
 			os.remove(table_dir+os.sep +'Reviews.tex')
