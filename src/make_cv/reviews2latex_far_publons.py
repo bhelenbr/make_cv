@@ -50,13 +50,12 @@ def reviews2latex_far_publons(f,years,inputfile):
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description='This script outputs reviewing data to a latex table that shows a list of journals reviewed for and the number of papers reviewed for each journal in the last [YEARS] years')
 	parser.add_argument('-y', '--years',default="3",type=int,help='the number of years to output')
-	parser.add_argument('-a', '--append', action='store_const',const="a",default="w")
 	parser.add_argument('inputfile',help='the input excel file name')           
 	parser.add_argument('outputfile',help='the output latex table name')
 	args = parser.parse_args()
 	
-	f = reviews2latex_far_publons(args.outputfile, args.append) # file to write
-	nrows = main(f,args.years,args.inputfile)
+	f = open(args.outpufile, 'w') # file to write
+	nrows = reviews2latex_far_publons(f, args.years, args.inputfile) # file to write
 	f.close()
 	
 	if (nrows == 0):
