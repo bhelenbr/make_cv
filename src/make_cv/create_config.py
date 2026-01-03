@@ -26,10 +26,10 @@ defaults = {'data_dir': '../..',
 				'UseScraper': 'false',
 				'UpdateCitations': 'false',
 				'UpdateStudentMarkers': 'false',
-				'GetNewScholarshipEntries': '0',
+				'GetNewGoogleEntries': '0',
 				'SearchForDOIs': 'false',
 				'ORCID': '',
-				'GetNewScholarshipEntriesusingOrcid':'0'}
+				'GetNewOrcidEntries':'0'}
 
 files = {'ScholarshipFile': 'Scholarship/scholarship.bib',
 			'PersonalAwardsFile': 'Awards/personal awards data.xlsx',

@@ -19,6 +19,8 @@ from datetime import date
 import sys
 
 from .bib_add_keywords import add_keyword
+from .bib_get_entries_orcid import make_bibtex_id_list
+
 
 from bs4 import BeautifulSoup
 import requests
@@ -90,6 +92,9 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 		bib_database = bibtexparser.load(bibtex_file, tbparser)
 	entries = bib_database.entries
 	
+	bib_entry_ids = make_bibtex_id_list(bibfile)
+	
+	
 	# Create list of titles in bibfile compressing out nonalphanumeric characters
 	titles = [re.sub('[\\W_]', '', entry['title']).lower() if 'title' in entry.keys() else None for entry in entries]
 	# Create list of google publication ids if they exist
@@ -110,7 +115,7 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 		pub_id = au_pub_id[au_pub_id.find(':') + 1:]
 		if pub_id in google_pub_ids:
 			continue
-		
+			
 		################  Using bibtex autocomplete ########################
 		print('Trying to complete this record using bibtex autocomplete:')
 		try:
@@ -127,10 +132,24 @@ def bib_get_entries(bibfile, author_id, years, outputfile, scraper_id=None):
 			bibtex_str = bibtex_file.read()
 		
 		if bibtex_str.find('author') > -1  and bibtex_str.find('title') > -1:
-			print(bibtex_str)
+			year_match = re.search(r'year\s*=\s*{(\d+)}', bibtex_str)
+			title_match = re.search(r'(?:,|\n)\s*title\s*=\s*{(.+?)},', bibtex_str)
+			doi_match = re.search(r'(?:,|\n)\s*doi\s*=\s*{(.+?)},', bibtex_str)
+			
+			if doi_match:
+				doi = doi_match.group()
+				if any(doi.lower() == entry_doi for _, entry_doi in bib_entry_ids):
+					continue
+
+			# Skip if matching title/date string
+			title_id = ''.join(word.lower() for word in title_match.group().split() if (word.isalpha()  and word.isascii()))
+			title_id += year
+			if any(title_id == entry_title_id for entry_title_id, _ in bib_entry_ids):
+				if doi is None:
+					continue
+			
 			bibtex_str = re.sub("&amp;", "\\&", bibtex_str)
 			bibtex_str = re.sub(" #", "\\#", bibtex_str)
-			print(bibtex_str)
 			bib_database = bibtexparser.loads(bibtex_str, tbparser)
 			print(BibTexWriter()._entry_to_bibtex(bib_database.entries[-1]))
 			YN = 'Y'
@@ -220,89 +239,3 @@ if __name__ == "__main__":
 			args.author_id = google_file.readline().strip('\n\r')
 		
 	bib_get_entries(args.bibfile,args.author_id,args.years,args.output,args.scraperID)
-
-# OLD ATTEMPTS
-# 		if not 'citedby_url' in pub.keys():
-# 			print('Failed: no cited by link')
-# 			continue
-# 			
-# 		url = pub['citedby_url']
-# 		
-# 		response = requests.get(url)
-# 		soup = BeautifulSoup(response.content, 'html.parser')
-# 		
-# 		first_entry = soup.find('h2', class_='gs_rt')
-# 
-# 		if first_entry and first_entry.a:
-# 			url2 = "https://scholar.google.com" + first_entry.a['href']
-# 		else:
-# 			print("No entry found. Google probably blocked the request.")
-# 			continue
-# 
-# 		chrome_options = Options()
-# 		chrome_options.add_argument("--headless")
-# 		chrome_options.add_argument("--disable-gpu")
-# 
-# 		service = Service()
-# 
-# 		driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-# 		driver.get(url2)
-# 
-
-
-# 			response = requests.get(url, headers=myHeader)
-# 			print(response)
-# 			
-# 			soup = BeautifulSoup(response.content, 'html.parser')
-#             
-# 			a_tag = soup.find("a", class_="gs_citi")
-# 			if a_tag and a_tag.get("href"):
-# 				bibtex_url = a_tag["href"]
-# 				print(bibtex_url)
-# 				try:
-# 					response = requests.get(bibtex_url)
-# 					bibtex_content = response.text
-# 				except Exception as e:
-# 					print(bibtex_url,e)
-# 					continue
-# 			else:
-# 				print('failed')
-# 				continue
-
-
-				
-# import time
-# from webdriver_manager.chrome import ChromeDriverManager
-# from selenium import webdriver
-# from selenium.webdriver.chrome.service import Service
-# from selenium.webdriver.chrome.options import Options
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support.ui import WebDriverWait
-# from selenium.webdriver.support import expected_conditions as EC
-# 			bibtex_str = response.text
-# 			bib_database = bibtexparser.loads(bibtex_str, tbparser)
-# 			process_entry(bib_database.entries[-1],pub_id,year)
-# 			print(BibTexWriter()._entry_to_bibtex(bib_database.entries[-1]))
-# 			YN = input('Is this entry correct and ready to be added?\nOnce an entry is added any changes must be done manually.\n[Y/N]?')
-# 			if YN.upper() == 'Y':
-# 				newentries.append(bib_database.entries[-1]['ID'])
-
-# 			try:
-# 				chrome_options = Options()
-# 				chrome_options.add_argument("--headless")
-# 				chrome_options.add_argument("--disable-gpu")
-# 				service = Service()
-# 				driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-# 				driver.get(url)
-# 				time.sleep(10)
-# 				print(driver.find_element(By.XPATH, "/html/body").text)
-# 				citation_link = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, "gs_citi")))
-# 				citation_link.click()
-# 				time.sleep(3)
-# 				bibtex_str = driver.find_element(By.XPATH, "/html/body").text
-# 				print(bibtex_str)
-# 			except Exception as e:
-# 				print("An error occurred:", e)
-# 			finally:
-# 				driver.quit()
-
