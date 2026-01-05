@@ -93,6 +93,21 @@ def make_far_tables(config,table_dir):
 		advising2latex_far(f,years,filename,private=False)
 		f.close()
 		
+		filename = faculty_source +os.sep +"Proposals & Grants" +os.sep + "expenditures.xlsx"
+
+	# Expenditures
+	if Path(filename).is_file():
+		print('Updating expenditures')
+		df = pd.read_excel(filename,skiprows=0)
+		expenditures = df["Expenditure"].iloc[-1]
+		indirect = df["Indirect"].iloc[-1]
+		tuition = df["Tuition"].iloc[-1]
+		recovery = df["Salary Recovery"].iloc[-1]
+		year = df["Year"].iloc[-1]
+		f = open(table_dir +os.sep +'Expenditures.tex', 'w') # file to write
+		f.write(f"{year}: expenditures \\${expenditures:.2f}, indirect \\${indirect:.2f}, tuition \\${tuition:.2f}, salary recovery \\${recovery:.2f} \\par\n")
+		f.close()
+		
 	# Prospective Visit Counts
 	filename = faculty_source +os.sep +"Service" +os.sep + "prospective visit data.xlsx"
 	if Path(filename).is_file():

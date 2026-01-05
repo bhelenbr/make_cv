@@ -10,6 +10,7 @@ from bibtexparser.bibdatabase import BibDatabase
 from bibtexparser.customization import convert_to_unicode
 from bibtexparser.bparser import BibTexParser
 from bibtexautocomplete.core import main as btac
+from bibtexautocomplete import BibtexAutocomplete
 
 
 import re
@@ -119,18 +120,27 @@ def bib_get_entries_google(bibfile, author_id, years, outputfile, scraper_id=Non
 		################  Using bibtex autocomplete ########################
 		print('Trying to complete this record using bibtex autocomplete:')
 		try:
-			print(pub['bib']['citation'] + ' ' + pub['bib']['title'])
+			print(pub['bib']['citation'] + ' ' + pub['bib']['title'] +' ' +pub['bib']['pub_year'])
 		except KeyError:
-			print(pub['bib']['title'])
+			print(pub['bib']['title'] +' ' +pub['bib']['pub_year'])
 		
-		# try to fill entry using bibtex autocomplete?
-		with open('btac.bib', 'w',encoding='utf-8') as tempfile:
-			tempfile.write('@article{' + pub_id + ',\n title={' + pub['bib']['title'] + '},\n}')
-		btac(['-s','-i','-f','-m','btac.bib'])
+		bibstring = '@article{' + pub_id + ',\n title={' + pub['bib']['title'] + '},\n year={' + pub['bib']['pub_year'] + '},\n}'
 		
-		with open('btac.bib',encoding='utf-8') as bibtex_file:
-			bibtex_str = bibtex_file.read()
+		# Try to fill entry using BibTeX autocomplete
+		completer = BibtexAutocomplete()
+		completer.load_string(bibstring)
+		completer.autocomplete()
+		bibtex_str = completer.write_string()[0]
 		
+		# # try to fill entry using bibtex autocomplete?
+# 		with open('btac.bib', 'w',encoding='utf-8') as tempfile:
+# 			tempfile.write('@article{' + pub_id + ',\n title={' + pub['bib']['title'] + '},\n}')
+# 		btac(['-s','-i','-f','-m','btac.bib'])
+# 		
+# 		with open('btac.bib',encoding='utf-8') as bibtex_file:
+# 			bibtex_str = bibtex_file.read()
+		
+			
 		if bibtex_str.find('author') > -1  and bibtex_str.find('title') > -1:
 			year_match = re.search(r'year\s*=\s*{(\d+)}', bibtex_str)
 			title_match = re.search(r'(?:,|\n)\s*title\s*=\s*{(.+?)},', bibtex_str)

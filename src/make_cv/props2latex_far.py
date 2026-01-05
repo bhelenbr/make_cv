@@ -24,13 +24,16 @@ def props2latex_far(f,years,inputfile,max_rows=-1):
 	
 	
 	props.fillna(value={"Sponsor": "", "Title": "", "Allocated Amt": 0, "Total Cost": 0, "Funded?": "N", "Begin Date": dt.datetime(1900,1,1),"End Date": dt.datetime(1900,1,1)},inplace=True)
+	props["Submit Date"] = props["Submit Date"].fillna(props["Begin Date"])
+
+	
 	if years > 0:
 		today = dt.date.today()
 		year = today.year
 		begin_year = year - years
-		props = props[props['Begin Date'].apply(lambda x: x.year) >= begin_year]
+		props = props[props['Submit Date'].apply(lambda x: x.year) >= begin_year]
 	
-	props.sort_values(by=['Begin Date'], inplace=True,ascending = [False])
+	props.sort_values(by=['Submit Date'], inplace=True,ascending = [False])
 	props = props.reset_index()
 	nrows = props.shape[0] 
 

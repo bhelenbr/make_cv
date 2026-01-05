@@ -21,6 +21,7 @@ def grants2latex_far(f,years,inputfile,max_rows=-1):
 		
 
 	props.fillna(value={"Sponsor": "", "Title": "", "Allocated Amt": 0, "Total Cost": 0, "Funded?": "N", "Begin Date": dt.datetime(1900,1,1),"End Date": dt.datetime(1900,1,1)},inplace=True)
+	props["Submit Date"] = props["Submit Date"].fillna(props["Begin Date"])
 	grants = props[props['Funded?'].str.match('Y')]
 	grants.reset_index(inplace=True,drop=True)
 
@@ -31,7 +32,7 @@ def grants2latex_far(f,years,inputfile,max_rows=-1):
 		today = date.today()
 		year = today.year
 		begin_year = year - years	
-		grants = grants[grants['Begin Date'].apply(lambda x: x.year) >= begin_year]
+		grants = grants[grants['End Date'].apply(lambda x: x.year) >= begin_year]
 		
 	grants = grants.sort_values(by=['Begin Date'],ascending = [False])
 	grants.reset_index(inplace=True,drop=True)
