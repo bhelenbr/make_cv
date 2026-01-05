@@ -18,7 +18,7 @@
 }
 
 \includeCheck{Book}{
-\section{BOOK CHAPTERS}
+\section{BOOKS \& BOOK CHAPTERS}
 \input{Book.tex}
 }
 
@@ -81,19 +81,45 @@
 
 \includeCheck{Teaching}{
 \section{TEACHING}
+%\subsection{Teaching Evaluations}
 This table includes all classes taught that had reported teaching evaluations.  Question 19 is ``Overall, how would you rate this instructor?''  Question 20 is ``Overall, how would you rate this course?''. The scores are out of 5 and the University average evaluation is approximately 4.1. 
 \input{Teaching.tex}
+%\subsection{Course Development}
+%subsection{Innovative Activities}
 }
 
+%\section{CLINICAL WORK}
+%Please proviide: job title, workplace info (name, address, supervisor), client populations (including age groups and conditions), average hours per week, and a general description of work.
+%
+%\section{CONSULTING ACTIVITIES}
+%Please provide: job title, workplace info (company name, address, supervisor) average hours per week, and a general description of work.
+%
+%\section{OUTREACH ACTIVITIES}
+%
+%\section{PROFESSIONAL DEVELOPMENT ACTIVITIES}
+%\subsection{Licensure and Advanced Certification}
+%\subsection{Continuing Education}
+%\subsection{Teaching-Related Professional Development}
+
 \includeCheck{Grants}{
-\section{GRANTS}
+\section{ACTIVE GRANTS}
+\IfFileExists{Expenditures.tex}{
+\input{Expenditures.tex}
+}{}
 \input{Grants.tex}
 }
 
 \includeCheck{Proposals}{
-\section{PROPOSALS}
+\section{PROPOSALS SUBMITTED}
 \input{Proposals.tex}
 }
+
+
+%\section{NARRATIVE}
+
+%\section{GOALS}
+
+
 
 \end{document}
 
