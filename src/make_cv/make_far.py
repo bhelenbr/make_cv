@@ -27,8 +27,6 @@ from .UR2latex_far import UR2latex_far
 from .personal_awards2latex_far import personal_awards2latex_far
 from .student_awards2latex_far import student_awards2latex_far
 from .service2latex_far import service2latex_far
-from .reviews2latex_far_publons import reviews2latex_far_publons
-from .reviews2latex_far_orcid import reviews2latex_far_orcid
 from .teaching2latex_far import teaching2latex_far
 from .advising2latex_far import advising2latex_far	
 
@@ -119,20 +117,6 @@ def make_far_tables(config,table_dir):
 		f = open(table_dir +os.sep +'ProspectiveVisits.tex', 'w') # file to write
 		f.write(f"Prospective visits in {nyear}: {nvisits} with {ndeposits} deposits \\par\n")
 		f.close()
-	
-	#Reviewing
-	if config.getboolean('Reviews'):
-		print('Updating reviews table')
-		freviews = open(table_dir +os.sep +'Reviews.tex', 'w', encoding="utf-8") # file to write
-		file_path = Path(config['ReviewsFile'])
-		if file_path.exists():
-			filename = os.path.join(faculty_source,config['ReviewsFile'])
-			nrows = reviews2latex_far_publons(freviews,years,filename)
-		else:
-			nrows = reviews2latex_far_orcid(freviews,config["orcid"],years)
-		freviews.close()
-		if not(nrows):
-			os.remove(table_dir+os.sep +'Reviews.tex')
 	
 	# Undergraduate Research
 	if config.getboolean('UndergradResearch'):

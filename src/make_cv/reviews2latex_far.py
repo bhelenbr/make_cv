@@ -13,8 +13,9 @@ from datetime import datetime
 from datetime import date
 
 from .stringprotect import str2latex
+from . import global_prefs
 
-def reviews2latex_publons(f,years,inputfile,max_rows=-1):
+def reviews2latex_far(f,years,inputfile,max_rows=-1):
 	source = inputfile  # file to read
 	try:
 		reviews = pd.read_excel(source,header=0)
@@ -48,11 +49,13 @@ def reviews2latex_publons(f,years,inputfile,max_rows=-1):
 		
 		nreviews = table["Reviews"].sum()
 		nrounds = table["Rounds"].sum()
-		f.write("Reviewing activity as reported by Web of Science since " +str(yearmin)+ ": " +str(nreviews) +" reviews (" +str(nrounds) +" total review rounds)\\par\\vspace\\baselineskip\n")
+		f.write("Reviewing activity since " +str(yearmin)+ ": " +str(nreviews) +" reviews (" +str(nrounds) +" total review rounds)\\par\\vspace\\baselineskip\n")
 
-
-		f.write("\\begin{tabularx}{\\linewidth}{Xl}\nJournal & Reviews(Rounds) \\endfirsthead\n")
-		f.write("\\multicolumn{2}{l}{\\conthead{Reviewing Activity}} \\endhead \\hline\n")
+		if global_prefs.usePandoc:
+			f.write("\\begin{tabularx}{\\linewidth}{Xl}\nJournal & Reviews(Rounds) \\\\ \\hline\n")
+		else:
+			f.write("\\begin{tabularx}{\\linewidth}{Xl}\nJournal & Reviews(Rounds) \\endfirsthead\n")
+			f.write("\\multicolumn{2}{l}{\\conthead{Reviewing Activity}} \\endhead \\hline\n")
 
 		count = 0
 		while count < nrows:
@@ -70,7 +73,7 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 	
 	f = open(args.outputfile, args.append) # file to write
-	nrows = reviews2latex_publons(f,args.years,args.inputfile)
+	nrows = reviews2latex_far(f,args.years,args.inputfile)
 	f.close()
 	
 	if (nrows == 0):

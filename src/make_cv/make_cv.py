@@ -21,6 +21,7 @@ import re
 from .create_config import create_config
 from .create_config import verify_config
 from .reviews2excel_publons import reviews2excel_publons
+from .reviews2excel_orcid import reviews2excel_orcid
 from .bib_add_citations import bib_add_citations
 from .bib_get_entries_google import bib_get_entries_google
 from .bib_get_entries_orcid import bib_get_entries_orcid
@@ -35,7 +36,7 @@ from .thesisbib2latex_far import thesisbib2latex_far
 from .personal_awards2latex import personal_awards2latex
 from .student_awards2latex import student_awards2latex
 from .service2latex import service2latex
-from .reviews2latex_publons import reviews2latex_publons
+from .reviews2latex_far import reviews2latex_far
 from .teaching2latex import teaching2latex
 from .shortformteaching import shortformteaching
 from . import global_prefs
@@ -125,7 +126,7 @@ def make_cv_tables(config,table_dir):
 		print('Updating reviews table')
 		freviews = open(table_dir +os.sep +'Reviews.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['ReviewsFile'])
-		nrows = reviews2latex_publons(freviews,years,filename,max_rows=max_rows)
+		nrows = reviews2latex_far(freviews,years,filename,max_rows=max_rows)
 		freviews.close()
 		if not(nrows):
 			os.remove(table_dir+os.sep +'Reviews.tex')
@@ -340,6 +341,9 @@ def process_default_args(config,args):
 		if os.path.exists(json):
 			print('Converting json reviewing file')
 			reviews2excel_publons(json,xls)
+		else:
+			print('Getting review history from ORCID')
+			reviews2excel_orcid(config['ORCID'],xls)
 		config['ReviewsFile'] = name_extension_tuple[0] +'.xlsx'
 		
 	if config['UseScraper'] == 'false':
