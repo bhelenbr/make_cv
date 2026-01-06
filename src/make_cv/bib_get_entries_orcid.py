@@ -331,8 +331,8 @@ def bib_get_entries_orcid(bibfile, orcid, years, outputfile):
 	# get list of publication identifiers in existing file
 	bib_entries = make_bibtex_id_list(bibfile)
 	
-	for bibid in bib_entries:
-		print(bibid)
+# 	for bibid in bib_entries:
+# 		print(bibid)
 	
 	# Get all works from orcid
 	groups = get_all_works(orcid)

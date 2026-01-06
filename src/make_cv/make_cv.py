@@ -332,20 +332,6 @@ def process_default_args(config,args):
 	# do the preprocessing stuff first
 	faculty_source = config['data_dir']
 	
-	# convert a reviewin history json file from Web of Science
-	reviewfile = config['ReviewsFile']
-	name_extension_tuple = os.path.splitext(reviewfile)
-	if name_extension_tuple[1] == '.json':
-		xls = os.path.join(faculty_source,name_extension_tuple[0] +'.xlsx')
-		json = os.path.join(faculty_source,reviewfile)
-		if os.path.exists(json):
-			print('Converting json reviewing file')
-			reviews2excel_publons(json,xls)
-		else:
-			print('Getting review history from ORCID')
-			reviews2excel_orcid(config['ORCID'],xls)
-		config['ReviewsFile'] = name_extension_tuple[0] +'.xlsx'
-		
 	if config['UseScraper'] == 'false':
 		scraperID = None
 	else:
@@ -360,6 +346,20 @@ def process_default_args(config,args):
 		config['GetNewOrcidEntries'] = '0'
 	elif config['GetNewOrcidEntries'] == 'true':
 		config['GetNewOrcidEntries'] = '1'
+		
+	# convert a reviewin history json file from Web of Science
+	reviewfile = config['ReviewsFile']
+	name_extension_tuple = os.path.splitext(reviewfile)
+	if name_extension_tuple[1] == '.json':
+		xls = os.path.join(faculty_source,name_extension_tuple[0] +'.xlsx')
+		json = os.path.join(faculty_source,reviewfile)
+		if os.path.exists(json):
+			print('Converting json reviewing file')
+			reviews2excel_publons(json,xls)
+		elif config.getint('GetNewOrcidEntries') != 0:
+			print('Getting review history from ORCID')
+			reviews2excel_orcid(config['ORCID'],xls)
+		config['ReviewsFile'] = name_extension_tuple[0] +'.xlsx'
 	
 	if config.getint('GetNewGoogleEntries') != 0:
 		print("Trying to find new .bib entries from Google Scholar")
