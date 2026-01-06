@@ -357,33 +357,33 @@ def process_default_args(config,args):
 			print('Converting json reviewing file')
 			reviews2excel_publons(json,xls)
 		elif config.getint('GetNewOrcidEntries') != 0:
-			print('Getting review history from ORCID')
-			reviews2excel_orcid(config['ORCID'],xls)
+			if not (config['ORCID'] == ""):
+				reviews2excel_orcid(config['ORCID'],xls)
 		config['ReviewsFile'] = name_extension_tuple[0] +'.xlsx'
 	
 	if config.getint('GetNewGoogleEntries') != 0:
-		print("Trying to find new .bib entries from Google Scholar")
-		if config['GoogleID'] == "":
-			print("Can't find new scholarship entries without providing Google ID")
-			exit()
-		filename = os.path.join(faculty_source,config['ScholarshipFile'])
-		backupfile = os.path.join(faculty_source,'backup1.bib')
-		shutil.copyfile(filename,backupfile)
-		nyears = int(config['GetNewGoogleEntries'])
-		bib_get_entries_google(backupfile,config['GoogleID'],nyears,filename,scraperID)
-		os.remove(backupfile)
+		if not (config['GoogleID'] == ""):
+			print("Trying to find new .bib entries from Google Scholar")
+			filename = os.path.join(faculty_source,config['ScholarshipFile'])
+			backupfile = os.path.join(faculty_source,'backup1.bib')
+			shutil.copyfile(filename,backupfile)
+			nyears = int(config['GetNewGoogleEntries'])
+			bib_get_entries_google(backupfile,config['GoogleID'],nyears,filename,scraperID)
+			os.remove(backupfile)
+		else:
+			print("Can't get entries from Google without providing Google ID")
 	
 	if config.getint('GetNewOrcidEntries') != 0:
-		print("Trying to find new .bib entries from ORCID")
-		if config['ORCID'] == "":
-			print("Can't find new scholarship entries without providing ORCID")
-			exit()
-		filename = os.path.join(faculty_source,config['ScholarshipFile'])
-		backupfile = os.path.join(faculty_source,'backup1.bib')
-		shutil.copyfile(filename,backupfile)
-		nyears = int(config['GetNewOrcidEntries'])
-		bib_get_entries_orcid(backupfile,config['ORCID'],nyears,filename)
-		os.remove(backupfile)
+		if not (config['ORCID'] == ""):
+			print("Trying to find new .bib entries from ORCID")
+			filename = os.path.join(faculty_source,config['ScholarshipFile'])
+			backupfile = os.path.join(faculty_source,'backup1.bib')
+			shutil.copyfile(filename,backupfile)
+			nyears = int(config['GetNewOrcidEntries'])
+			bib_get_entries_orcid(backupfile,config['ORCID'],nyears,filename)
+			os.remove(backupfile)
+		else:
+			print("Can't get entries from ORCID without providing ORCID")
 		
 	# add/update citations counts in .bib file	
 	if config.getboolean('UpdateCitations'):
