@@ -32,7 +32,7 @@ from .advising2latex_far import advising2latex_far
 
 from . import global_prefs
 
-pubfiles = ['Journal','Refereed','Book','Conference','Patent','Invited']
+pubfiles = ['Journal','Refereed','Book','Conference','Patent','Invited','arXiv']
 
 def make_far_tables(config,table_dir):
 	# default to writing entire history

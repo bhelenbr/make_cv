@@ -41,15 +41,21 @@ from .teaching2latex import teaching2latex
 from .shortformteaching import shortformteaching
 from . import global_prefs
 	
-pub_categories = ['Journal','Conference','Patent','Book','Invited','Refereed']
+pub_categories = ['Journal','Conference','Patent','Book','Invited','Refereed','arXiv']
 other_sections = ['PersonalAwards','StudentAwards','Service','Reviews','GradAdvisees','UndergradResearch','Teaching','Grants','Proposals'] 
 sections = pub_categories +other_sections
 datafiles = ['Scholarship','PersonalAwards','StudentAwards','Service','Reviews','CurrentGradAdvisees','GradTheses','UndergradResearch','Teaching','Grants','Proposals']
 
 def getSectionVals(config,section):
 	include = config.getboolean(section)
+	if include is None:
+		include = True;
 	years = config.getint(section +'Years')
+	if years is None:
+		years = -1
 	max_pubs = config.getint(section +'Count')
+	if max_pubs is None:
+		max_pubs = -1
 	defaultyears = config.getint('Years')
 	if years < 0:
 		years = defaultyears

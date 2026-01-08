@@ -65,7 +65,7 @@ def bib2latex_far(f,inputfile,keywords,years=-1,max_pubs=-1):
 			kword = str(paperbibentry["keywords"])
 			for count,etype in enumerate(keywords):
 				etype = etype.strip().lower()
-				if kword.find(etype) > -1:
+				if kword.lower().find(etype) > -1:
 					f.write("\\item\n\\" +citestring +"{"+paperbibentry["ID"]+"}\n")
 					nrecord += 1
 					break
