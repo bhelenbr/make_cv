@@ -43,14 +43,14 @@ def teaching2latex_far(f,years,inputfile,private=False):
 	if (nrows > 0):	
 		newline=""
 		if (private):
-			f.write("\\begin{tabularx}{\\linewidth}{lXll}\nTerm  & Course & Sections & Enrollment \\\\\n\\hline\n")
+			f.write("\\begin{tabularx}{\\linewidth}{lXll}\nTerm  & Course & Section & Enrollment \\\\\n\\hline\n")
 			count = 0
 			while count < nrows:
 				f.write(newline)
 				f.write(str2latex(df.loc[count,('term','')]) + " & " +str2latex(df.loc[count,('combined_course_num','')]) + " & " +str2latex(df.loc[count,('course_section','')]) +" & " +"{:d}".format(df.loc[count,('enrollment',19)]))
 				count += 1
 		else:
-			f.write("\\begin{tabularx}{\\linewidth}{lXlllll}\nTerm  & Course & Sections & Enrollment & \\%Response & Q19 & Q20 \\\\\n\\hline\n")
+			f.write("\\begin{tabularx}{\\linewidth}{lXlllll}\nTerm  & Course & Section & Enrollment & \\%Response & Q19 & Q20 \\\\\n\\hline\n")
 			count = 0
 			while count < nrows:
 				f.write(newline)

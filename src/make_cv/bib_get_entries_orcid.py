@@ -85,7 +85,7 @@ def get_work(orcid, put_code):
 
 
 def extract_doi(work):
-	for ext in work.get("external-ids", {}).get("external-id", []):
+	for ext in (work.get("external-ids", {}).get("external-id") or []):
 		if ext.get("external-id-type") == "doi":
 			return ext.get("external-id-value")
 	return None
