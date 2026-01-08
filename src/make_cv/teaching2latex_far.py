@@ -47,14 +47,14 @@ def teaching2latex_far(f,years,inputfile,private=False):
 			count = 0
 			while count < nrows:
 				f.write(newline)
-				f.write(str2latex(df.loc[count,('term','')]) + " & " +str2latex(df.loc[count,('combined_course_num','')]) + " & " +str2latex(df.loc[count,('course_section','')]) +" & " +str2latex(df.loc[count,('enrollment',1)]))
+				f.write(str2latex(df.loc[count,('term','')]) + " & " +str2latex(df.loc[count,('combined_course_num','')]) + " & " +str2latex(df.loc[count,('course_section','')]) +" & " +"{:d}".format(df.loc[count,('enrollment',19)]))
 				count += 1
 		else:
-			f.write("\\begin{tabularx}{\\linewidth}{lXllll}\nTerm  & Course & Sections & Enrollment & Q19 & Q20 \\\\\n\\hline\n")
+			f.write("\\begin{tabularx}{\\linewidth}{lXlllll}\nTerm  & Course & Sections & Enrollment & \\%Response & Q19 & Q20 \\\\\n\\hline\n")
 			count = 0
 			while count < nrows:
 				f.write(newline)
-				f.write(str2latex(df.loc[count,('term','')]) + " & " +str2latex(df.loc[count,('combined_course_num','')]) + " & " +str2latex(df.loc[count,('course_section','')]) +" & " +str2latex(df.loc[count,('enrollment',19)])+ " & " +"{:3.2f}".format(df.loc[count,('Weighted Average',19)]/df.loc[count,('count_evals',19)]) + " & " +"{:3.2f}".format(df.loc[count,('Weighted Average',20)]/df.loc[count,('count_evals',20)]))
+				f.write(str2latex(df.loc[count,('term','')]) + " & " +str2latex(df.loc[count,('combined_course_num','')]) + " & " +str2latex(df.loc[count,('course_section','')]) +" & " +"{:d}".format(df.loc[count,('enrollment',19)])+ " & " +"{:3.0f}".format(df.loc[count,('count_evals',19)]*100.0/df.loc[count,('enrollment',19)]) + "\\% & " +"{:3.2f}".format(df.loc[count,('Weighted Average',19)]/df.loc[count,('count_evals',19)]) + " & " +"{:3.2f}".format(df.loc[count,('Weighted Average',20)]/df.loc[count,('count_evals',20)]))
 				newline="\\\\\n"
 				count += 1
 		f.write("\n\\end{tabularx}\n")

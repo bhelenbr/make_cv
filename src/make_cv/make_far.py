@@ -103,7 +103,7 @@ def make_far_tables(config,table_dir):
 		recovery = df["Salary Recovery"].iloc[-1]
 		year = df["Year"].iloc[-1]
 		f = open(table_dir +os.sep +'Expenditures.tex', 'w') # file to write
-		f.write(f"{year}: expenditures \\${expenditures:.2f}, indirect \\${indirect:.2f}, tuition \\${tuition:.2f}, salary recovery \\${recovery:.2f} \\par\n")
+		f.write(f"{year}: expenditures\\par \\${expenditures:.2f}, indirect \\${indirect:.2f}, tuition \\${tuition:.2f}, salary recovery \\${recovery:.2f} \\par\n")
 		f.close()
 		
 	# Prospective Visit Counts

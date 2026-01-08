@@ -18,12 +18,12 @@ def grants2latex_far(f,years,inputfile,max_rows=-1):
 	except OSError:
 		print("Could not open/read file: " + inputfile)
 		return(0)
-		
-
+	
+	# This allows us to either use a proposals file with a Y/N or a separate grants file that has similar columns but no Funded? column
+	if not "Funded?" in props.columns:
+		props["Funded?"] = "Y"
 	props.fillna(value={"Sponsor": "", "Title": "", "Allocated Amt": 0, "Total Cost": 0, "Funded?": "N", "Begin Date": dt.datetime(1900,1,1),"End Date": dt.datetime(1900,1,1)},inplace=True)
-	props["Submit Date"] = props["Submit Date"].fillna(props["Begin Date"])
 	grants = props[props['Funded?'].str.match('Y')]
-	grants.reset_index(inplace=True,drop=True)
 
 	if (not(grants.shape[0] > 0)):
 		return(0)
