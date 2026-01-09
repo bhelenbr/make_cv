@@ -28,7 +28,7 @@ from .make_cv import read_args
 from .stringprotect import abbreviate_name
 from .stringprotect import split_names
 from .stringprotect import last_first
-from .thesisbib2latex_far import read_thesis_bib
+from .thesis2latex_far import read_thesis_bib
 
 import bibtexparser
 from bibtexparser.bwriter import BibTexWriter
@@ -56,7 +56,6 @@ def get_collaborator_list(config, output_format):
 	tbparser = BibTexParser(common_strings=True)
 	bib_database = bibtexparser.loads(bibtex_str, tbparser)
 	
-	cur_grad_names = 
 	cur_grad = os.path.join(faculty_source, config['CurrentGradAdviseesFile'])
 	try:
 		cur_grad_names = pd.read_excel(cur_grad, sheet_name="Data", parse_dates=['Start Date'])
@@ -138,7 +137,7 @@ def get_collaborator_list(config, output_format):
 					collab_list[key] = (last_first(author), year)
 						
 	# add grant collaborators
-	grants = grants[grants['End Date'].dt.year >= begin_year]
+	grants = grants[pd.to_datetime(grants['End Date'], errors='coerce').dt.year >= begin_year]
 	for index, row in grants.iterrows():
 		year = row['End Date'].year
 		

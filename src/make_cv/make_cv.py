@@ -32,7 +32,6 @@ from .props2latex_far import props2latex_far
 from .UR2latex import UR2latex
 from .bib2latex_far import bib2latex_far
 from .thesis2latex_far import thesis2latex_far
-from .thesisbib2latex_far import thesisbib2latex_far
 from .personal_awards2latex import personal_awards2latex
 from .student_awards2latex import student_awards2latex
 from .service2latex import service2latex
@@ -144,10 +143,7 @@ def make_cv_tables(config,table_dir):
 		fthesis = open(table_dir +os.sep +'GradAdvisees.tex', 'w') # file to write
 		filename1 = os.path.join(faculty_source,config['CurrentGradAdviseesFile'])
 		filename2 = os.path.join(faculty_source,config['GradThesesFile'])
-		if config['GradThesesFile'].endswith(".bib"):
-			nrows = thesisbib2latex_far(fthesis,years,filename1,filename2,max_rows=max_rows)
-		else:
-			nrows = thesis2latex_far(fthesis,years,filename1,filename2,max_rows=max_rows)
+		nrows = thesis2latex_far(fthesis,years,filename1,filename2,max_rows=max_rows)
 		fthesis.close()
 		if not(nrows):
 			os.remove(table_dir+os.sep +'GradAdvisees.tex')

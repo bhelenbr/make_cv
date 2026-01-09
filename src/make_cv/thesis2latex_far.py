@@ -1,18 +1,127 @@
-#! /usr/bin/env python3
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
-# Python code to scatter Undergraduate research data to faculty folders - for the 3 most recent years
-# First argument is file to scatter, second argument is Faculty
-# scatter <file to scatter> <Faculty folder>
+# writes latex files for creating bibliography
+# Usually run from CV/Tables folder like this
+# pubs2latex_far.py ../../Scholarship/scholarship.bib
 
-# import modules
+import os, sys
+import bibtexparser
+from bibtexparser.bwriter import BibTexWriter
+from bibtexparser.bibdatabase import BibDatabase
+from bibtexparser.customization import convert_to_unicode
+from bibtexparser.bparser import BibTexParser
+from datetime import date
 import datetime as dt
-import pandas as pd
-import os
-import sys
 import argparse
+import numpy as np
+import pandas as pd
 
-from .stringprotect import str2latex
+from .bib2latex_far import getyear
+from .stringprotect import split_names
 from .stringprotect import abbreviate_name
+from .stringprotect import str2latex
+from . import global_prefs
+
+def read_thesis_bib(thesisfile):
+	import pandas as pd
+	import bibtexparser
+	from bibtexparser.bparser import BibTexParser
+
+	# Create dataframe
+	df = pd.DataFrame(columns=[
+		"Student",
+		"Start Date",
+		"Year",
+		"Degree",
+		"Advisor",
+		"Title",
+		"Comments"
+	])
+	
+	# Try common encodings
+	for enc in ("utf-8", "cp1252", "latin-1"):
+		try:
+			with open(thesisfile, encoding=enc) as bibtex_file:
+				tbparser = BibTexParser()
+				bib_database = bibtexparser.load(bibtex_file, tbparser)
+			break
+		except UnicodeDecodeError:
+			continue
+		except OSError:
+			print(f"Could not open/read file: {thesisfile}")
+			return df
+	else:
+		print(f"Could not decode file: {thesisfile}")
+		return df
+
+	bib_database.entries = sorted(
+		bib_database.entries,
+		key=lambda k: getyear(k),
+		reverse=True
+	)
+
+	for paperbibentry in bib_database.entries:
+		row = {}
+
+		if "author" in paperbibentry:
+			names = split_names(paperbibentry["author"])
+			row["Student"] = abbreviate_name(names[0])
+			row["Advisor"] = abbreviate_name(names[1]) if len(names) > 1 else ""
+		else:
+			print("Missing Author in " + paperbibentry.get("ID", "UNKNOWN"))
+			continue
+
+		row["Start Date"] = "0"
+		row["Year"] = str(getyear(paperbibentry))
+
+		entrytype = paperbibentry.get("ENTRYTYPE", "").lower()
+		if "type" in paperbibentry:
+			row["Degree"] = paperbibentry["type"]
+		elif entrytype == "phdthesis":
+			row["Degree"] = "Ph.D."
+		elif entrytype == "mastersthesis":
+			row["Degree"] = "M.S."
+		else:
+			row["Degree"] = "unknown"
+
+		if "title" in paperbibentry:
+			row["Title"] = paperbibentry["title"]
+		else:
+			print("Missing Title in " + paperbibentry.get("ID", "UNKNOWN"))
+			continue
+
+		row["Comments"] = paperbibentry.get("school", "")
+
+		# Correct append
+		df.loc[len(df)] = row
+
+	return df
+
+def read_thesis_excel(thesisfile):
+    """Read thesis data from Excel file"""
+    try:
+        df = pd.read_excel(thesisfile, sheet_name="Data", dtype={'Start Date':int,'Year':int})
+        return df
+    except OSError:
+        print("Could not open/read file: " + thesisfile)
+        return pd.DataFrame(columns=[
+			"Student",
+			"Start Date",
+			"Year",
+			"Degree",
+			"Advisor",
+			"Title",
+			"Comments"
+		])
+
+def read_thesis_file(thesisfile):
+    """Detect file type and read thesis data accordingly"""
+    # Check file extension
+    if thesisfile.lower().endswith('.bib'):
+        return read_thesis_bib(thesisfile)
+    else:
+        return read_thesis_excel(thesisfile)
 
 def thesis2latex_far(f,years,studentfile,thesisfile,max_rows=-1):
 	try:
@@ -21,18 +130,17 @@ def thesis2latex_far(f,years,studentfile,thesisfile,max_rows=-1):
 	except OSError:
 		print("Could not open/read file: " + studentfile)
 		student_found = False
-		
-	try:
-		source2 = pd.read_excel(thesisfile,sheet_name="Data",dtype={'Start Date':int,'Year':int})
-		thesis_found = True
-	except OSError:
-		print("Could not open/read file: " + thesisfile)
-		thesis_found = False
 	
 	today = dt.date.today()
 	year = today.year
 	begin_year = year - years
-
+	
+	source2 = read_thesis_file(thesisfile)
+	
+	thesis_found = False
+	if len(source2) > 0:
+		thesis_found = True
+	
 	if (student_found):
 		source = source.fillna({'Start Date':today})
 		source.sort_values(by=['Start Date','Current Program','Student Name'], inplace=True, ascending = [False,True,True])
@@ -51,15 +159,19 @@ def thesis2latex_far(f,years,studentfile,thesisfile,max_rows=-1):
 	else:
 		nrows2 = 0
 	
-	
 	if (nrows+nrows2 > 0):
-		f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXll}\n & Name: Title  & Date & Degree \\tablehead\n")
-		f.write("\\tablecontinue{Graduate Advisees}\n")
+		if global_prefs.usePandoc:
+			f.write("\\begin{tabularx}{\\linewidth}{lXll}\n & Name: Title  & Date & Degree \\\\\n")
+		else:
+			f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXll}\n & Name: Title  & Date & Degree \\tablehead\n")
+			f.write("\\tablecontinue{Graduate Advisees}\n")
 		newline=""
 		if nrows > 0:
 			count = 0
 			while count < nrows:
 				f.write(newline)
+				if global_prefs.usePandoc:
+					f.write(str(count+1) +".")
 				f.write(" & " +abbreviate_name(df.loc[count,"Student Name"])+": in progress"  + " &  & " +str2latex(df.loc[count,"Current Program"][(df.loc[count,"Current Program"].find("-")+1):]))
 				newline="\\\\\n"
 				count += 1
@@ -71,6 +183,8 @@ def thesis2latex_far(f,years,studentfile,thesisfile,max_rows=-1):
 			count = 0
 			while count < nrows2:
 				f.write(newline)
+				if global_prefs.usePandoc:
+					f.write(str(count+nrows+1) +".")
 				f.write(" & " +abbreviate_name(df2.loc[count,"Student"])+": " +str2latex(df2.loc[count,"Title"]) + " & " +'{0:d}'.format(int(df2.loc[count,"Year"])) + " & " +str2latex(df2.loc[count,"Degree"]))
 				newline="\\\\\n"
 				count += 1
@@ -78,13 +192,13 @@ def thesis2latex_far(f,years,studentfile,thesisfile,max_rows=-1):
 		f.write("\n\\end{tabularx}\n")
 		
 	return(nrows+nrows2)
-
+	
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description='This script outputs thesis data to a latex table for the last [YEARS] years')
 	parser.add_argument('-y', '--years',default="3",type=int,help='the number of years to output')
 	parser.add_argument('-a', '--append', action='store_const',const="a",default="w")
-	parser.add_argument('studentfile',help='the student excel file name')          
-	parser.add_argument('thesisfile',help='the thesis excel file name') 
+	parser.add_argument('studentfile',help='the student excel file name')		  
+	parser.add_argument('thesisfile',help='the thesis file name') 
 	parser.add_argument('outputfile',help='the output latex table name')
 	args = parser.parse_args()
 	
