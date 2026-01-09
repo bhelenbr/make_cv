@@ -28,6 +28,7 @@ def advising2latex_far(f,years,inputfile,private=False):
 		begin_year = year - years
 		df = df[df['Term'].apply(lambda x: int(x/10)-400+2000) >= begin_year]
 	
+	df = df[df['Career']=="UGRD"]
 	df = df.drop(columns=["ID","LN,FN","Career","DeptID","Descriptio","School","Long Descr"])
 	df['Weighted'] = df["Question 1"] +2*df["Question 2"] +3*df["Question 3"] +4*df["Question 4"] +5*df["Question 5"] 
 	df['EvalCount'] =   df["Question 1"] +df["Question 2"] +df["Question 3"] +df["Question 4"] +df["Question 5"]
