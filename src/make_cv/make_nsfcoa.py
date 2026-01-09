@@ -131,9 +131,9 @@ def get_collaborator_list(config, output_format):
 					collab_list[key] = (last_first(author), max(year, collab_list[key][-1]))
 				else:
 					collab_list[key] = (last_first(author), year)
-					
+						
 	# add grant collaborators
-	grants = grants[grants['End Date'].apply(lambda x: x.year) >= begin_year]
+	grants = grants[grants['End Date'].dt.year >= begin_year]
 	for index, row in grants.iterrows():
 		year = row['End Date'].year
 		
