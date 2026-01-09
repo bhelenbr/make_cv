@@ -28,6 +28,7 @@ from .make_cv import read_args
 from .stringprotect import abbreviate_name
 from .stringprotect import split_names
 from .stringprotect import last_first
+from .thesisbib2latex_far import read_thesis_bib
 
 import bibtexparser
 from bibtexparser.bwriter import BibTexWriter
@@ -55,19 +56,23 @@ def get_collaborator_list(config, output_format):
 	tbparser = BibTexParser(common_strings=True)
 	bib_database = bibtexparser.loads(bibtex_str, tbparser)
 	
+	cur_grad_names = 
 	cur_grad = os.path.join(faculty_source, config['CurrentGradAdviseesFile'])
 	try:
 		cur_grad_names = pd.read_excel(cur_grad, sheet_name="Data", parse_dates=['Start Date'])
 	except OSError:
 		print("Could not open/read file: " + cur_grad)
-		return
+		cur_grad_names = pd.DataFrame(columns=["Student Name","Current Program","Start Date"])
 	
 	grads = os.path.join(faculty_source, config['GradThesesFile'])
-	try:
-		grad_names = pd.read_excel(grads, sheet_name="Data", dtype={'Start Date': int, 'Year': int})
-	except OSError:
-		print("Could not open/read file: " + grads)
-		return
+	if config['GradThesesFile'].endswith(".bib"):
+		grad_names = read_thesis_bib(grads)
+	else:
+		try:
+			grad_names = pd.read_excel(grads, sheet_name="Data", dtype={'Start Date': int, 'Year': int})
+		except OSError:
+			print("Could not open/read file: " + grads)
+			grad_names = pd.DataFrame(columns=["Student","Start Date","Year","Degree","Advisor","Title","Comments"])
 		
 	grantfile = os.path.join(faculty_source, config['GrantsFile'])
 	try:
@@ -77,7 +82,7 @@ def get_collaborator_list(config, output_format):
 		grants.reset_index(inplace=True,drop=True)
 	except OSError:
 		print("Could not open/read file: " + grantfile)
-		return
+		grants = pd.DataFrame(columns=["Proposal_ID","Faculty","Sponsor","Allocated Amt","Total Cost","Funded?","Title","Begin Date","End Date","Submit Date","Principal Investigators"])
 		
 	if years > 0:
 		today = date.today()
