@@ -4,6 +4,7 @@ import configparser
 
 sections = {'PersonalAwards': 'true',
 				'Journal': 'true',
+				'arXiv': 'true',
 				'Refereed': 'true',
 				'Book': 'true',
 				'Patent': 'true',
