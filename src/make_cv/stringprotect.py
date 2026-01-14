@@ -267,6 +267,10 @@ if __name__ == "__main__":
 	name = "Adade Jr, Ken"
 	print('test abbreviation of single name ' +name)
 	print(abbreviate_name(name))
+	
+	name = 'K. Visser'
+	print('test abbreviation of single abbreviated name ' +name)
+	print(abbreviate_name(name,first_initial_only=True))
 
 
 

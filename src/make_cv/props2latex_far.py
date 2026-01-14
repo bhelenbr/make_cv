@@ -24,6 +24,10 @@ def props2latex_far(f,years,inputfile,max_rows=-1):
 	
 	
 	props.fillna(value={"Sponsor": "", "Title": "", "Allocated Amt": 0, "Total Cost": 0, "Funded?": "N", "Begin Date": dt.datetime(1900,1,1),"End Date": dt.datetime(1900,1,1)},inplace=True)
+	# Ensure date columns are real datetimes to avoid pandas downcasting
+	props["Submit Date"] = pd.to_datetime(props["Submit Date"], errors='coerce')
+	props["Begin Date"] = pd.to_datetime(props["Begin Date"], errors='coerce')
+	# Avoid chained-assignment by assigning the filled Series back to the DataFrame
 	props["Submit Date"] = props["Submit Date"].fillna(props["Begin Date"])
 
 	
@@ -31,7 +35,9 @@ def props2latex_far(f,years,inputfile,max_rows=-1):
 		today = dt.date.today()
 		year = today.year
 		begin_year = year - years
-		props = props[props['Submit Date'].apply(lambda x: x.year) >= begin_year]
+		# Use vectorized access to the year to avoid invalid comparisons
+		mask = props['Submit Date'].dt.year >= begin_year
+		props = props[mask.fillna(False)]
 	
 	props.sort_values(by=['Submit Date'], inplace=True,ascending = [False])
 	props = props.reset_index()
