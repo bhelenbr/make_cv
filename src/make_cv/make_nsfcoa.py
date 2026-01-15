@@ -76,7 +76,10 @@ def get_collaborator_list(config, output_format):
 	grantfile = os.path.join(faculty_source, config['GrantsFile'])
 	try:
 		grants = pd.read_excel(grantfile,sheet_name="Data")
-		grants.fillna(value={'Principal Investigators':'','Funded?':'No'},inplace=True)
+		# This allows us to either use a proposals file with a Y/N or a separate grants file that has similar columns but no Funded? column
+		if not "Funded?" in grants.columns:
+			grants["Funded?"] = "Y"
+		grants.fillna(value={'Principal Investigators':'','Funded?':'N'},inplace=True)
 		grants = grants[grants['Funded?'].str.match('Y')]
 		grants.reset_index(inplace=True,drop=True)
 	except OSError:
