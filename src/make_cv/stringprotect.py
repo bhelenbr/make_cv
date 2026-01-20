@@ -7,9 +7,13 @@ def str2latex(text):
 	if text=="nan":
 		return("")
 	else:
+		replacements1 = {"&":"\\&","#":"\\#","&amp;":"\\&"}
+		for i, j in replacements1.items():
+			text = text.replace(i, j)
+
 		# Count number of $ signs if even assume latex string
 		if text.count('$') == 0 or text.count('$') % 2 == 1:
-			replacements = {"&":"\\&","$":"\\$","_":"\\_","#":"\\#"}
+			replacements = {"$":"\\$","_":"\\_"}
 			for i, j in replacements.items():
 				text = text.replace(i, j)
 		return text

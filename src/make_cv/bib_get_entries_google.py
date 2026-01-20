@@ -12,6 +12,9 @@ from bibtexparser.bparser import BibTexParser
 from bibtexautocomplete.core import main as btac
 from bibtexautocomplete import BibtexAutocomplete
 
+from .stringprotect import str2latex
+from .stringprotect import last_first
+from pylatexenc.latex2text import LatexNodes2Text
 
 import re
 import string
@@ -21,8 +24,9 @@ import sys
 
 from .bib_add_keywords import add_keyword
 from .bib_get_entries_orcid import make_bibtex_id_list
-
-
+from .bib_get_entries_orcid import make_title_id
+from .bib_get_entries_orcid import getyear
+from .bib_get_entries_uspto import identifier_to_bibtex
 from bs4 import BeautifulSoup
 import requests
 
@@ -47,19 +51,8 @@ def process_entry(paperbibentry,pub_id,year):
 		paperbibentry['ENTRYTYPE'] = 'misc'
 	paperbibentry['google_pub_id'] = pub_id
 	add_keyword(paperbibentry)
-	IDstring = re.search('^[A-z]+', paperbibentry['author']).group(0)
-	IDstring += year
-	hasletter = re.search('^[A-z]+', paperbibentry['title'])
-	if hasletter:
-		IDstring += re.search('^[A-z]+', paperbibentry['title']).group(0)
-	paperbibentry['ID'] = IDstring
-
-def getyear(paperbibentry):
-	if "year" in paperbibentry.keys(): 
-		return int(paperbibentry["year"])
-	if "date" in paperbibentry.keys():
-		return int(paperbibentry["date"][:4])
-	return 0
+	title_str = paperbibentry.get('title', '') or ''
+	paperbibentry['ID'] = make_title_id(title_str,str(year))
 
 def bib_get_entries_google(bibfile, author_id, years, outputfile, scraper_id=None):
 	
@@ -75,6 +68,13 @@ def bib_get_entries_google(bibfile, author_id, years, outputfile, scraper_id=Non
 		
 	# Get Google Scholar Data for Author	
 	author = scholarly.search_author_id(author_id)
+	author_name = author.get('name')
+	if author_name is None:
+		last_name = ""
+		print('Could not find author name for id: ' + author_id)
+	else:
+		last_name = last_first(author_name).split(',')[0]
+
 	author = scholarly.fill(author, sections=['indices', 'publications'])
 
 	# Set starting year for search
@@ -92,12 +92,10 @@ def bib_get_entries_google(bibfile, author_id, years, outputfile, scraper_id=Non
 	with open(bibfile,encoding='utf-8') as bibtex_file:
 		bib_database = bibtexparser.load(bibtex_file, tbparser)
 	entries = bib_database.entries
+
+	# Create list of existing index, title ids, and dois
+	bib_entry_ids = make_bibtex_id_list(entries)
 	
-	bib_entry_ids = make_bibtex_id_list(bibfile)
-	
-	
-	# Create list of titles in bibfile compressing out nonalphanumeric characters
-	titles = [re.sub('[\\W_]', '', entry['title']).lower() if 'title' in entry.keys() else None for entry in entries]
 	# Create list of google publication ids if they exist
 	google_pub_ids = [entry["google_pub_id"] if "google_pub_id" in entry.keys() else None for entry in entries]
 	
@@ -116,50 +114,87 @@ def bib_get_entries_google(bibfile, author_id, years, outputfile, scraper_id=Non
 		pub_id = au_pub_id[au_pub_id.find(':') + 1:]
 		if pub_id in google_pub_ids:
 			continue
-			
+
 		################  Using bibtex autocomplete ########################
-		print('Trying to complete this record using bibtex autocomplete:')
+		print('Trying to complete this record:')
 		try:
 			print(pub['bib']['citation'] + ' ' + pub['bib']['title'] +' ' +pub['bib']['pub_year'])
 		except KeyError:
 			print(pub['bib']['title'] +' ' +pub['bib']['pub_year'])
-		
-		bibstring = '@article{' + pub_id + ',\n title={' + pub['bib']['title'] + '},\n year={' + pub['bib']['pub_year'] + '},\n}'
-		
+
+		try:
+			if pub['bib']['citation'].find('Patent') > -1:
+				if pub['bib']['citation'].find('App') > -1:
+					# US Patent App. 12/335,794,
+					year = pub['bib']['pub_year']
+					two_search = re.search('([0-9][0-9])/', pub['bib']['citation'])
+					if two_search:
+						twodigits = two_search.group(1)
+						num_search = re.search('/([0-9,]+)', pub['bib']['citation'])
+						if num_search:
+							patent_app = twodigits +"/" +num_search.group(1).replace(',','')
+							bibtex_str = identifier_to_bibtex(patent_app, global_prefs.uspto_api_key)
+							if bibtex_str is not None:
+								print('Patent found: ' + patent_app)
+								bib_database_patent = bibtexparser.loads(bibtex_str, tbparser)
+								process_entry(bib_database_patent.entries[-1],pub_id,year)
+							else:
+								print('Patent not found: ' + patent_app)
+				else:
+					# US Patent 7,942,929
+					num_search = re.search('Patent ([0-9,]+)', pub['bib']['citation'])
+					if num_search:
+						patent_num = num_search.group(1).replace(',','')
+						bibtex_str = identifier_to_bibtex(patent_num, global_prefs.uspto_api_key)
+						if bibtex_str is not None:
+							print('Patent found: ' + patent_num)
+							bib_database_patent = bibtexparser.loads(bibtex_str, tbparser)
+							process_entry(bib_database_patent.entries[-1],pub_id,year)
+						else:
+							print('Patent not found: ' + patent_num)
+		except KeyError:
+			pass
+
+		if author_name is not None:
+			bibstring = '@article{' + pub_id + ',\n title={' + pub['bib']['title'] + '},\n year={' + pub['bib']['pub_year'] + '}, author={' + author_name + '}\n}'
+			nentries = 3
+		else:
+			bibstring = '@article{' + pub_id + ',\n title={' + pub['bib']['title'] + '},\n year={' + pub['bib']['pub_year'] + '}\n}'
+
 		# Try to fill entry using BibTeX autocomplete
-		completer = BibtexAutocomplete()
+		completer = BibtexAutocomplete(fields_to_overwrite=set(['type','author']))
 		completer.load_string(bibstring)
+		nfields_before = len(completer.write_entry()[0][0])
 		completer.autocomplete()
+		nfields_after = len(completer.write_entry()[0][0])
+
 		bibtex_str = completer.write_string()[0]
-		
-		# # try to fill entry using bibtex autocomplete?
-# 		with open('btac.bib', 'w',encoding='utf-8') as tempfile:
-# 			tempfile.write('@article{' + pub_id + ',\n title={' + pub['bib']['title'] + '},\n}')
-# 		btac(['-s','-i','-f','-m','btac.bib'])
-# 		
-# 		with open('btac.bib',encoding='utf-8') as bibtex_file:
-# 			bibtex_str = bibtex_file.read()
-		
-			
-		if bibtex_str.find('author') > -1  and bibtex_str.find('title') > -1:
-			year_match = re.search(r'year\s*=\s*{(\d+)}', bibtex_str)
-			title_match = re.search(r'(?:,|\n)\s*title\s*=\s*{(.+?)},', bibtex_str)
-			doi_match = re.search(r'(?:,|\n)\s*doi\s*=\s*{(.+?)},', bibtex_str)
-			
+
+		author_match = re.search(r'(?:,|\n)\s*author\s*=\s*{(.+?)}', bibtex_str)
+		if author_match and nfields_after > nfields_before:
+			authors = author_match.group(1)
+			if authors.find(last_name) == -1:
+				print('Skipped entry since last name ' + last_name + ' not found in authors: ' + authors)
+				continue
+
+			doi_match = re.search(r'(?:,|\n)\s*doi\s*=\s*{(.+?)}', bibtex_str)
+			# initialize doi for later checks
+			doi = None
 			if doi_match:
-				doi = doi_match.group()
-				if any(doi.lower() == entry_doi for _, entry_doi in bib_entry_ids):
+				doi = doi_match.group(1).lower()
+				if any(entry_doi and doi == entry_doi for _, _, entry_doi in bib_entry_ids):
 					continue
 
 			# Skip if matching title/date string
-			title_id = ''.join(word.lower() for word in title_match.group().split() if (word.isalpha()  and word.isascii()))
-			title_id += year
-			if any(title_id == entry_title_id for entry_title_id, _ in bib_entry_ids):
+			year_match = re.search(r'year\s*=\s*{(\d+)}', bibtex_str)
+			title_match = re.search(r'(?:,|\n)\s*title\s*=\s*{(.+?)},', bibtex_str)
+			title_text = title_match.group(1)
+			title_id = make_title_id(title_text,year_match.group(1))
+			if any(title_id == entry_title_id for _, entry_title_id, _ in bib_entry_ids):
 				if doi is None:
 					continue
-			
-			bibtex_str = re.sub("&amp;", "\\&", bibtex_str)
-			bibtex_str = re.sub(" #", "\\#", bibtex_str)
+					
+			bibtex_str = str2latex(bibtex_str)
 			bib_database = bibtexparser.loads(bibtex_str, tbparser)
 			print(BibTexWriter()._entry_to_bibtex(bib_database.entries[-1]))
 			YN = 'Y'
@@ -171,7 +206,7 @@ def bib_get_entries_google(bibfile, author_id, years, outputfile, scraper_id=Non
 			else:
 				bib_database.entries.pop()
 		else:
-			print('BibTeX Autocomplete failed: missing author or title')
+			print('BibTeX Autocomplete failed: missing author or title or year')
 		
 		##################  Using Google Scholar #############################
 		if global_prefs.scrapeGoogle:
@@ -248,4 +283,4 @@ if __name__ == "__main__":
 		with open("google_id") as google_file:
 			args.author_id = google_file.readline().strip('\n\r')
 		
-	bib_get_entries(args.bibfile,args.author_id,args.years,args.output,args.scraperID)
+	bib_get_entries_google(args.bibfile,args.author_id,args.years,args.output,args.scraperID)

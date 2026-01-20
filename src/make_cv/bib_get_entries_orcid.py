@@ -13,22 +13,51 @@ import re
 
 import bibtexparser
 from bibtexparser.bparser import BibTexParser
+from bibtexparser.bwriter import BibTexWriter
 from bibtexautocomplete import BibtexAutocomplete
 
+from .stringprotect import str2latex
+from pylatexenc.latex2text import LatexNodes2Text
+
 from . import global_prefs
+
+def make_title_id(title, year):
+	# Strip braces and other BibTeX bracketing
+	title_string = LatexNodes2Text().latex_to_text(title).lower()
+	title_id = re.sub(r"[^a-z0-9]+", "", title_string)
+	title_id += str(year)
+	return title_id
+
+def make_bibtex_id_list(entries):
+	parsed_entries = []
+	for i, entry in enumerate(entries):
+		title = entry.get('title') or entry.get('TITLE')
+		year_str = getyear(entry)
+
+		# Strip braces and other BibTeX bracketing
+		title_id = make_title_id(title,year_str)
+
+		doi = entry.get('doi') or entry.get('DOI')
+		doi_val = doi.lower() if doi else None
+		parsed_entries.append((i, title_id, doi_val))
+
+	return parsed_entries
+
+
+def getyear(paperbibentry):
+	if "year" in paperbibentry.keys(): 
+		return int(paperbibentry["year"])
+	if "date" in paperbibentry.keys():
+		return int(paperbibentry["date"][:4])
+	return 0
+
 
 # -------------------------------
 # Configuration
 # -------------------------------
 
 ORCID_API = "https://pub.orcid.org/v3.0"
-CROSSREF_API = "https://api.crossref.org/works"
-
 HEADERS_ORCID = {"Accept": "application/json"}
-HEADERS_CROSSREF = {
-	"User-Agent": "ORCID-BibTeX-Exporter/1.0 (mailto:bhelenbr@clarkson.edu)"
-}
-
 BIBTEX_TYPE_MAP = {
 	"journal-article": "article",
 	"conference-paper": "inproceedings",
@@ -36,8 +65,6 @@ BIBTEX_TYPE_MAP = {
 	"book-chapter": "incollection",
 	"report": "techreport"
 }
-
-CROSSREF_CACHE = {}
 
 # -------------------------------
 # Utility helpers
@@ -54,8 +81,8 @@ def safe_value(d, *keys):
 
 
 def normalize_key(text):
-	if not text:
-		return "unknown"
+	if text is None:
+		return ""
 	text = text.lower()
 	text = re.sub(r"[^a-z0-9]+", "", text)
 	return text[:20]
@@ -72,16 +99,24 @@ def normalize_bibtex(bib):
 
 def get_all_works(orcid):
 	url = f"{ORCID_API}/{orcid}/works"
-	r = requests.get(url, headers=HEADERS_ORCID)
-	r.raise_for_status()
-	return r.json().get("group", [])
+	try:
+		r = requests.get(url, headers=HEADERS_ORCID, timeout=10)
+		r.raise_for_status()
+		return r.json().get("group", [])
+	except requests.RequestException as exc:
+		print(f"Failed to fetch ORCID works for {orcid}: {exc}")
+		return []
 
 
 def get_work(orcid, put_code):
 	url = f"{ORCID_API}/{orcid}/work/{put_code}"
-	r = requests.get(url, headers=HEADERS_ORCID)
-	r.raise_for_status()
-	return r.json()
+	try:
+		r = requests.get(url, headers=HEADERS_ORCID, timeout=10)
+		r.raise_for_status()
+		return r.json()
+	except requests.RequestException as exc:
+		print(f"Failed to fetch ORCID work {put_code} for {orcid}: {exc}")
+		return None
 
 
 def extract_doi(work):
@@ -150,128 +185,29 @@ def extract_orcid_bibtex(work):
 	return bib
 
 
-
-# -------------------------------
-# Crossref access
-# -------------------------------
-
-def crossref_lookup(doi):
-	if doi in CROSSREF_CACHE:
-		return CROSSREF_CACHE[doi]
-
-	try:
-		url = f"{CROSSREF_API}/{doi}"
-		r = requests.get(url, headers=HEADERS_CROSSREF, timeout=10)
-		r.raise_for_status()
-		msg = r.json()["message"]
-		CROSSREF_CACHE[doi] = msg
-		return msg
-	except Exception:
-		CROSSREF_CACHE[doi] = None
-		return None
-
-
-def crossref_authors(msg):
-	authors = []
-	for a in msg.get("author", []):
-		family = a.get("family")
-		given = a.get("given")
-		if family and given:
-			authors.append(f"{family}, {given}")
-		elif family:
-			authors.append(family)
-	return " and ".join(authors) if authors else None
-
-
-def crossref_year(msg):
-	for key in ("published-print", "published-online", "issued"):
-		parts = msg.get(key, {}).get("date-parts")
-		if parts and parts[0]:
-			return str(parts[0][0])
-	return None
-
-
-def crossref_title(msg):
-	titles = msg.get("title")
-	return titles[0] if titles else None
-
-
-def crossref_journal(msg):
-	container = msg.get("container-title")
-	return container[0] if container else None
-
-# -------------------------------
-# Metadata merge
-# -------------------------------
-
-def merge_metadata(work):
-	doi = extract_doi(work)
-	cr = crossref_lookup(doi) if doi else None
-
-	if cr:
-		return {
-			"title": crossref_title(cr),
-			"author": crossref_authors(cr),
-			"year": crossref_year(cr),
-			"journal": crossref_journal(cr),
-			"volume": cr.get("volume"),
-			"number": cr.get("issue"),
-			"pages": cr.get("page"),
-			"doi": doi
-		}
-
-	# ORCID structured fallback
-	return {
-		"title": safe_value(work, "title", "title", "value"),
-		"author": extract_authors(work),
-		"year": safe_value(work, "publication-date", "year", "value"),
-		"journal": safe_value(work, "journal-title", "value"),
-		"volume": None,
-		"number": None,
-		"pages": None,
-		"doi": doi
-	}
-
-
 # -------------------------------
 # BibTeX writer
 # -------------------------------
 
 def bibtex_entry(work):
-
-
-	# 2️⃣ Crossref → ORCID fallback
-	meta = merge_metadata(work)
 	work_type = work.get("type", "").lower()
 	bib_type = BIBTEX_TYPE_MAP.get(work_type, "misc")
-
-	key_parts = [
-		normalize_key(meta["author"].split(" and ")[0] if meta["author"] else None),
-		meta["year"] or "nodate",
-		normalize_key(meta["title"])
-	]
-	cite_key = "_".join(filter(None, key_parts))
+	fields = {
+		"title": str2latex(safe_value(work, "title", "title", "value")),
+		"author": extract_authors(work),
+		"year": safe_value(work, "publication-date", "year", "value"),
+		"journal": str2latex(safe_value(work, "journal-title", "value")),
+		"doi": extract_doi(work)
+	}
+	cite_key = make_title_id(fields["title"], fields["year"])
 	
 	# 1️⃣ ORCID BibTeX takes precedence
 	orcid_bib = extract_orcid_bibtex(work)
 	if orcid_bib:
 		orcid_bib = re.sub(r'{[^,]+', "{" +cite_key, orcid_bib, count=1)
 		return normalize_bibtex(orcid_bib)
-		
-
-	fields = {
-		"title": meta["title"],
-		"author": meta["author"],
-		"journal": meta["journal"],
-		"year": meta["year"],
-		"volume": meta["volume"],
-		"number": meta["number"],
-		"pages": meta["pages"],
-		"doi": meta["doi"]
-	}
 
 	bib = [f"@{bib_type}{{{cite_key},"]
-
 	for field, value in fields.items():
 		if value:
 			bib.append(f"  {field} = {{{value}}},")
@@ -281,42 +217,6 @@ def bibtex_entry(work):
 
 	bib.append("}\n")
 	return "\n".join(bib)
-
-
-# --------
-
-
-def make_bibtex_id_list(file_path):
-	with open(file_path, 'r') as file:
-		content = file.read()
-	
-	# Split the content into individual entries
-	entries = re.split(r'\n@', content)
-	parsed_entries = []
-
-	for entry in entries:
-		year_match = re.search(r'year\s*=\s*{(\d+)}', entry)
-		title_match = re.search(r'(?:,|\n)\s*title\s*=\s*{(.+?)},', entry)
-		if year_match and title_match:
-			# Get rid of protect strings
-			title_string = title_match.group(1)
-			title_string = re.sub('{', "", title_string)
-			title_string = re.sub('}', "", title_string)
-			title_id = ''.join(word.lower() for word in title_string.split() if (word.isalpha()  and word.isascii()))
-			title_id += year_match.group(1)
-		else:
-			continue
-			
-		# Extract doi
-		doi_match = re.search(r'doi\s*=\s*{(.+?)}', entry)
-		if doi_match:
-			doi = doi_match.group(1).lower()
-		else:
-			doi = None
-		
-		parsed_entries.append((title_id,doi))
-	
-	return parsed_entries
 
 def bib_get_entries_orcid(bibfile, orcid, years, outputfile):
 
@@ -329,18 +229,31 @@ def bib_get_entries_orcid(bibfile, orcid, years, outputfile):
 		begin_year = 0
 		
 	# get list of publication identifiers in existing file
-	bib_entries = make_bibtex_id_list(bibfile)
-	
-# 	for bibid in bib_entries:
-# 		print(bibid)
-	
+	tbparser = BibTexParser(common_strings=True)
+	tbparser.alt_dict['url'] = 'url'	# this prevents change 'url' to 'link'
+	tbparser.expect_multiple_parse = True
+	with open(bibfile,encoding='utf-8') as bibtex_file:
+		bib_database = bibtexparser.load(bibtex_file, tbparser)
+	entries = bib_database.entries
+	bib_entry_ids = make_bibtex_id_list(entries)
+		
 	# Get all works from orcid
 	groups = get_all_works(orcid)
-	
+	if not groups:
+		print(f"No works returned for ORCID {orcid}")
+		return
+
 	for group in groups:
-		summary = group["work-summary"][0]
-		put_code = summary["put-code"]
+		summaries = group.get("work-summary") or []
+		if not summaries:
+			continue
+		summary = summaries[0]
+		put_code = summary.get("put-code")
+		if not put_code:
+			continue
 		work = get_work(orcid, put_code)
+		if not work:
+			continue
 		year = extract_publication_year(work)
 		if year is None or int(year) < begin_year:
 			continue
@@ -349,38 +262,51 @@ def bib_get_entries_orcid(bibfile, orcid, years, outputfile):
 		# Skip entries that have matching doi database
 		doi = extract_doi(work)
 		if doi is not None:
-			if any(doi.lower() == entry_doi for _, entry_doi in bib_entries):
+			if any(doi.lower() == entry_doi for _, _, entry_doi in bib_entry_ids):
 				continue
 		
 		title = safe_value(work, "title", "title", "value")
-		if (title is None):
+		if not title:
 			continue
-		title_id = ''.join(word.lower() for word in title.split() if (word.isalpha()  and word.isascii()))
-		title_id += year
-		if any(title_id == entry_title_id for entry_title_id, _ in bib_entries):
-			if doi is not None:
-				print(f'possibly missing doi {title_id}: {doi}')
+		title_id = make_title_id(title,str(year))
+	
+		# Skip entries that have matching title+year database
+		matched = False
+		for i, entry_title_id, _ in bib_entry_ids:
+			if title_id == entry_title_id:
+				if doi is not None:
+					print(f"Adding DOI {doi} to existing entry {title_id}")
+					entries[i]["doi"] = doi
+				matched = True
+				break
+		if matched:
 			continue
 			
 		# New entry
-		print(title_id)
 		new_entry = bibtex_entry(work)
 		
 		# Try to fill entry using BibTeX autocomplete
 		completer = BibtexAutocomplete()
 		completer.load_string(new_entry)
 		completer.autocomplete()
-		print(completer.write_string()[0])
+
+		bibtex_str = completer.write_string()[0]
+		print(bibtex_str)
 		
 		if not global_prefs.quiet:
 			print('Is this btac entry correct and ready to be added?\nOnce an entry is added any future changes must be done manually.')
 			YN = input('Y/N? ')
 			if YN.upper() != 'Y':
 				continue
-			
-		with open(outputfile, 'a') as dest_file:  # Use 'a' to append
-			dest_file.write(completer.write_string()[0])
-	
+		
+		bib_database = bibtexparser.loads(bibtex_str, tbparser)	
+
+	writer = BibTexWriter()
+	writer.order_entries_by = None
+	with open(outputfile, 'w',encoding='utf-8') as thebibfile:
+		bibtex_str = bibtexparser.dumps(bib_database, writer)
+		thebibfile.write(bibtex_str)
+
 	#cleanup
 	for file in ['dump.text', 'btac.bib']:
 		try:
