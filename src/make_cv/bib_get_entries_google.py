@@ -27,6 +27,7 @@ from .bib_get_entries_orcid import make_bibtex_id_list
 from .bib_get_entries_orcid import make_title_id
 from .bib_get_entries_orcid import getyear
 from .bib_get_entries_uspto import identifier_to_bibtex
+
 from bs4 import BeautifulSoup
 import requests
 

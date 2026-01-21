@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "make_cv"
-version = "0.7.0"
+version = "0.8.0"
 authors = [
   { name="Brian Helenbrook", email="brian.helenbrook@gmail.com" },
 ]
@@ -28,7 +28,8 @@ dependencies = [
   "requests",
   "pylatexenc",
   "selenium",
-  "webdriver-manager"
+  "webdriver-manager",
+  "pybliometrics"
 ]
 
 [project.scripts]

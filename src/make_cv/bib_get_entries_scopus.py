@@ -31,39 +31,72 @@ def scopus_author_id_from_name(name):
         return None
     return res.authors[0].author_id
 
-
-def scopus_bibtex_from_eid(eid):
-    try:
-        ab = AbstractRetrieval(eid, view="FULL")
-        bib = ab.bibtex
-        return bib if bib and bib.startswith("@") else None
-    except Exception:
-        return None
-
-
-def scopus_metadata(eid):
-    ab = AbstractRetrieval(eid, view="STANDARD")
+def scopus_metadata(ab):
     return {
         "title": ab.title,
-        "authors": " and ".join(a.given_name + " " + a.surname for a in ab.authors),
         "year": ab.coverDate[:4] if ab.coverDate else None,
-        "journal": ab.publicationName,
-        "doi": ab.doi
+        "doi": ab.doi if ab.doi else None,
     }
 
 
-def build_bibtex(meta):
-    cite_key = make_title_id(meta["title"], meta["year"])
-    bib = [
-        f"@article{{{cite_key},",
-        f"  title   = {{{str2latex(meta['title'])}}},",
-        f"  author  = {{{meta['authors']}}},",
-        f"  journal = {{{str2latex(meta['journal'])}}},",
-        f"  year    = {{{meta['year']}}},"
-    ]
-    if meta.get("doi"):
-        bib.append(f"  doi     = {{{meta['doi']}}},")
-    bib[-1] = bib[-1].rstrip(",")
+def build_bibtex(ab):
+    # Safe getters
+    def _name(a):
+        given = getattr(a, "given_name", None) or getattr(a, "givenName", "")
+        surname = getattr(a, "surname", None) or getattr(a, "surname", "")
+        return (given + " " + surname).strip()
+
+    authors = " and ".join(_name(a) for a in (ab.authors or [])) if getattr(ab, "authors", None) else None
+    year = ab.coverDate[:4]
+    cite_key = make_title_id(ab.title, year)
+
+    publication = getattr(ab, "publicationName", None)
+    pages = getattr(ab, "pageRange", None) or getattr(ab, "pages", None)
+    doi = getattr(ab, "doi", None)
+
+    # Determine entry type: book chapter, book, conference (inproceedings), fallback article
+    subtype = (getattr(ab, "subtype", "") or "").lower()
+    print(subtype)
+    if "ch" in subtype:
+        entry_type = "incollection"
+        primary_container = publication
+    elif "bk" in subtype:
+        entry_type = "book"
+        primary_container = publication
+    elif "cp" in subtype:
+        entry_type = "inproceedings"
+        primary_container = publication
+    else:
+        entry_type = "article"
+        primary_container = publication
+
+    bib = [f"@{entry_type}{{{cite_key},"]
+
+    # Common fields
+    if getattr(ab, "title", None):
+        bib.append(f"  title   = {{{str2latex(getattr(ab, 'title'))}}},")
+    if authors:
+        bib.append(f"  author  = {{{authors}}},")
+    if getattr(ab,"publisher", None):
+        bib.append(f"  publisher   = {{{str2latex(getattr(ab, 'publisher'))}}},")
+    if pages:
+        bib.append(f"  pages   = {{{pages}}},")
+    if year:
+        bib.append(f"  year    = {{{year}}},")
+    if doi:
+        bib.append(f"  doi     = {{{doi}}},")
+
+    if entry_type in ("incollection", "inproceedings"):
+        if primary_container:
+            bib.append(f"  booktitle = {{{str2latex(primary_container)}}},")
+
+    elif entry_type == "article":
+        if primary_container:
+            bib.append(f"  journal = {{{str2latex(primary_container)}}},")
+
+    # Trim trailing comma on last field and finish
+    if len(bib) > 1:
+        bib[-1] = bib[-1].rstrip(',')
     bib.append("}\n")
     return "\n".join(bib)
 
@@ -86,39 +119,41 @@ def bib_get_entries_scopus(bibfile, author_id, years, outputfile):
     existing_ids = make_bibtex_id_list(entries)
 
     author = AuthorRetrieval(author_id)
-    eids = author.get_documents()
-
-    for eid in eids:
+    eids = author.get_documents(refresh=10)
+    for doc in eids:
+        # Extract a usable identifier (EID/Scopus ID/DOI) from the returned document
+        eid_val = getattr(doc, "eid")
+        ab = AbstractRetrieval(eid_val, view="FULL")
         try:
-            meta = scopus_metadata(eid)
+            meta = scopus_metadata(ab)
         except Exception:
             continue
-
-        print(meta)
 
         if not meta["year"] or int(meta["year"]) < begin_year:
             continue
 
         title_id = make_title_id(meta["title"], meta["year"])
-        doi = meta.get("doi")
 
         # DOI duplicate check
-        if doi and any(doi.lower() == d for _, _, d in existing_ids):
+        if meta["doi"] and any(meta["doi"].lower() == d for _, _, d in existing_ids):
             continue
 
         # Title/year duplicate check
         if any(title_id == t for _, t, _ in existing_ids):
             continue
 
-        # Prefer native Scopus BibTeX
-        bib = scopus_bibtex_from_eid(eid)
-        if not bib:
-            bib = build_bibtex(meta)
+        # Prefer native Scopus BibTeX for journal articles
+        try:
+            bib = ab.get_bibtex()
+        except Exception:
+            bib = None
 
-        completer = BibtexAutocomplete()
-        completer.load_string(bib)
-        completer.autocomplete()
-        bib = completer.write_string()[0]
+        if not bib:
+            bib = build_bibtex(ab)
+            completer = BibtexAutocomplete()
+            completer.load_string(bib)
+            completer.autocomplete()
+            bib = completer.write_string()[0]
 
         print(bib)
 
