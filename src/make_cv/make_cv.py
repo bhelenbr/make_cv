@@ -385,6 +385,21 @@ def process_default_args(config,args):
 	if config.getint('GetNewGoogleEntries') != 0:
 		if not (config['GoogleID'] == ""):
 			print("Trying to find new .bib entries from Google Scholar")
+			# read api key for uspto from .cache
+			uspto_file = os.path.join('~','.cache', 'uspto_api_key.txt')
+			if os.path.isfile(os.path.expanduser(uspto_file)):
+				with open(os.path.expanduser(uspto_file), 'r') as f:
+					global_prefs.uspto_api_key = f.read().strip()
+			else:
+				print("USPTO API key not found in ~/.cache/uspto_api_key.txt for looking up patent information from Google Scholar.")
+				print("Request a key at https://patentsview-support.atlassian.net/servicedesk/customer/portal/1")
+				global_prefs.uspto_api_key = input("Enter key and press Enter to continue... or hit enter to skip patent lookup\n")
+				if global_prefs.uspto_api_key != "":
+					with open(os.path.expanduser(uspto_file), 'w') as f:
+						f.write(global_prefs.uspto_api_key)
+				else:
+					global_prefs.uspto_api_key = None
+
 			filename = os.path.join(faculty_source,config['ScholarshipFile'])
 			backup_path= os.path.join(faculty_source,'make_cv','Backups')
 			copy_with_timestamp(filename, str(backup_path))

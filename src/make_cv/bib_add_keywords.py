@@ -23,6 +23,9 @@ def guess_type(paperbibentry):
 		if "note" in paperbibentry.keys():
 			if (paperbibentry["note"].find("Patent") > -1):
 				return("patent")
+		elif "howpublished" in paperbibentry.keys():
+			if (paperbibentry["howpublished"].find("Patent") > -1):
+				return("patent")
 		else:
 			return("invited")
 	elif entrytype  ==  "article":

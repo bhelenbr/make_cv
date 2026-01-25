@@ -21,8 +21,10 @@ Requires:
 import requests
 import re
 from datetime import datetime
+from urllib.parse import quote
 from typing import Optional
 
+from .bib_get_entries_orcid import make_title_id
 
 # =========================
 # API ENDPOINTS
@@ -31,207 +33,242 @@ from typing import Optional
 PATENT_URL = "https://search.patentsview.org/api/v1/patent"
 PUBLICATION_URL = "https://search.patentsview.org/api/v1/publication"
 
+def _resolve_field(record: dict, dotted_key: str):
+    """Resolve a possibly dotted key from a PatentsView record.
 
-# =========================
-# IDENTIFIER HANDLING
-# =========================
-
-def normalize_application_number(app_no: str) -> str:
+    Examples:
+      'patent_id' -> record['patent_id']
+      'granted_pregrant_crosswalk.application_number' ->
+         record['granted_pregrant_crosswalk'][0]['application_number']
+    Returns None if not found.
     """
-    Convert '19/091,471' → '19091471'
+    # direct
+    if dotted_key in record:
+        return record.get(dotted_key)
+
+    # dotted resolution
+    if "." not in dotted_key:
+        return record.get(dotted_key)
+
+    parts = dotted_key.split(".")
+    cur = record
+    for part in parts:
+        if cur is None:
+            return None
+        if isinstance(cur, list):
+            cur = cur[0] if cur else None
+        if isinstance(cur, dict) and part in cur:
+            cur = cur.get(part)
+        else:
+            return None
+    return cur
+
+def lookup_patent(identifier: str, api_key: str) -> Optional[str]:
+    """Lookup a granted patent record from the PatentsView API and
+    return a BibTeX string (or None).
     """
-    return app_no.replace("/", "").replace(",", "").strip()
-
-
-def classify_identifier(identifier: str) -> str:
-    """
-    Classify identifier as:
-      - 'patent'
-      - 'publication'
-      - 'application'
-    """
-    identifier = identifier.strip()
-
-    if re.match(r"^[A-Z]{2}\d{4}", identifier):
-        return "publication"
-
-    if "/" in identifier or "," in identifier:
-        return "application"
-
-    if identifier.isdigit() and len(identifier) >= 7:
-        return "patent"
-
-    raise ValueError(f"Unrecognized identifier format: {identifier}")
-
-
-# =========================
-# LOOKUP LOGIC
-# =========================
-
-def lookup_record(identifier: str, api_key: str) -> Optional[dict]:
-    """
-    Lookup a patent, publication, or application and return
-    a normalized record with metadata for BibTeX conversion.
-    """
-
-    id_type = classify_identifier(identifier)
-
-    headers = {
-        "X-Api-Key": api_key,
-        "Accept": "application/json"
+    num_id = identifier.replace(",","").strip()
+    headers = {"X-Api-Key": api_key, "Accept": "application/json"}
+    payload = {
+        "q": {"patent_id": num_id},
+        "f": [
+            "patent_id",
+            "patent_title",
+            "patent_date",
+            "inventors.inventor_name_first",
+            "inventors.inventor_name_last",
+            "assignees.assignee_organization",
+        ],
     }
 
-    # ---- Granted Patent ----
-    if id_type == "patent":
-        payload = {
-            "q": {"patent_id": identifier},
-            "f": [
-                "patent_id",
-                "patent_title",
-                "patent_date",
-                "inventors.inventor_name_first",
-                "inventors.inventor_name_last",
-                "assignees.assignee_organization"
-            ]
-        }
-        url = PATENT_URL
-        record_key = "patents"
-        meta = {
-            "id": "patent_id",
-            "title": "patent_title",
-            "date": "patent_date",
-            "label": "U.S. Patent"
-        }
-
-    # ---- Publication or Application ----
-    else:
-        if id_type == "application":
-            identifier = normalize_application_number(identifier)
-            query = {"application_number": identifier}
-        else:
-            query = {"publication_number": identifier}
-
-        payload = {
-            "q": query,
-            "f": [
-                "publication_number",
-                "publication_title",
-                "publication_date",
-                "application_number",
-                "inventors.inventor_name_first",
-                "inventors.inventor_name_last",
-                "assignees.assignee_organization"
-            ]
-        }
-        url = PUBLICATION_URL
-        record_key = "publications"
-        meta = {
-            "id": "publication_number",
-            "title": "publication_title",
-            "date": "publication_date",
-            "label": "U.S. Patent Application"
-        }
-
-    response = requests.post(url, json=payload, headers=headers, timeout=30)
+    response = requests.post(PATENT_URL, json=payload, headers=headers, timeout=30)
     response.raise_for_status()
-
-    records = response.json().get(record_key, [])
+    records = response.json().get("patents", [])
     if not records:
         return None
-
     record = records[0]
-    record["_meta"] = meta
-    return record
 
-
-# =========================
-# BIBTEX CONVERSION
-# =========================
-
-def record_to_bibtex_misc(record: dict) -> str:
-    """
-    Convert a PatentsView record to BibTeX @misc
-    """
-
-    meta = record["_meta"]
-
-    identifier = record.get(meta["id"], "unknown")
-
-    title = (
-        record.get(meta["title"], "")
-        .replace("{", "")
-        .replace("}", "")
-    )
-
+    title = record.get("patent_title", "").replace("{", "").replace("}", "")
     inventors = record.get("inventors", [])
     authors = " and ".join(
         f"{i.get('inventor_name_last')}, {i.get('inventor_name_first')}"
         for i in inventors
         if i.get("inventor_name_last")
     )
-
     assignees = [
         a.get("assignee_organization")
         for a in record.get("assignees", [])
         if a.get("assignee_organization")
     ]
-
     year = ""
     month = ""
-    date_str = record.get(meta["date"])
+    date_str = record.get("patent_date") 
     if date_str:
         dt = datetime.strptime(date_str, "%Y-%m-%d")
         year = dt.year
-        month = dt.strftime("%b").lower()
-
-    bibtex = f"""@misc{{{identifier},
-  title        = {{{title}}},
-  author       = {{{authors}}},
-  year         = {{{year}}},
-  month        = {{{month}}},
-  howpublished = {{{meta["label"]} {identifier}}},
-"""
-
+        month = str(dt.month)
+        idstring = make_title_id(title, str(year))
+        # build Google Patents URL (prefix with US if numeric)
+        gp_id = num_id if re.match(r'^[A-Za-z]', num_id) else f"US{num_id}"
+        url = f"https://patents.google.com/patent/{gp_id}"
+        bibtex = f"""@misc{{{idstring},
+        title        = {{{title}}},
+        author       = {{{authors}}},
+        year         = {{{year}}},
+        month        = {{{month}}},
+        keywords      = {{patent}},
+        howpublished = {{U.S. Patent {identifier.rstrip(',')}}},
+        url          = {{{url}}},
+    """
     if assignees:
         bibtex += f"  note         = {{Assignee: {', '.join(assignees)}}},\n"
-
     bibtex += "}\n"
     return bibtex
 
 
-# =========================
-# ONE-CALL PIPELINE
-# =========================
+def lookup_application(identifier: str, api_key: str) -> Optional[str]:
+    """Lookup an application (or related publication) from PatentsView and
+    return a BibTeX string (or None).
 
-def identifier_to_bibtex(identifier: str, api_key: str) -> Optional[str]:
+    This will normalize application numbers like '19/091,471' → '19091471'.
     """
-    Main public API:
-      identifier → BibTeX @misc entry
-    """
-    record = lookup_record(identifier, api_key)
-    if not record:
+    num_id = identifier.replace(",","").replace("/","").strip()
+    headers = {"X-Api-Key": api_key, "Accept": "application/json"}
+
+    query = {"granted_pregrant_crosswalk.application_number": num_id}
+    payload = {
+        "q": query,
+        "f": [
+            "granted_pregrant_crosswalk.application_number",
+            "document_number",
+            "publication_title",
+            "publication_date",
+            "inventors.inventor_name_first",
+            "inventors.inventor_name_last",
+            "assignees.assignee_organization",
+            "granted_pregrant_crosswalk.current_document_number_flag",
+            "granted_pregrant_crosswalk.current_patent_id_flag",
+            "granted_pregrant_crosswalk.patent_id",
+        ],
+    }
+
+    response = requests.post(PUBLICATION_URL, json=payload, headers=headers, timeout=30)
+    response.raise_for_status()
+    records = response.json().get("publications", [])
+    if not records:
         return None
-    return record_to_bibtex_misc(record)
+    
+    # Prefer the record marked as the current document number, if present.
+    record = records[0]
+    for temp in records:
+        flag = _resolve_field(record, "granted_pregrant_crosswalk.current_document_number_flag")
+        if flag:
+            record = temp
+            break
 
-
-# =========================
-# EXAMPLE USAGE
-# =========================
-if __name__ == "__main__":
-
-    API_KEY = "YOUR_API_KEY_HERE"
-
-    identifiers = [
-        "10987654",        # granted patent
-        "US20210234567",   # publication
-        "19/091,471",      # raw application number
-        "19091471"         # normalized application number
+    title = record.get("publication_title", "").replace("{", "").replace("}", "")
+    inventors = record.get("inventors", [])
+    authors = " and ".join(
+        f"{i.get('inventor_name_last')}, {i.get('inventor_name_first')}"
+        for i in inventors
+        if i.get("inventor_name_last")
+    )
+    assignees = [
+        a.get("assignee_organization")
+        for a in record.get("assignees", [])
+        if a.get("assignee_organization")
     ]
+    year = ""
+    month = ""
+    date_str = record.get("publication_date")
+    if date_str:
+        dt = datetime.strptime(date_str, "%Y-%m-%d")
+        year = dt.year
+        month = str(dt.month)
+    idstring = make_title_id(title, str(year))
+    # Try to extract a direct publication/document id for a per-publication URL
+    pub_id = record.get("document_number")
+    gp_id = f"US{pub_id}"
+    url = f"https://patents.google.com/patent/{gp_id}"
+    bibtex = f"""@misc{{{idstring},
+title        = {{{title}}},
+author       = {{{authors}}},
+year         = {{{year}}},
+month        = {{{month}}},
+keywords      = {{patent}},
+howpublished = {{U.S. Patent Application {identifier.rstrip(',')}}},
+url          = {{{url}}},
+"""
+    if assignees:
+        bibtex += f"  note         = {{Assignee: {', '.join(assignees)}}},\n"
+    bibtex += "}\n"
+    return bibtex
 
-    with open("patents.bib", "w", encoding="utf-8") as f:
-        for ident in identifiers:
-            bib = identifier_to_bibtex(ident, API_KEY)
-            if bib:
-                f.write(bib + "\n")
-            else:
-                print(f"No record found for {ident}")
+
+def lookup_publication(identifier: str, api_key: str) -> Optional[str]:
+    """Lookup a publication/document record from PatentsView and
+    return a BibTeX string (or None).
+    """
+    num_id = identifier.replace(",","").strip()
+    num_id = re.sub(r'^[A-Za-z]{2}', '', num_id)
+
+    headers = {"X-Api-Key": api_key, "Accept": "application/json"}
+    query = {"document_number": num_id}
+    payload = {
+        "q": query,
+        "f": [
+            "document_number",
+            "publication_title",
+            "publication_date",
+            "inventors.inventor_name_first",
+            "inventors.inventor_name_last",
+            "assignees.assignee_organization",
+        ],
+    }
+
+    response = requests.post(PUBLICATION_URL, json=payload, headers=headers, timeout=30)
+    response.raise_for_status()
+    records = response.json().get("publications", [])
+    if not records:
+        return None
+    record = records[0]
+
+    # Direct field access (no _meta)
+    title = record.get("publication_title", "").replace("{", "").replace("}", "")
+    inventors = record.get("inventors", [])
+    authors = " and ".join(
+        f"{i.get('inventor_name_last')}, {i.get('inventor_name_first')}"
+        for i in inventors
+        if i.get("inventor_name_last")
+    )
+    assignees = [
+        a.get("assignee_organization")
+        for a in record.get("assignees", [])
+        if a.get("assignee_organization")
+    ]
+    year = ""
+    month = ""
+    date_str = record.get("publication_date") 
+    if date_str:
+        dt = datetime.strptime(date_str, "%Y-%m-%d")
+        year = dt.year
+        month = str(dt.month)
+        idstring = make_title_id(title, str(year))
+        # Prefer document_number from the API record for a direct link
+        pub_id = record.get("document_number")
+        gp_id = f"US{pub_id}"
+        url = f"https://patents.google.com/patent/{gp_id}"
+        bibtex = f"""@misc{{{idstring},
+    title        = {{{title}}},
+    author       = {{{authors}}},
+    year         = {{{year}}},
+    month        = {{{month}}},
+    keywords      = {{patent}},
+    howpublished = {{U.S. Patent Application {identifier.rstrip(',')}}},
+    url          = {{{url}}},
+"""
+    if assignees:
+        bibtex += f"  note         = {{Assignee: {', '.join(assignees)}}},\n"
+    bibtex += "}\n"
+    return bibtex
+

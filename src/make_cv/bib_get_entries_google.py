@@ -26,7 +26,8 @@ from .bib_add_keywords import add_keyword
 from .bib_get_entries_orcid import make_bibtex_id_list
 from .bib_get_entries_orcid import make_title_id
 from .bib_get_entries_orcid import getyear
-from .bib_get_entries_uspto import identifier_to_bibtex
+from .bib_get_entries_uspto import lookup_application
+from .bib_get_entries_uspto import lookup_patent
 
 from bs4 import BeautifulSoup
 import requests
@@ -124,35 +125,23 @@ def bib_get_entries_google(bibfile, author_id, years, outputfile, scraper_id=Non
 			print(pub['bib']['title'] +' ' +pub['bib']['pub_year'])
 
 		try:
-			if pub['bib']['citation'].find('Patent') > -1:
+			if pub['bib']['citation'].find('Patent') > -1 and global_prefs.uspto_api_key is not None:
 				if pub['bib']['citation'].find('App') > -1:
 					# US Patent App. 12/335,794,
-					year = pub['bib']['pub_year']
-					two_search = re.search('([0-9][0-9])/', pub['bib']['citation'])
-					if two_search:
-						twodigits = two_search.group(1)
-						num_search = re.search('/([0-9,]+)', pub['bib']['citation'])
-						if num_search:
-							patent_app = twodigits +"/" +num_search.group(1).replace(',','')
-							bibtex_str = identifier_to_bibtex(patent_app, global_prefs.uspto_api_key)
-							if bibtex_str is not None:
-								print('Patent found: ' + patent_app)
-								bib_database_patent = bibtexparser.loads(bibtex_str, tbparser)
-								process_entry(bib_database_patent.entries[-1],pub_id,year)
-							else:
-								print('Patent not found: ' + patent_app)
+					num_search = re.search('([0-9][0-9]/[0-9,]+)', pub['bib']['citation'])
+					bibtex_str = lookup_application(num_search.group(1), global_prefs.uspto_api_key)
 				else:
 					# US Patent 7,942,929
 					num_search = re.search('Patent ([0-9,]+)', pub['bib']['citation'])
-					if num_search:
-						patent_num = num_search.group(1).replace(',','')
-						bibtex_str = identifier_to_bibtex(patent_num, global_prefs.uspto_api_key)
-						if bibtex_str is not None:
-							print('Patent found: ' + patent_num)
-							bib_database_patent = bibtexparser.loads(bibtex_str, tbparser)
-							process_entry(bib_database_patent.entries[-1],pub_id,year)
-						else:
-							print('Patent not found: ' + patent_num)
+					bibtex_str = lookup_patent(num_search.group(1), global_prefs.uspto_api_key)
+
+				if bibtex_str is not None:
+					print('Patent found:\n ' + bibtex_str)
+					bib_database_patent = bibtexparser.loads(bibtex_str, tbparser)
+					bib_database_patent.entries[-1]['google_pub_id'] = pub_id
+					continue
+				else:
+					print('Patent not found: ' + num_search.group(1))
 		except KeyError:
 			pass
 
