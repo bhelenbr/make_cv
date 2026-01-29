@@ -20,7 +20,7 @@ import re
 import pybliometrics
 
 from .create_config import create_config
-from .create_config import verify_config
+from .create_config import verify_config, load_personal_data
 from .reviews2excel_publons import reviews2excel_publons
 from .reviews2excel_orcid import reviews2excel_orcid
 from .bib_add_citations import bib_add_citations
@@ -236,15 +236,12 @@ def read_args(parser,argv):
 			print("This directory already exists.  Please provide a different directory name")
 			exit()
 		else:
-			regoogleid = re.compile(r"^googleid =.*$")
-			reorcid = re.compile(r"^orcid =.*$")
-			rescopusid = re.compile(r"^scopusid =.*$")
-			rewebscraperid = re.compile(r"^webscraperid =.*$")
+			# IDs will be kept in PersonalData/personal_data.txt rather than in the config files
 			dst = Path(args.begin)
 			#dst = path.parent.absolute()
 			myDir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) # script directory
 			shutil.copytree(myDir +os.sep +"files",dst)
-			# Override google id and orcid and scraperID if provided
+			# Override google/orcid/scopus/scraper args to empty strings if not provided
 			if args.GoogleID is None:
 				args.GoogleID = ""
 			if args.ORCID is None:
@@ -254,25 +251,15 @@ def read_args(parser,argv):
 			if args.WebScraperID is None:
 				args.WebScraperID = ""
 
-			for root, _, files in os.walk(dst):
-				if "make_cv.cfg" in files:
-					full_path = os.path.join(root, "make_cv.cfg")
-					new_lines = []
-					with open(full_path, "r", encoding="utf-8") as f:
-						lines = f.readlines()
-						for line in lines:
-							if regoogleid.match(line):
-								new_lines.append("googleid = " +args.GoogleID +"\n")
-							elif reorcid.match(line):
-								new_lines.append("orcid = " +args.ORCID +"\n")
-							elif rescopusid.match(line):
-								new_lines.append("scopusid = " +args.ScopusID +"\n")
-							elif rewebscraperid.match(line):
-								new_lines.append("scraperid = " +args.WebScraperID +"\n")
-							else:
-								new_lines.append(line)
-					with open(full_path, "w", encoding="utf-8") as f:
-						f.writelines(new_lines)
+			# Create PersonalData/personal_data.txt in the new project
+			personal_dir = os.path.join(dst, 'make_cv', 'PersonalData')
+			pfile = os.path.join(personal_dir, 'personal_data.txt')
+			with open(pfile, 'w', encoding='utf-8') as pf:
+				pf.write('# Personal data (IDs) for make_cv\n')
+				pf.write(f'googleid = {args.GoogleID}\n')
+				pf.write(f'webscraperid = {args.WebScraperID}\n')
+				pf.write(f'scopusid = {args.ScopusID}\n')
+				pf.write(f'orcid = {args.ORCID}\n')
 			print('Directory created.  Now type "cd ' +args.begin +'/make_cv/CV" to change to that folder and type "make_cv" to create sample')
 			exit()
 		
@@ -280,20 +267,26 @@ def read_args(parser,argv):
 		
 	configuration = configparser.ConfigParser()
 	configuration.read(args.configfile)
-	
+
+	# Load personal data from bio_dir/personal_data.txt and inject into configuration
+	configuration = load_personal_data(configuration)
+
+	# verify configuration file
 	ok = verify_config(configuration)
 	if (not ok):
 		print("Incomplete or Unreadable configuration file " +args.configfile +".\n") 
-		YN = input('Would you like to update configuration file named make_cv.cfg [Y/N]?')
-		if YN == 'Y' or YN =='y':
-			newconfig = create_config('make_cv.cfg',configuration)
-			return(newconfig,args)
-		elif YN =='N' or YN =='n':
-			print("Couldn't proceed due to Incomplete or Unreadable configuration file")
-			return
+		if not global_prefs.quiet:
+			YN = input('Would you like to update configuration file named make_cv.cfg [Y/N]?')
 		else:
-			return
-		
+			YN = 'Y'
+			print('Auto-updating configuration file named make_cv.cfg')
+
+		if YN == 'Y' or YN =='y':
+			configuration = create_config('make_cv.cfg',configuration)
+		else:
+			print("Couldn't proceed due to Incomplete or Unreadable configuration file")
+			exit(1)
+
 	return([configuration,args])
 
 def process_default_args(config,args):
@@ -382,6 +375,29 @@ def process_default_args(config,args):
 				reviews2excel_orcid(config['ORCID'],xls)
 		config['ReviewsFile'] = name_extension_tuple[0] +'.xlsx'
 	
+	if config.getint('GetNewScopusEntries') != 0:
+		if not (config['ScopusID'] == ""):
+			print("Trying to find new .bib entries from Scopus")
+			pybliometrics.init()
+			filename = os.path.join(faculty_source,config['ScholarshipFile'])
+			backup_path= os.path.join(faculty_source,'make_cv','Backups')
+			copy_with_timestamp(filename, str(backup_path))
+			nyears = int(config['GetNewScopusEntries'])
+			bib_get_entries_scopus(filename,config['ScopusID'],nyears,filename)
+		else:
+			print("Can't get entries from Scopus without providing Scopus ID")
+
+	if config.getint('GetNewOrcidEntries') != 0:
+		if not (config['ORCID'] == ""):
+			print("Trying to find new .bib entries from ORCID")
+			filename = os.path.join(faculty_source,config['ScholarshipFile'])
+			backup_path= os.path.join(faculty_source,'make_cv','Backups')
+			copy_with_timestamp(filename, str(backup_path))
+			nyears = int(config['GetNewOrcidEntries'])
+			bib_get_entries_orcid(filename,config['ORCID'],nyears,filename)
+		else:
+			print("Can't get entries from ORCID without providing ORCID")
+
 	if config.getint('GetNewGoogleEntries') != 0:
 		if not (config['GoogleID'] == ""):
 			print("Trying to find new .bib entries from Google Scholar")
@@ -408,29 +424,6 @@ def process_default_args(config,args):
 		else:
 			print("Can't get entries from Google without providing Google ID")
 	
-	if config.getint('GetNewOrcidEntries') != 0:
-		if not (config['ORCID'] == ""):
-			print("Trying to find new .bib entries from ORCID")
-			filename = os.path.join(faculty_source,config['ScholarshipFile'])
-			backup_path= os.path.join(faculty_source,'make_cv','Backups')
-			copy_with_timestamp(filename, str(backup_path))
-			nyears = int(config['GetNewOrcidEntries'])
-			bib_get_entries_orcid(filename,config['ORCID'],nyears,filename)
-		else:
-			print("Can't get entries from ORCID without providing ORCID")
-
-	if config.getint('GetNewScopusEntries') != 0:
-		if not (config['ScopusID'] == ""):
-			print("Trying to find new .bib entries from Scopus")
-			pybliometrics.init()
-			filename = os.path.join(faculty_source,config['ScholarshipFile'])
-			backup_path= os.path.join(faculty_source,'make_cv','Backups')
-			copy_with_timestamp(filename, str(backup_path))
-			nyears = int(config['GetNewScopusEntries'])
-			bib_get_entries_scopus(filename,config['ScopusID'],nyears,filename)
-		else:
-			print("Can't get entries from Scopus without providing Scopus ID")
-		
 	# add/update citations counts in .bib file	
 	if config.getboolean('UpdateCitations'):
 		print("Updating citation counts using Google Scholar")

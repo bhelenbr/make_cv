@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import configparser
+import os
 
 sections = {'PersonalAwards': 'true',
 				'Journal': 'true',
@@ -22,17 +23,58 @@ sections = {'PersonalAwards': 'true',
 
 defaults = {'data_dir': '../..',
 				'bio_dir': '../PersonalData',
-				'GoogleID': '',
-				'WebScraperID': '',
 				'UseWebScraper': 'false',
 				'UpdateCitations': 'false',
 				'UpdateStudentMarkers': 'false',
 				'GetNewGoogleEntries': '0',
 				'SearchForDOIs': 'false',
-				'ORCID': '',
 				'GetNewOrcidEntries':'0',
-				'ScopusID': '',
 				'GetNewScopusEntries':'0'}
+
+
+def load_personal_data(configuration):
+	"""Read personal_data.txt from the given bio_dir and return dict of values.
+	Keys returned (lowercase): googleid, webscraperid, scopusid, orcid
+	If file does not exist, returns empty values.
+	"""
+	bio_dir = configuration['DEFAULT'].get('bio_dir')
+
+	pdata = {'googleid': '', 'webscraperid': '', 'scopusid': '', 'orcid': ''}
+	if bio_dir is None:
+		return pdata
+	pfile = os.path.join(bio_dir, 'personal_data.txt')
+	if (not os.path.isfile(pfile)):
+		with open(pfile, 'w', encoding='utf-8') as f:
+			f.write('# Personal data (IDs) for make_cv\n')
+			f.write('# Fill in the values without quotes. Example:\n')
+			f.write('# googleid = ABCDEFGHIJ\n')
+			for k in ['googleid', 'webscraperid', 'scopusid', 'orcid']:
+				if k in configuration['DEFAULT'].keys():
+					f.write(f'{k} = {configuration["DEFAULT"][k]}\n')
+				else:
+					f.write(f'{k} = \n')
+		return(configuration)
+	else:
+		with open(pfile, 'r', encoding='utf-8') as f:
+			for line in f:
+				line = line.strip()
+				if not line or line.startswith('#'):
+					continue
+				if '=' in line:
+					key, val = line.split('=', 1)
+				elif ':' in line:
+					key, val = line.split(':', 1)
+				else:
+					continue
+				key = key.strip().lower()
+				val = val.strip()
+				if key in pdata:
+					pdata[key] = val
+		for k, v in pdata.items():
+			configuration['DEFAULT'][k] = v
+		return configuration
+	
+	return(None)
 
 files = {'ScholarshipFile': 'Scholarship/scholarship.bib',
 			'PersonalAwardsFile': 'Awards/personal awards data.xlsx',
@@ -111,7 +153,7 @@ def create_config(filename, old_config=None):
 	
 	with open(filename, 'w') as configfile:
 		config.write(configfile)
-	
+
 	return config
   
 if __name__ == "__main__":

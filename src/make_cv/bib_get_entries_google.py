@@ -28,6 +28,7 @@ from .bib_get_entries_orcid import make_title_id
 from .bib_get_entries_orcid import getyear
 from .bib_get_entries_uspto import lookup_application
 from .bib_get_entries_uspto import lookup_patent
+from .bib_get_entries_uspto import lookup_publication	
 
 from bs4 import BeautifulSoup
 import requests
@@ -67,9 +68,14 @@ def bib_get_entries_google(bibfile, author_id, years, outputfile, scraper_id=Non
 		if success:
 			print('ScraperAPI in use')
 			scholarly.use_proxy(pg)
-		
-	# Get Google Scholar Data for Author	
-	author = scholarly.search_author_id(author_id)
+	
+	# Get Google Scholar Data for Author
+	try:
+		author = scholarly.search_author_id(author_id)
+	except Exception:
+		print('Error retrieving author from Google Scholar: ' + str(author_id))
+		return
+	
 	author_name = author.get('name')
 	if author_name is None:
 		last_name = ""
@@ -117,6 +123,12 @@ def bib_get_entries_google(bibfile, author_id, years, outputfile, scraper_id=Non
 		if pub_id in google_pub_ids:
 			continue
 
+		# Skip if matching title/date string
+		title_id = make_title_id(pub['bib']['title'],year)
+		if any(title_id == entry_title_id for _, entry_title_id, _ in bib_entry_ids):
+			print('Skipped entry since title/year already exists')
+			continue
+
 		################  Using bibtex autocomplete ########################
 		print('Trying to complete this record:')
 		try:
@@ -126,15 +138,23 @@ def bib_get_entries_google(bibfile, author_id, years, outputfile, scraper_id=Non
 
 		try:
 			if pub['bib']['citation'].find('Patent') > -1 and global_prefs.uspto_api_key is not None:
-				if pub['bib']['citation'].find('App') > -1:
+				num_search = re.search(r'([0-9][0-9]/[0-9,]+)', pub['bib']['citation'])
+				if num_search is not None:
 					# US Patent App. 12/335,794,
-					num_search = re.search('([0-9][0-9]/[0-9,]+)', pub['bib']['citation'])
 					bibtex_str = lookup_application(num_search.group(1), global_prefs.uspto_api_key)
 				else:
-					# US Patent 7,942,929
-					num_search = re.search('Patent ([0-9,]+)', pub['bib']['citation'])
-					bibtex_str = lookup_patent(num_search.group(1), global_prefs.uspto_api_key)
-
+					# US Patent document US20210238065A1
+					num_search = re.search(r'([A-Za-z]{2}[\d]{4}[^,]*)', pub['bib']['citation'])
+					if num_search is not None:
+						bibtex_str = lookup_publication(num_search.group(1), global_prefs.uspto_api_key)
+					else:
+						# US Patent 7,942,929
+						num_search = re.search(r'Patent ([0-9,]+)', pub['bib']['citation'])
+						if num_search is not None:
+							bibtex_str = lookup_patent(num_search.group(1), global_prefs.uspto_api_key)
+						else:
+							bibtex_str = None
+				
 				if bibtex_str is not None:
 					print('Patent found:\n ' + bibtex_str)
 					bib_database_patent = bibtexparser.loads(bibtex_str, tbparser)
@@ -173,15 +193,7 @@ def bib_get_entries_google(bibfile, author_id, years, outputfile, scraper_id=Non
 			if doi_match:
 				doi = doi_match.group(1).lower()
 				if any(entry_doi and doi == entry_doi for _, _, entry_doi in bib_entry_ids):
-					continue
-
-			# Skip if matching title/date string
-			year_match = re.search(r'year\s*=\s*{(\d+)}', bibtex_str)
-			title_match = re.search(r'(?:,|\n)\s*title\s*=\s*{(.+?)},', bibtex_str)
-			title_text = title_match.group(1)
-			title_id = make_title_id(title_text,year_match.group(1))
-			if any(title_id == entry_title_id for _, entry_title_id, _ in bib_entry_ids):
-				if doi is None:
+					print('Skipped entry since doi already exists')
 					continue
 					
 			bibtex_str = str2latex(bibtex_str)

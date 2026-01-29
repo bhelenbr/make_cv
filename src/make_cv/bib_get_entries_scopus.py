@@ -53,10 +53,11 @@ def build_bibtex(ab):
     publication = getattr(ab, "publicationName", None)
     pages = getattr(ab, "pageRange", None) or getattr(ab, "pages", None)
     doi = getattr(ab, "doi", None)
+    eid = getattr(ab, "eid", None)
 
     # Determine entry type: book chapter, book, conference (inproceedings), fallback article
     subtype = (getattr(ab, "subtype", "") or "").lower()
-    print(subtype)
+
     if "ch" in subtype:
         entry_type = "incollection"
         primary_container = publication
@@ -85,6 +86,8 @@ def build_bibtex(ab):
         bib.append(f"  year    = {{{year}}},")
     if doi:
         bib.append(f"  doi     = {{{doi}}},")
+    if eid:
+        bib.append(f"  eid     = {{{eid}}},")
 
     if entry_type in ("incollection", "inproceedings"):
         if primary_container:
@@ -145,6 +148,12 @@ def bib_get_entries_scopus(bibfile, author_id, years, outputfile):
         # Prefer native Scopus BibTeX for journal articles
         try:
             bib = ab.get_bibtex()
+            if re.search(r'@comment{', bib):
+                raise Exception("Invalid BibTeX from Scopus")
+            
+            # Reset the citation key to our generated one, preserving entry type
+            # scopus citation keys can cause errors
+            bib = re.sub(r'@([a-zA-Z]+)\w*{[^,]+',f'@\\1{{{title_id}', bib, count=1)
         except Exception:
             bib = None
 

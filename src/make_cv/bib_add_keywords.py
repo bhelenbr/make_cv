@@ -27,10 +27,10 @@ def guess_type(paperbibentry):
 			if (paperbibentry["howpublished"].find("Patent") > -1):
 				return("patent")
 		else:
-			return("invited")
+			return("ignore")
 	elif entrytype  ==  "article":
 		if "journal" in paperbibentry.keys():
-			if (paperbibentry["journal"].find("arXiv") > -1):
+			if (paperbibentry["journal"].lower().find("rxiv") > -1):
 				return("arXiv")
 			else:
 				return("journal")
@@ -44,6 +44,8 @@ def guess_type(paperbibentry):
 				return("conference")
 		else:
 			return("conference")
+	elif (entrytype  == "incollection"):
+		return("book")
 	elif (entrytype == "conference"):
 		return("conference")
 	elif entrytype  == "techreport":
@@ -76,7 +78,9 @@ def add_keyword(paperbibentry):
 	keyword = guess_type(paperbibentry)
 	keyword = input_keyword(keyword)
 	if "keywords" in paperbibentry.keys():
-		response = input('Should I erase current keywords [Y/N] default is [Y]')
+		response = 'Y'
+		if not global_prefs.quiet:
+			response = input('Should I erase current keywords [Y/N] default is [Y]')
 		if (response == 'N'):
 			paperbibentry["keywords"] += ', ' +keyword
 		else:
