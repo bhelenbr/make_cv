@@ -289,8 +289,9 @@ def bib_get_entries_orcid(bibfile, orcid, years, outputfile):
 		completer = BibtexAutocomplete()
 		completer.load_string(new_entry)
 		completer.autocomplete()
-
+		
 		bibtex_str = completer.write_string()[0]
+		bibtex_str = str2latex(bibtex_str)
 		print(bibtex_str)
 		
 		if not global_prefs.quiet:

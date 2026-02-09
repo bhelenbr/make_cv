@@ -7,15 +7,20 @@ def str2latex(text):
 	if text=="nan":
 		return("")
 	else:
-		replacements1 = {"&":"\\&","#":"\\#","&amp;":"\\&"}
-		for i, j in replacements1.items():
-			text = text.replace(i, j)
+		# Only replace characters that do not already have a preceding backslash
+		# Order matters: handle multi-character entities first (e.g. '&amp;')
+		repl_order = [("&amp;", r"\&"), ("&", r"\&"), ("#", r"\#")]
+		for old, new in repl_order:
+			pattern = re.compile(r'(?<!\\)'+re.escape(old))
+			text = pattern.sub(lambda m, r=new: r, text)
 
-		# Count number of $ signs if even assume latex string
-		if text.count('$') == 0 or text.count('$') % 2 == 1:
-			replacements = {"$":"\\$","_":"\\_"}
-			for i, j in replacements.items():
-				text = text.replace(i, j)
+		# Count number of non-escaped $ signs; if none or odd, escape $ and _
+		unescaped_dollars = len(re.findall(r'(?<!\\)\$', text))
+		if unescaped_dollars == 0 or unescaped_dollars % 2 == 1:
+			replacements = [("$", r"\$"), ("_", r"\_")]
+			for old, new in replacements:
+				pattern = re.compile(r'(?<!\\)'+re.escape(old))
+				text = pattern.sub(lambda m, r=new: r, text)
 		return text
 		
 # This function should convert any name formatting in a document or file to that of the standardized format, which is:

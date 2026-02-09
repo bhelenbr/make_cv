@@ -283,6 +283,7 @@ def read_args(parser,argv):
 
 		if YN == 'Y' or YN =='y':
 			configuration = create_config('make_cv.cfg',configuration)
+			load_personal_data(configuration)
 		else:
 			print("Couldn't proceed due to Incomplete or Unreadable configuration file")
 			exit(1)

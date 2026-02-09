@@ -153,6 +153,7 @@ def bib_get_entries_scopus(bibfile, author_id, years, outputfile):
             
             # Reset the citation key to our generated one, preserving entry type
             # scopus citation keys can cause errors
+            bib = str2latex(bib)
             bib = re.sub(r'@([a-zA-Z]+)\w*{[^,]+',f'@\\1{{{title_id}', bib, count=1)
         except Exception:
             bib = None
@@ -163,7 +164,7 @@ def bib_get_entries_scopus(bibfile, author_id, years, outputfile):
             completer.load_string(bib)
             completer.autocomplete()
             bib = completer.write_string()[0]
-
+            bib = str2latex(bib)
         print(bib)
 
         if not global_prefs.quiet:
