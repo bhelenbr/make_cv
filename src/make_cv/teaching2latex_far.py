@@ -48,6 +48,7 @@ def teaching2latex_far(f,years,inputfile,private=False):
 			while count < nrows:
 				f.write(newline)
 				f.write(str2latex(df.loc[count,('term','')]) + " & " +str2latex(df.loc[count,('combined_course_num','')]) + " & " +str2latex(df.loc[count,('course_section','')]) +" & " +"{:d}".format(df.loc[count,('enrollment',19)]))
+				newline="\\\\\n"
 				count += 1
 		else:
 			f.write("\\begin{tabularx}{\\linewidth}{lXlllll}\nTerm  & Course & Section & Enrollment & \\%Response & Q19 & Q20 \\\\\n\\hline\n")
