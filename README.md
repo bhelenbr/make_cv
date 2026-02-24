@@ -11,19 +11,23 @@ This assumes you have LaTeX and Python installed on your system.  If not see App
 
 Once make\_cv is installed, you need to create the data directories and default files for adding data.  Choose a name for the root folder for keeping your c.v. related data.  To create this folder, execute the command
 
-`make_cv -b <folder name>`
+`make_cv -G <Google ID> -O <ORCID> -S <Scopus ID> -b <folder name>`
 
-The `-b` flag tells make\_cv to create a new data directory.  For example “`make_cv -b myData”` creates the default data folders and files in a folder called `myData` in the current working directory.  The folder “`make_cv”`in the `myData` folder contains subfolders for several different outputs.  To make the example cv, cd to “`make_cv/CV”`. In this folder is a text file called “`make_cv.cfg”.` This is a text file that can be edited with any text editor.  To use the Google Scholar features, you have to enter your Google ID.  To find this go to [Google Scholar](https://scholar.google.com) and click on “My profile” in the top left.  (If you don't have a public Google Scholar profile, follow [these instructions](https://scholar.google.com/intl/en/scholar/citations.html)). If you examine the url for your profile page it should have a section that looks like: user=m\_of3wYAAAAJ\&hl=en.  Your user id is the string after the \= sign up to but not including the &.  So in this case it is “m\_of3wYAAAAJ”.  Put this value into the `make_cv.cfg` file under “googleid”.
+You don’t need any of the IDs to use make\_cv, but to automatically update your published works and find citation counts, at least one is necessary. To find your Google ID, go to [Google Scholar](https://scholar.google.com) and click on “My profile” in the top left.  (If you don't have a public Google Scholar profile, follow [these instructions](https://scholar.google.com/intl/en/scholar/citations.html)). If you examine the url for your profile page it should have a section that looks like: user=m\_of3wYAAAAJ\&hl=en.  Your user id is the string after the \= sign up to but not including the &.  So in this case it is “m\_of3wYAAAAJ”.  
+
+For ORCID, go to their [site](https://orcid.org) and search for your last name.  If you don’t have an ORCID,  the instructions are [here](https://support.orcid.org/hc/en-us/articles/360006897454-How-do-I-register-for-an-ORCID-ID) for obtaining one.  If you click on your ORCID number it will take you to your personal information and in the left sidebar it will also list your Scopus ID if that exists.   Note that Scopus requires a subscription which many Universities have.
+
+The `-b` flag tells make\_cv to create a new data directory.  For example “`make_cv -b myData”` creates the default data folders and files in a folder called `myData` in the current working directory.  The folder “`make_cv”`in the `myData` folder contains subfolders for several different outputs.  To make the example cv, cd to “`make_cv/CV”`. In this folder is a text file called “`make_cv.cfg”.` This is a text file that can be edited with any text editor and can be used to control things like what sections are included and limiting the number of entries in each section either by year or by number of entries.  
 
 Look through the folders and files created and add any additional data that you would like or leave it blank and that section will be ignored.  The format and usage of these files is described below.
 
-Edit the personal data in the files in the folder “`PersonalData”.` At the top of the file “`ContactInfo.tex”` change the command \\boldname{Lastname}{F} to your last name and first initial to have your name bolded in the bibliography.  The files “`Education.tex”`  and “`Employment.tex”` are where you add your education and employment history.
+Edit the personal data in the files in the folder “`make_cv/PersonalData”.` At the top of the file “`ContactInfo.tex”` change the command `\boldname{Lastname}{F}` to your last name and first initial to have your name bolded in the bibliography.  The files “`Education.tex”`  and “`Employment.tex”` are where you add your education and employment history.  The file “`personal_data.txt`” is where make\_cv stores your id numbers.
 
-Now use Google Scholar to get the bibliographic and citation information for your scholarly works:
+Now (stilll in the make\_cv/CV folder) use Google Scholar/ORCID/Scopus to get the bibliographic and citation information for your scholarly works using any or all of the following:
 
-`make_cv -g -1`
+`make_cv -g -1 -o -1 -s -1`
 
-This will get everything and might take a while if you have a lot of publications.  There are other import options that might be faster (see below), but this is the easiest.  The flag “`-g -1”` tells make\_cv to get all years of citations using Google Scholar.   When it is finished it will create the file `CV/cv.pdf` that you should open to see the results.
+This will use all three to find bibliographic entries.  The \-1 means all years.  If you only want to find recent entries you could specify a positive integer for the number of years to search i.e. 1 will only find entries from this year.  This will get everything and might take a while if you have a lot of publications.  There are other import options that are faster ([see below](#bookmark=id.z5xk4spi2w62)), especially if you already have a database of your publications but this is the easiest.  When it is finished it will create the file `CV/cv.pdf` that you should open to see the results.
 
 ### The Data
 
@@ -35,7 +39,8 @@ The files created within the `mydata/make_cv/` folder are
 `PersonalData/reference.tex` – file to include list of references
 
 `CV/cv.tex` – document that gets compiled by `make_cv` to create cv  
-`FAR/far.tex` – document that gets compiled `make_far` to create faculty activity report  
+`FAR/far.tex` – document that gets compiled by `make_far` to create a pdf activity report  
+`FAR_docx/far.tex` – document that gets compiled `make_far` to create docx activity report  
 `Web/web.tex` – file to create web pages using `make_web`  
 `Collaborator/` folder to create an NSF collaborator list using `make_nsfcoa`
 
@@ -61,7 +66,7 @@ Awards
 
 Proposals & Grants
 
-2. There is one excel file here `proposals & grants.xlsx`.  The only necessary fields for the cv are “Proposal\_ID”, “Sponsor”, “Allocated Amt”, “Total Cost”, “Funded?”, “Title”, and “Begin Date” .  The field “Principal Investigators” is necessary if you want to make a NSF collaborator list.   “Proposal” must be a unique identifier for each proposal.  “Sponsor” is the name of the funding agency.  “Allocated Amt” is the percent that should be allocated to you and “Total Cost” is the total dollar amount of the grant.  “Funded?” is a Y or N field that states whether the proposal was funded or not.  "Begin Date" is the start date for the proposed work.  The proposals are organized by proposal begin date in the c.v. and faculty activity report.   make\_cv will sum up your allocated and total grant dollars and put that at the bottom of the grant section of the c.v.  It will do the same for the proposal dollars. 
+2. There is one excel file here `proposals & grants.xlsx`.  The only necessary fields for the cv are “Proposal\_ID”, “Sponsor”, “Allocated Amt”, “Total Cost”, “Funded?”, “Title”, and “Begin Date” .  The field “Principal Investigators” is necessary if you want to make a NSF collaborator list.  It should be a comma separated list of co-PIs.   “Proposal” must be a unique identifier for each proposal.  “Sponsor” is the name of the funding agency.  “Allocated Amt” is the percent that should be allocated to you and “Total Cost” is the total dollar amount of the grant.  “Funded?” is a Y or N field that states whether the proposal was funded or not.  "Begin Date" is the start date for the proposed work.  The proposals are organized by proposal begin date in the c.v. and faculty activity report.   make\_cv will sum up your allocated and total grant dollars and put that at the bottom of the grant section of the c.v.  It will do the same for the proposal dollars.  Depending on what is most convenient for you, you can also make a separate “grants.xlsx” file and keep grants & proposals separately.  If “grants.xlsx” exists it will be used to make the grant list.  If not, make\_cv uses all proposals with a funded status of “Y” to make the grant list.
 
 Scholarship
 
@@ -103,7 +108,7 @@ Scholarship
 
         title \= {Why is Fluid Mechanics Interesting?}}
 
-      Patents use the “Misc” type as well.  These can be downloaded from Google Scholar.
+      Patents use the “Misc” type as well.  These can be found from Google Scholar with bibliographic data pulled from the USPTO’s repository.
 
 Service
 
@@ -136,7 +141,7 @@ Service
 
       
 
-      make\_cv will gather the reviews by journal and list the number reviews for each journal in the c.v.   it will also sum up the total number of reviews performed over the time period where records were kept and list that in the c.v. as well.
+      make\_cv will gather the reviews by journal and list the number reviews for each journal in the c.v.   it will also sum up the total number of reviews performed over the time period where records were kept and list that in the c.v. as well.  Your ORCID can also be used to get reviewing data but this is typically less complete.
 
 Teaching
 
@@ -157,7 +162,9 @@ The `make_cv` tool provides a range of command-line options to customize and aut
 | Option | Description |
 | :---- | :---- |
 | `-g {NUMBER OF YEARS}` | Search for and add new entries from Google Scholar to the `.bib` file for the past specified number of years. Use `-g -1` to search for all available entries. Defaults to `1` if `-g` is used without specifying a number. |
-| `-G {GOOGLEID}` | Override `GoogleID` specified in config file |
+| `-G {GOOGLEID}` | Override/Specify `GoogleID` (stored in “personal\_data.txt”) |
+| `-O {ORCID}` | Override/Specify `ORCID` (stored in “personal\_data.txt”) |
+| `-S {Scopus ID}` | Override/Specify `Scopus ID` (stored in “personal\_data.txt”) |
 | `-c {true,false}` | Update citation counts stored in the `.bib` file. |
 | `-m {true,false}` | Update student author markers in the `.bib` file. |
 | `-I {true,false}` | Use `bibtexautocomplete` to search for and add missing DOIs to the `.bib` file. |
@@ -165,14 +172,12 @@ The `make_cv` tool provides a range of command-line options to customize and aut
 | `-d {PATH TO DATA DIRECTORY}` | Override the default data directory location specified in the config file. |
 | `-f {PATH TO CONFIGURATION FILE}` | Specify a configuration file. Defaults to `make_cv.cfg`. |
 | `-F {NAME}` | Override data file location in config file for specific sections.  Format is `-F NAME=<file name>` where NAME can be `Scholarship`, `PersonalAwards`, `StudentAwards`, `Service`, `Reviews`, `CurrentGradAdvisees`, `GradTheses`, `UndergradResearch`, `Teaching`, `Proposals`, `Grants`. |
-| `-S {SCRAPERID}` | Specify the `ScraperID` (optional, but helps avoid Google blocking requests). |
-| `-s {true,false}` | Use scraper to avoid Google blocking. |
+| `-W {Web Scraper ID}` | Specify the `ScraperID` (optional, but helps avoid Google blocking requests). |
+| `-w {true,false}` | Use scraper to avoid Google blocking. |
 | `-C {true,false}` | Include citation counts in the CV. |
 | `-M {true,false}` | Include student author markers in the CV. |
 | `-T`  | Include the last update timestamp at the bottom of the CV. If the flag is passed, it adds a timestamp to indicate the last update of the CV. |
 | `-p` | This is for make\_far only, to output a docx file instead of a pdf for the activity report. |
-| `-o {NUMBER OF YEARS}` | Search for and add new entries from ORCID to the `.bib` file for the past specified number of years.  Use `-o -1` to search for all available entries. Defaults to 1 if used without specifying a number. |
-| `-O {ORCID}` | Override `ORCID` specified in config file. |
 | `-y` | Set number of years of data to use in generating cv or far or collaborator list |
 | `-q` | Quiet \- when importing data make\_cv will not ask for confirmations and just makes its best guess as to how to import data from Google Scholar and ORCID. |
 | `-n` | No clean up \- leave files generated by XeLaTeX (for debugging purposes) |
