@@ -5,6 +5,7 @@
 # scatter <file to scatter> <Faculty folder> 
 
 # import modules
+from anyio import key
 import pandas as pd
 import os
 import sys
@@ -12,10 +13,18 @@ import numpy as np
 from datetime import date
 import argparse
 
+from make_cv import global_prefs
+
 from .stringprotect import str2latex
 
+def STRM2Year(strm):
+	return(int((strm-4190)/10 +2019))
 
-def teaching2latex_far(f,years,inputfile,private=False):
+# Last 4 digits of term should be year
+def term2year(term):
+	return(int(term[-4:]))
+
+def teaching2latex_far(f,years,inputfile,private=False,sortbycourse=False,shortform=False):
 	source = inputfile # file to read
 	try:
 		df = pd.read_excel(source,sheet_name="Data")
@@ -27,37 +36,70 @@ def teaching2latex_far(f,years,inputfile,private=False):
 		today = date.today()
 		year = today.year
 		begin_year = year - years	
-		df = df[df['term'].apply(lambda x: int(x[-4:])) >= begin_year]
+		df = df[df['term'].apply(lambda x: term2year(x) >= begin_year)]
 	
-	df = df[(df['question']==19) | (df['question'] == 20)]
-	
-	table = df.pivot_table(index=['STRM','term','combined_course_num','course_section'],columns=['question'],aggfunc={'enrollment': 'sum','Weighted Average': 'sum', 'count_evals': 'sum'})	
-	#table = df.pivot_table(index=['STRM','term','course_num','course_section','enrollment'],columns=['question'],values=['Calculated Mean','Particip'],aggfunc={'Calculated Mean': np.mean, 'Particip':'sum'})
-	
+	if 'component' not in df.columns:
+		df['component'] = "LEC"
+	else:
+		df['component'] = df['component'].fillna("LEC")
+
+	if 'course_title' not in df.columns:
+		df['course_title'] = ""
+	else:
+		df['course_title'] = df['course_title'].fillna("")
+
+	if 'STRM' not in df.columns:
+		df['STRM'] = df.index
+
+	# components: CLN -clinical DIS-discussion FLD-fieldwork IND-independent study LAB-lab LEC-lecture PHY-physical education PRA-practacum PRO-project RSC-research SEM-seminar THE-thesis TUT-tutorial						
+	df = df[~df['component'].isin(['DIS','IND','PRO','RSC','TUT','THE'])]	
+	df['weighted_19'] = df['count_19'] * df['mean_19']
+	df['weighted_20'] = df['count_20'] * df['mean_20']
+
+	table = df.groupby(['combined_course_num','STRM','term']).agg({'course_title':['first'],'combined_num_sec':['count'],'enrollment':['sum'],'count_19':['sum'],'weighted_19':['sum'],'count_20':['sum'],'weighted_20':['sum']})
 	df = table.reset_index()
-	df = df.fillna(0)
-	df.sort_values(by=['STRM','combined_course_num','course_section'], inplace=True,ascending = [False,True,True])
-	df = df.reset_index()
-	#print(df.columns)
+	if sortbycourse:
+		df.sort_values(by=[('combined_course_num',''),('course_title','first'),('STRM','')], inplace=True,ascending = [True,True,False])
+		df[('title_string','')] = df[('course_title','first')]
+
+		headers = ["Course","Term"]
+		keys = [('title_string',''),('term','')]
+	else:
+		df.sort_values(by=[('STRM',''),('combined_course_num',''),('course_title','first')], inplace=True,ascending = [False,True,True])
+		df[('title_string','')] = df[('combined_course_num','')] + " " + df[('course_title','first')]
+		headers = ["Term","Course"]
+		keys = [('term',''),('title_string','')]			
+	
+	df.reset_index(inplace=True)	
+	
+
 	nrows = df.shape[0] 
 	if (nrows > 0):	
 		newline=""
-		if (private):
-			f.write("\\begin{tabularx}{\\linewidth}{lXll}\nTerm  & Course & Section & Enrollment \\\\\n\\hline\n")
-			count = 0
-			while count < nrows:
-				f.write(newline)
-				f.write(str2latex(df.loc[count,('term','')]) + " & " +str2latex(df.loc[count,('combined_course_num','')]) + " & " +str2latex(df.loc[count,('course_section','')]) +" & " +"{:d}".format(df.loc[count,('enrollment',19)]))
-				newline="\\\\\n"
-				count += 1
+		if not global_prefs.usePandoc:
+			ending = "\\endfirsthead\n"
 		else:
-			f.write("\\begin{tabularx}{\\linewidth}{lXlllll}\nTerm  & Course & Section & Enrollment & \\%Response & Q19 & Q20 \\\\\n\\hline\n")
-			count = 0
-			while count < nrows:
-				f.write(newline)
-				f.write(str2latex(df.loc[count,('term','')]) + " & " +str2latex(df.loc[count,('combined_course_num','')]) + " & " +str2latex(df.loc[count,('course_section','')]) +" & " +"{:d}".format(df.loc[count,('enrollment',19)])+ " & " +"{:3.0f}".format(df.loc[count,('count_evals',19)]*100.0/df.loc[count,('enrollment',19)]) + "\\% & " +"{:3.2f}".format(df.loc[count,('Weighted Average',19)]/df.loc[count,('count_evals',19)]) + " & " +"{:3.2f}".format(df.loc[count,('Weighted Average',20)]/df.loc[count,('count_evals',20)]))
-				newline="\\\\\n"
-				count += 1
+			ending = "\\\\\n\\hline\n"
+
+		if (private):
+			f.write("\\begin{tabularx}{\\linewidth}{lXll}\n")
+			f.write(f"{headers[0]}  & {headers[1]} & Secs & Enroll. {ending}")
+			if not global_prefs.usePandoc: 
+				f.write("\\multicolumn{4}{l}{\\conthead{Teaching}} \\endhead \\hline\n")
+		else:
+			f.write("\\begin{tabularx}{\\linewidth}{lXlllll}\n")
+			f.write(f"{headers[0]} & {headers[1]} & Secs & Enroll. & \\%Resp. & Q19 & Q20 {ending}")
+			if not global_prefs.usePandoc: 
+				f.write("\\multicolumn{7}{l}{\\conthead{Teaching}} \\endhead \\hline\n")
+		
+		count = 0
+		while count < nrows:
+			f.write(newline)
+			f.write(str2latex(df.loc[count,keys[0]]) + " & " +str2latex(df.loc[count,keys[1]]) + " & " +"{:d}".format(df.loc[count,('combined_num_sec','count')]) +" & " +"{:d}".format(df.loc[count,('enrollment','sum')]))
+			if not private:
+				f.write(" & " +"{:3.0f}".format(df.loc[count,('count_19','sum')]*100.0/df.loc[count,('enrollment','sum')]) + "\\% & " +"{:3.2f}".format(df.loc[count,('weighted_19','sum')]/df.loc[count,('count_19','sum')]) + " & " +"{:3.2f}".format(df.loc[count,('weighted_20','sum')]/df.loc[count,('count_20','sum')]))
+			newline="\\\\\n"
+			count += 1
 		f.write("\n\\end{tabularx}\n")
 		
 	return(nrows)

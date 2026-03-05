@@ -38,8 +38,8 @@ from .personal_awards2latex import personal_awards2latex
 from .student_awards2latex import student_awards2latex
 from .service2latex import service2latex
 from .reviews2latex_far import reviews2latex_far
-from .teaching2latex import teaching2latex
-from .shortformteaching import shortformteaching
+from .teaching2latex_far import teaching2latex_far
+from .teaching2latex_short import teaching2latex_short
 from .copy_with_timestamp import copy_with_timestamp
 
 from . import global_prefs
@@ -169,9 +169,9 @@ def make_cv_tables(config,table_dir):
 		fteaching = open(table_dir +os.sep +'Teaching.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['TeachingFile'])
 		if config.getboolean('ShortTeachingTable'):
-			nrows = shortformteaching(fteaching,years,filename)
+			nrows = teaching2latex_short(fteaching,years,filename)
 		else:
-			nrows = teaching2latex(fteaching,years,filename)	
+			nrows = teaching2latex_far(fteaching,years,filename,sortbycourse=True)	
 		fteaching.close()
 		if not(nrows):
 			os.remove(table_dir+os.sep +'Teaching.tex')

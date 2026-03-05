@@ -11,9 +11,13 @@ import argparse
 def STRM2Year(strm):
 	return(int((strm-4190)/10 +2019))
 
+# Last 4 digits of term should be year
+def term2year(term):
+	return(int(term[-4:]))
+
 from .stringprotect import str2latex
 
-def shortformteaching(f, years, inputfile):
+def teaching2latex_short(f, years, inputfile):
 	source = inputfile  # File to read
 	try:
 		df = pd.read_excel(source, sheet_name="Data")
@@ -29,44 +33,60 @@ def shortformteaching(f, years, inputfile):
 		today = date.today()
 		year = today.year
 		begin_year = year - years
-		df = df[df['term'].apply(lambda x: int(x[-4:])) >= begin_year]
+		df = df[df['term'].apply(lambda x: term2year(x)) >= begin_year]
+
+	if 'component' not in df.columns:
+		df['component'] = "LEC"
+	else:
+		df['component'] = df['component'].fillna("LEC")
 
 	if 'course_title' not in df.columns:
 		df['course_title'] = ""
+	else:
+		df['course_title'] = df['course_title'].fillna("")
 
+	if 'STRM' not in df.columns:
+		df['STRM'] = df.index
 
-	df = df[(df['question']==19) | (df['question'] == 20)]
-	table = df.pivot_table(index=['combined_course_num','course_title'],columns=['question'],values=['Weighted Average','enrollment','count_evals','STRM'],aggfunc={'Weighted Average': 'sum','enrollment': 'mean','count_evals': 'sum','STRM' : ['min', 'max',pd.Series.nunique]},sort=True)
+	# components: CLN -clinical DIS-discussion FLD-fieldwork IND-independent study LAB-lab LEC-lecture PHY-physical education PRA-practacum PRO-project RSC-research SEM-seminar THE-thesis TUT-tutorial						
+	df = df[~df['component'].isin(['DIS','IND','PRO','RSC','TUT','THE'])]	
+	df['weighted_19'] = df['count_19'] * df['mean_19']
+	df['weighted_20'] = df['count_20'] * df['mean_20']
+
+	df['STRM_combined_num_sec'] = df['STRM'].astype(str) + df['combined_num_sec'].astype(str)
+	table = df.groupby(['combined_course_num']).agg({'course_title':['first'],'STRM':['min', 'max','nunique'],'enrollment':['sum'],'count_19':['sum'],'weighted_19':['sum'],'count_20':['sum'],'weighted_20':['sum']})	
 	df = table.reset_index()
-	df.fillna(0,inplace=True)
+	df.sort_values(by=[('combined_course_num',''),('course_title','first')], inplace=True,ascending = [True,True])
+	df = table.reset_index()
+	df[('title_string','')] = df[('combined_course_num','')] + " " + df[('course_title','first')]
+
 	nrows = df.shape[0] 
-			
 	if (nrows > 0):	
 		f.write("\\begin{itemize}\n")
 		count = 0
 		while count < nrows:
 			f.write("\\item\n")
-			f.write(str2latex(df.iloc[count]['course_title','','']) + ' ')  #+' ' +str2latex(df.iloc[count]['combined_course_num','','']) 
-			if STRM2Year(df.iloc[count]['STRM','min',19]) == STRM2Year(df.iloc[count]['STRM','max',19]):
-				f.write(str(STRM2Year(df.iloc[count]['STRM','min',19])))
+			f.write(str2latex(df.iloc[count]['title_string','']) + ' ')
+			if STRM2Year(df.iloc[count]['STRM','min']) == STRM2Year(df.iloc[count]['STRM','max']):
+				f.write(str(STRM2Year(df.iloc[count]['STRM','min'])))
 			else:
-				f.write(str(STRM2Year(df.iloc[count]['STRM','min',19])) + "-" +str(STRM2Year(df.iloc[count]['STRM','max',19])))
+				f.write(str(STRM2Year(df.iloc[count]['STRM','min'])) + "-" +str(STRM2Year(df.iloc[count]['STRM','max'])))
 			
-			f.write(" " +str(df.iloc[count]['STRM', 'nunique', 20]))
-			if df.iloc[count]['STRM', 'nunique', 20] == 1:
+			f.write(" " +str(df.iloc[count]['STRM', 'nunique']))
+			if df.iloc[count]['STRM', 'nunique'] == 1:
 				f.write(" semester")
 			else:
 				f.write(" semesters")
-			f.write(" Av. Enrl. " +str(int(df.iloc[count]['enrollment', 'mean', 20])))
-			f.write(", Q19 " +"{:3.2f}".format(df.iloc[count]['Weighted Average', 'sum', 19]/df.iloc[count]['count_evals', 'sum', 19]))
-			#f.write(", Q20 " +"{:3.2f}".format(df.iloc[count]['Weighted Average', 'sum', 20]/df.iloc[count]['count_evals', 'sum', 20]) +"\n")
+			f.write(" Av. Enrl. " +str(int(df.iloc[count]['enrollment', 'sum'])/df.iloc[count]['STRM', 'nunique']))
+			f.write(", Q19 " +"{:3.2f}".format(df.iloc[count]['weighted_19', 'sum']/df.iloc[count]['count_19', 'sum']))
+			#f.write(", Q20 " +"{:3.2f}".format(df.iloc[count]['weighted_20', 'sum']/df.iloc[count]['count_20', 'sum']) +"\n")
 			count += 1
 		f.write("\\end{itemize}\n")
 
 	return(nrows)
 	
-	df = df['question'==19]
-	
+#	df = df['question'==19]
+#	
 #	 df = df.drop_duplicates(subset=['combined_course_num', 'term'])
 # 
 #	 df['course_period'] = df['term'].apply(lambda x: x[-4:])
@@ -102,8 +122,8 @@ def shortformteaching(f, years, inputfile):
 #		 for _, row in grouped.iterrows():
 #			 f.write(f"  \\item {str2latex(row['output'])}\n")
 #		 f.write("\\end{itemize}\n")
-
-	return len(grouped)
+#
+#	return len(grouped)
 
 
 
@@ -117,7 +137,7 @@ if __name__ == "__main__":
 	args = parser.parse_args()
 
 	f = open(args.outputfile, args.append)  # File to write
-	nrows = shortformteaching(f, args.years, args.inputfile)
+	nrows = teaching2latex_short(f, args.years, args.inputfile)
 	f.close()
 
 	if nrows == 0:
