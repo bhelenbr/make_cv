@@ -5,7 +5,6 @@
 # scatter <file to scatter> <Faculty folder> 
 
 # import modules
-from anyio import key
 import pandas as pd
 import os
 import sys
