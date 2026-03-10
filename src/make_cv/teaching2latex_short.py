@@ -17,7 +17,7 @@ def term2year(term):
 
 from .stringprotect import str2latex
 
-def teaching2latex_short(f, years, inputfile):
+def teaching2latex_short(f, years, inputfile, private=False):
 	source = inputfile  # File to read
 	try:
 		df = pd.read_excel(source, sheet_name="Data")
@@ -58,7 +58,7 @@ def teaching2latex_short(f, years, inputfile):
 	df = table.reset_index()
 	df.sort_values(by=[('combined_course_num',''),('course_title','first')], inplace=True,ascending = [True,True])
 	df = table.reset_index()
-	df[('title_string','')] = df[('combined_course_num','')] + " " + df[('course_title','first')]
+	df[('title_string','')] = df[('combined_course_num','')] + "-" + df[('course_title','first')]
 
 	nrows = df.shape[0] 
 	if (nrows > 0):	
@@ -66,19 +66,21 @@ def teaching2latex_short(f, years, inputfile):
 		count = 0
 		while count < nrows:
 			f.write("\\item\n")
-			f.write(str2latex(df.iloc[count]['title_string','']) + ' ')
+			f.write(str2latex(df.iloc[count]['title_string','']) + ', ')
 			if STRM2Year(df.iloc[count]['STRM','min']) == STRM2Year(df.iloc[count]['STRM','max']):
 				f.write(str(STRM2Year(df.iloc[count]['STRM','min'])))
 			else:
 				f.write(str(STRM2Year(df.iloc[count]['STRM','min'])) + "-" +str(STRM2Year(df.iloc[count]['STRM','max'])))
 			
-			f.write(" " +str(df.iloc[count]['STRM', 'nunique']))
+			f.write(", " +str(df.iloc[count]['STRM', 'nunique']))
 			if df.iloc[count]['STRM', 'nunique'] == 1:
-				f.write(" semester")
+				f.write(" semester,")
 			else:
-				f.write(" semesters")
-			f.write(" Av. Enrl. " +str(int(df.iloc[count]['enrollment', 'sum'])/df.iloc[count]['STRM', 'nunique']))
-			f.write(", Q19 " +"{:3.2f}".format(df.iloc[count]['weighted_19', 'sum']/df.iloc[count]['count_19', 'sum']))
+				f.write(" semesters,")
+			f.write(" Av. Enrl.: " +"{:d}".format(int(df.iloc[count]['enrollment', 'sum']/df.iloc[count]['STRM', 'nunique'])))
+		
+			if not private:
+				f.write(", Q19: " +"{:3.2f}".format(df.iloc[count]['weighted_19', 'sum']/df.iloc[count]['count_19', 'sum']))
 			#f.write(", Q20 " +"{:3.2f}".format(df.iloc[count]['weighted_20', 'sum']/df.iloc[count]['count_20', 'sum']) +"\n")
 			count += 1
 		f.write("\\end{itemize}\n")

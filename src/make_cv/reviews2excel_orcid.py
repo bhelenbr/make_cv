@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import requests
+import argparse
+
 from collections import defaultdict
 from datetime import date
 from datetime import datetime
@@ -86,7 +88,7 @@ def reviews2excel_orcid(orcid,outputfile):
 	# with open(file_path3, encoding="latin-1") as f3:
 	output_dir = os.path.dirname(outputfile)
 	try:
-		df2 = pd.read_excel(output_dir +os.sep +file_path3)
+		df2 = pd.read_excel(output_dir +os.sep +file_path3,sheet_name='Data')
 		df_total = pd.concat([df1, df2])
 	except FileNotFoundError as e:
 		df_total = df1

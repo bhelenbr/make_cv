@@ -71,17 +71,17 @@ def service2latex(f,years,inputfile,name,max_rows=-1):
 			for year in range(2,ncols):
 				if (df.iloc[count,year] > 0):
 					if (found==False):
-						date_string = date_string +separ +str(df.columns[year][1])
+						date_string = date_string +separ +"{:d}".format(int(df.columns[year][1]))
 						separ = ","
 					prev_found = found
 					found = True
 				else:
 					if ((prev_found == True) and (found == True)):
-						date_string = date_string +"-" +str(df.columns[year-1][1])
+						date_string = date_string +"-" +"{:d}".format(int(df.columns[year-1][1]))
 					prev_found = found
 					found = False
 			if ((prev_found == True) and (found == True)):
-				date_string = date_string +"-" +str(df.columns[ncols-1][1])
+				date_string = date_string +"-" +"{:d}".format(int(df.columns[ncols-1][1]))
 			f.write("\\entry*[" +date_string +"] " +str2latex(df.iloc[count,1]) +"\n")
 			count += 1
 	f.write("\\end{rubric}\n")

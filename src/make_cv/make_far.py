@@ -28,6 +28,7 @@ from .personal_awards2latex_far import personal_awards2latex_far
 from .student_awards2latex_far import student_awards2latex_far
 from .service2latex_far import service2latex_far
 from .teaching2latex_far import teaching2latex_far
+from .teaching2latex_short import teaching2latex_short
 from .advising2latex_far import advising2latex_far	
 
 from . import global_prefs
@@ -133,7 +134,11 @@ def make_far_tables(config,table_dir):
 		print('Updating teaching table')
 		fteaching = open(table_dir +os.sep +'Teaching.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['TeachingFile'])
-		nrows = teaching2latex_far(fteaching,years,filename)	
+		hide_evals = config.getboolean('HideTeachingEvals')
+		if config.getboolean('ShortTeachingTable'):
+			nrows = teaching2latex_short(fteaching,years,filename,private=hide_evals)
+		else:
+			nrows = teaching2latex_far(fteaching,years,filename,sortbycourse=True,private=hide_evals)
 		fteaching.close()
 		if not(nrows):
 			os.remove(table_dir+os.sep +'Teaching.tex')

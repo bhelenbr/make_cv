@@ -168,10 +168,11 @@ def make_cv_tables(config,table_dir):
 		print('Updating teaching table')
 		fteaching = open(table_dir +os.sep +'Teaching.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['TeachingFile'])
+		hide_evals = config.getboolean('HideTeachingEvals')
 		if config.getboolean('ShortTeachingTable'):
-			nrows = teaching2latex_short(fteaching,years,filename)
+			nrows = teaching2latex_short(fteaching,years,filename,private=hide_evals)
 		else:
-			nrows = teaching2latex_far(fteaching,years,filename,sortbycourse=True)	
+			nrows = teaching2latex_far(fteaching,years,filename,sortbycourse=True,private=hide_evals)
 		fteaching.close()
 		if not(nrows):
 			os.remove(table_dir+os.sep +'Teaching.tex')

@@ -13,12 +13,22 @@ import argparse
 from .stringprotect import str2latex
 from . import global_prefs
 
+from .grants2latex_far import dollars2latex
+
 def props2latex_far(f,years,inputfile,max_rows=-1):
 	source = inputfile # file to read
 	try:
-		props = pd.read_excel(source,sheet_name="Data",header=0,dtype={'Sponsor':str,'Long Descr':str,'Allocated Amt':float,'Total Cost':float})
-
-	except OSError:
+		props = pd.read_excel(source,sheet_name="Data",header=0,dtype={'Sponsor':str,'Long Descr':str})
+		# Ensure 'Allocated Amt' is numeric; convert non-numeric entries to NaN, then fill with 0
+		if 'Allocated Amt' in props.columns:
+			props['Allocated Amt'] = pd.to_numeric(props['Allocated Amt'], errors='coerce').fillna(0)
+		else:
+			props['Allocated Amt'] = 0
+		if 'Total Cost' in props.columns:
+			props['Total Cost'] = pd.to_numeric(props['Total Cost'], errors='coerce').fillna(0)
+		else:
+			props['Total Cost'] = 0
+	except:
 		print("Could not open/read file: " + source)
 		return(0)
 	
@@ -58,7 +68,7 @@ def props2latex_far(f,years,inputfile,max_rows=-1):
 			f.write(newline)
 			if global_prefs.usePandoc:
 				f.write(str(count+1) +".")
-			f.write(" & " +str2latex(props.loc[count,"Sponsor"].upper())+": " +str2latex(props.loc[count,"Title"]) + " & " + "\\${:,.0f}k".format(props.loc[count,"Allocated Amt"]/1000) + "/" +"\\${:,.0f}k".format(props.loc[count,"Total Cost"]/1000))
+			f.write(" & " +str2latex(props.loc[count,"Sponsor"].upper())+": " +str2latex(props.loc[count,"Title"]) + " & " + dollars2latex(props.loc[count,"Allocated Amt"]) + "/" + dollars2latex(props.loc[count,"Total Cost"]))
 			f.write(" & " +props.loc[count,"Begin Date"].strftime("%m/%Y") +"-" +props.loc[count,"End Date"].strftime("%m/%Y"))
 			newline = "\\\\\n"
 			count += 1

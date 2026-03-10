@@ -1,0 +1,7 @@
+# Personal data (IDs) for make_cv
+# Fill in the values without quotes. Example:
+# googleid = ABCDEFGHIJ
+googleid = 
+webscraperid = 
+scopusid = 
+orcid = 

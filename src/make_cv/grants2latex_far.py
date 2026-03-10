@@ -11,10 +11,26 @@ import argparse
 from .stringprotect import str2latex
 from . import global_prefs
 
+def dollars2latex(dollars):
+	if dollars > 1000000:
+		return("\\${:,.1f}M".format(dollars/1000000))
+	elif dollars > 1000:
+		return("\\${:,.0f}k".format(dollars/1000))
+	else:
+		return("\\${:,.0f}".format(dollars))
+
 
 def grants2latex_far(f,years,inputfile,max_rows=-1):
 	try:
 		props = pd.read_excel(inputfile,sheet_name="Data",header=0)
+		if 'Allocated Amt' in props.columns:
+			props['Allocated Amt'] = pd.to_numeric(props['Allocated Amt'], errors='coerce').fillna(0)
+		else:
+			props['Allocated Amt'] = 0
+		if 'Total Cost' in props.columns:
+			props['Total Cost'] = pd.to_numeric(props['Total Cost'], errors='coerce').fillna(0)
+		else:
+			props['Total Cost'] = 0
 	except OSError:
 		print("Could not open/read file: " + inputfile)
 		return(0)
@@ -44,8 +60,8 @@ def grants2latex_far(f,years,inputfile,max_rows=-1):
 	if (nrows > 0):
 		total = grants["Total Cost"].sum()
 		allocated = grants["Allocated Amt"].sum()
-		
-		f.write("Personal Allocation: " +"\\${:,.0f}k".format(allocated/1000) +"  Total: " +"\\${:,.0f}k\n".format(total/1000))
+
+		f.write("Personal Allocation: " +dollars2latex(allocated) +"  Total: " +dollars2latex(total)+"\n")
 	
 		if global_prefs.usePandoc:
 			f.write("\\begin{tabularx}{\\linewidth}{lXll}\n& Sponsor: Title & Alloc/Total & Dates  \\\\\n")
@@ -59,7 +75,7 @@ def grants2latex_far(f,years,inputfile,max_rows=-1):
 			f.write(newline)
 			if global_prefs.usePandoc:
 				f.write(str(count+1) +".")
-			f.write(" & " +str2latex(grants.loc[count,"Sponsor"].upper())+": " +str2latex(grants.loc[count,"Title"]) + " & " + "\\${:,.0f}k".format(grants.loc[count,"Allocated Amt"]/1000) + "/" +"\\${:,.0f}k".format(grants.loc[count,"Total Cost"]/1000))
+			f.write(" & " +str2latex(grants.loc[count,"Sponsor"].upper())+": " +str2latex(grants.loc[count,"Title"]) + " & " + dollars2latex(grants.loc[count,"Allocated Amt"]) + "/" + dollars2latex(grants.loc[count,"Total Cost"]))
 			f.write(" & " +grants.loc[count,"Begin Date"].strftime("%m/%Y") +"-" +grants.loc[count,"End Date"].strftime("%m/%Y"))
 			newline="\\\\\n"
 			count += 1

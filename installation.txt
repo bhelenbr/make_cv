@@ -6,7 +6,7 @@ vi pyproject.toml   # change version number
 rm dist/*
 python -m build
 python -m twine upload dist/*
-python -m pip install --upgrade make_cv==X.X.X
+python -m pip install --upgrade make_cv
 
 # For testing
 python -m twine upload --repository testpypi dist/*

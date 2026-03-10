@@ -41,12 +41,12 @@ def reviews2excel_publons(inputfile,outputfile):
 	# append excel file 1 to 2 - creates new data file
 	# with open(file_path3, encoding="latin-1") as f3:
 	try:
-		df2 = pd.read_excel(json_dir +os.sep +file_path3)
+		df2 = pd.read_excel(json_dir +os.sep +file_path3,sheet_name='Data')
 		df_total = pd.concat([df1, df2])
 	except FileNotFoundError as e:
 		df_total = df1
 
-	excelfile = df_total.to_excel(outputfile, index=False)
+	excelfile = df_total.to_excel(outputfile, index=False, sheet_name='Data')
 
 
 if __name__ == "__main__":

@@ -9,6 +9,8 @@
 import pandas as pd
 import os
 import sys
+import argparse
+
 from datetime import datetime
 from datetime import date
 
@@ -18,11 +20,11 @@ from . import global_prefs
 def reviews2latex_far(f,years,inputfile,max_rows=-1):
 	source = inputfile  # file to read
 	try:
-		reviews = pd.read_excel(source,header=0)
+		reviews = pd.read_excel(source,header=0,sheet_name='Data')
 	except OSError:
 		print("Could not open/read file: " + source)
 		return
-		
+
 	if years > 0:
 		today = date.today()
 		year = today.year

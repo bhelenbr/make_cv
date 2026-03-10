@@ -94,6 +94,7 @@ cv_keys = {'Years': '-1',
 			'IncludeStudentMarkers': 'true',
 			'IncludeCitationCounts': 'true',
 			'ShortTeachingTable' : 'true', 
+			'HideTeachingEvals' : 'false',
 			'Timestamp': 'false',
 			}
 

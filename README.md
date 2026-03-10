@@ -13,21 +13,21 @@ Once make\_cv is installed, you need to create the data directories and default 
 
 `make_cv -G <Google ID> -O <ORCID> -S <Scopus ID> -b <folder name>`
 
-You don’t need any of the IDs to use make\_cv, but to automatically update your published works and find citation counts, at least one is necessary. To find your Google ID, go to [Google Scholar](https://scholar.google.com) and click on “My profile” in the top left.  (If you don't have a public Google Scholar profile, follow [these instructions](https://scholar.google.com/intl/en/scholar/citations.html)). If you examine the url for your profile page it should have a section that looks like: user=m\_of3wYAAAAJ\&hl=en.  Your user id is the string after the \= sign up to but not including the &.  So in this case it is “m\_of3wYAAAAJ”.  
+You don’t need any of the IDs to use make\_cv, but to automatically update your published works and find citation counts, you should at least have a Google ID.   To find your Google ID, go to [Google Scholar](https://scholar.google.com) and click on “My profile” in the top left.  (If you don't have a public Google Scholar profile, follow [these instructions](https://scholar.google.com/intl/en/scholar/citations.html)). If you examine the url for your profile page it should have a section that looks like: user=m\_of3wYAAAAJ\&hl=en.  Your user id is the string after the \= sign up to but not including the &.  So in this case it is “m\_of3wYAAAAJ”.   (If your Google ID starts with a “-” you may have to put it in quotation marks or you can just stick it in the personal\_data.txt file yourself) 
 
-For ORCID, go to their [site](https://orcid.org) and search for your last name.  If you don’t have an ORCID,  the instructions are [here](https://support.orcid.org/hc/en-us/articles/360006897454-How-do-I-register-for-an-ORCID-ID) for obtaining one.  If you click on your ORCID number it will take you to your personal information and in the left sidebar it will also list your Scopus ID if that exists.   Note that Scopus requires a subscription which many Universities have.
+For ORCID, go to their [site](https://orcid.org) and search for your last name.  If you don’t have an ORCID,  the instructions are [here](https://support.orcid.org/hc/en-us/articles/360006897454-How-do-I-register-for-an-ORCID-ID) for obtaining one.  If you click on your ORCID number it will take you to your personal information and in the left sidebar it will also list your Scopus ID if that exists.   Note that Scopus requires a subscription which your University may or may not have.  Just eliminate the \-S \<stuff if you don’t want to use Scopus.
 
-The `-b` flag tells make\_cv to create a new data directory.  For example “`make_cv -b myData”` creates the default data folders and files in a folder called `myData` in the current working directory.  The folder “`make_cv”`in the `myData` folder contains subfolders for several different outputs.  To make the example cv, cd to “`make_cv/CV”`. In this folder is a text file called “`make_cv.cfg”.` This is a text file that can be edited with any text editor and can be used to control things like what sections are included and limiting the number of entries in each section either by year or by number of entries.  
+The `-b` flag tells make\_cv to create a new data directory.  For example “`make_cv -b myData”` creates the default data folders and files in a folder called `myData` in the current working directory.  The folder “`make_cv”`in the `myData` folder contains subfolders for several different outputs.  To make the example cv, cd to “`<folder name>/make_cv/CV”`. In this folder is a text file called “`make_cv.cfg”.` This is a text file that can be edited with any text editor and can be used to control things like what sections are included and limiting the number of entries in each section either by year or by number of entries.  
 
 Look through the folders and files created and add any additional data that you would like or leave it blank and that section will be ignored.  The format and usage of these files is described below.
 
 Edit the personal data in the files in the folder “`make_cv/PersonalData”.` At the top of the file “`ContactInfo.tex”` change the command `\boldname{Lastname}{F}` to your last name and first initial to have your name bolded in the bibliography.  The files “`Education.tex”`  and “`Employment.tex”` are where you add your education and employment history.  The file “`personal_data.txt`” is where make\_cv stores your id numbers.
 
-Now (stilll in the make\_cv/CV folder) use Google Scholar/ORCID/Scopus to get the bibliographic and citation information for your scholarly works using any or all of the following:
+Now (still in the make\_cv/CV folder) use Google Scholar/ORCID/Scopus to get the bibliographic and citation information for your scholarly works using any or all of the following:
 
 `make_cv -g -1 -o -1 -s -1`
 
-This will use all three to find bibliographic entries.  The \-1 means all years.  If you only want to find recent entries you could specify a positive integer for the number of years to search i.e. 1 will only find entries from this year.  This will get everything and might take a while if you have a lot of publications.  There are other import options that are faster ([see below](#bookmark=id.z5xk4spi2w62)), especially if you already have a database of your publications but this is the easiest.  When it is finished it will create the file `CV/cv.pdf` that you should open to see the results.
+This will use all three to find bibliographic entries.  The \-1 means all years.  If you only want to find recent entries you could specify a positive integer for the number of years to search i.e. 2 will only find entries from the last two years.  Using \-1 will get everything and might take a while if you have a lot of publications.  There are other import options that are faster ([see below](#bookmark=id.z5xk4spi2w62)), especially if you already have a database of your publications but this is the easiest.  It will first start asking you what entries you want to import and then how to classify them.  Classification determines under what category the entry appears in the c.v.  When it is finished it will create the file `CV/cv.pdf` that you should open to see the results.
 
 ### The Data
 
@@ -36,17 +36,18 @@ The files created within the `mydata/make_cv/` folder are
 `PersonalData/Education.tex` – educational history  *(fill in your data)*  
 `PersonalData/Employment.tex` – employment history  *(fill in your data)*  
 `PersonalData/photo.jpg` – personal photo *(provide photo or set usePhoto to false in ContactInfo.tex)*  
-`PersonalData/reference.tex` – file to include list of references
+`PersonalData/reference.tex` – file to include list of references  
+`PersonalData/personal_data.txt` – stores your ID numbers
 
-`CV/cv.tex` – document that gets compiled by `make_cv` to create cv  
-`FAR/far.tex` – document that gets compiled by `make_far` to create a pdf activity report  
-`FAR_docx/far.tex` – document that gets compiled `make_far` to create docx activity report  
-`Web/web.tex` – file to create web pages using `make_web`  
+`make_cv/CV/cv.tex` – LaTeX file used by `make_cv` to create cv  
+`make_cv/FAR/far.tex` – LaTeX file used by `make_far` to create a pdf activity report  
+`FAR_docx/far.tex` – LaTeX file used with `make_far -p`  to create docx activity report  
+`Web/web.tex` –  LaTeX file used to create web pages using `make_web`  
 `Collaborator/` folder to create an NSF collaborator list using `make_nsfcoa`
 
 `make_cv.cfg` – configuration file (in each folder).  The other files in the folders contain settings for XeLaTex that do not need to be modified.
 
-The data files created within the `mydata` folder are  
+The data files created within the `myData` folder are  
 `Awards/personal awards data.xlsx`  
 `Awards/student awards data.xlsx`  
 `Proposals & Grants/proposals & grants.xlsx`  
@@ -58,15 +59,15 @@ The data files created within the `mydata` folder are
 `Service/service data.xlsx`  
 `Teaching/teaching evaluation data.xlsx`
 
-The following describes how to maintain all of the data files in your data folder.  You do not need to use all components of make\_cv if you don’t want to.  See the section Customization to learn how to turn on and off components.  Most people will definitely want to use the Scholarship components, but it may be more convenient to keep other sections using your own personal system.  This is easy to accommodate with make\_cv.  (As an aside, a lot of this was designed to be used with PeopleSoft to get data directly from the University.)
+The following describes how to maintain all of the data files in your data folder.  You do not need to use all components of make\_cv if you don’t want to.  See the section Customization to learn how to turn on and off components.  Most people will definitely want to use the Scholarship components, but it may be more convenient to keep other sections using your own personal system.  This is easy to accommodate with make\_cv and modifying the `cv.tex` file.  (As an aside, a lot of this was designed to be used with PeopleSoft to get data directly from the University.)
 
 Awards
 
-1. There are two excel files, one for personal awards and one for student awards.  The files are `student awards.xlsx` and `personal awards.xlsx`.   The notes page of each excel sheet explains what data should be included.   If you receive the same award multiple times, make\_cv will create a single entry for that award with a date string such as: “πτσ Teaching Award 2007-2014”
+1. There are two excel files, one for personal awards and one for student awards.  The files are `student awards.xlsx` and `personal awards.xlsx`.   The notes tab of each excel sheet explains what data should be included.   If you receive the same award multiple times, make\_cv will create a single entry for that award with a date string such as: “πτσ Teaching Award 2007-2014”
 
 Proposals & Grants
 
-2. There is one excel file here `proposals & grants.xlsx`.  The only necessary fields for the cv are “Proposal\_ID”, “Sponsor”, “Allocated Amt”, “Total Cost”, “Funded?”, “Title”, and “Begin Date” .  The field “Principal Investigators” is necessary if you want to make a NSF collaborator list.  It should be a comma separated list of co-PIs.   “Proposal” must be a unique identifier for each proposal.  “Sponsor” is the name of the funding agency.  “Allocated Amt” is the percent that should be allocated to you and “Total Cost” is the total dollar amount of the grant.  “Funded?” is a Y or N field that states whether the proposal was funded or not.  "Begin Date" is the start date for the proposed work.  The proposals are organized by proposal begin date in the c.v. and faculty activity report.   make\_cv will sum up your allocated and total grant dollars and put that at the bottom of the grant section of the c.v.  It will do the same for the proposal dollars.  Depending on what is most convenient for you, you can also make a separate “grants.xlsx” file and keep grants & proposals separately.  If “grants.xlsx” exists it will be used to make the grant list.  If not, make\_cv uses all proposals with a funded status of “Y” to make the grant list.
+2. There is one excel file here `proposals & grants.xlsx`.  The Notes tab describes the fields.  The only necessary fields for the cv are “Sponsor”, “Allocated Amt”, “Total Cost”, “Funded?”, “Title”, and “Begin Date”.  For activity reporting the “End Date” and “Submission Date” are also used.  The field “Principal Investigators” is necessary if you want to make a NSF collaborator list.  The proposals are organized by proposal begin date in the c.v. and faculty activity report.   make\_cv will sum up your allocated and total grant dollars and put that at the bottom of the grant section of the c.v.  It will do the same for the proposal dollars.  Depending on what is most convenient for you, you can also make a separate “grants.xlsx” file and keep grants & proposals separately.  If “grants.xlsx” exists it will be used to make the grant list.  If not, make\_cv uses all proposals with a funded status of “Y” to make the grant list.
 
 Scholarship
 
@@ -100,7 +101,7 @@ Scholarship
 
         author \= {B. T. Helenbrook},
 
-        booktitle \= {Clarkson University Physics Club Meeting},
+        address \= {Clarkson University Physics Club Meeting},
 
         date \= {2009-11-22},
 
@@ -116,7 +117,7 @@ Service
      
    1. `undergraduate research data.xlsx`.  See the notes sheet in this file for an explanation of the categories.  
         
-   2. `service data.xlsx`.   Use this file to keep track of your service data.   The categories are “Description”, “Type”-(University,Department,Professional,Community), “Position”-(Member,Chair), “Term”, “Calendar Year”, “Hours/Semester”.  “Hours/Semester” is not used when making the c.v..  If you have repeated service each term, you should copy and paste the lines from the previous term and make a new entry for each term that you are on an assignment.   make\_cv will gather all like entries into a single entry in the c.v. with a year sequence.  For example, “Science fair judge 2018-2021,2023”  
+   2. `service data.xlsx`.   Use this file to keep track of your service data.   The categories are “Description”, “Type”-(University,Department,Professional,Community), “Position”-(Member,Chair), “Term”, “Calendar Year”, “Hours/Semester”.  “Hours/Semester” is not used when making the c.v. only for activity reports.  If you have repeated service each term, you should copy and paste the lines from the previous term and make a new entry for each term that you are on an assignment.   make\_cv will gather all like entries into a single entry in the c.v. with a year sequence.  For example, “Science fair judge 2018-2021,2023”  
         
    3. `reviews data.xlsx`. I recommend that you let Web of Science keep your paper reviewing activity records for you.  To use the service do the following  
         
@@ -145,17 +146,15 @@ Service
 
 Teaching
 
-5. `teaching data.xlsx`.  Every school has a different format for their teaching evaluation data.  make\_cv assumes there will be entries in this file under the column headings: “STRM, term, combined\_course\_num, combined\_num\_sec, course\_title, enrollment, count\_19, mean\_19,  count\_20, mean\_20”.  ‘Combined\_course\_num’ is the course catalog number i.e. something like “ME515/CE538” for a cross-listed class or just ME515 for a normal class.  ‘STRM’ is an integer associated with the term the class was taught that is just used to sort the teaching chronologically.  ‘term’ is the text name of the term i.e. ‘Summer 2024’.  ‘combined\_num\_sec’ is a combined course & section number i.e “ME515-01” for a normal class or “ME515-01/CE538-01” for a cross-listed class.  This is used to count the number of sections taught for a given class.  ‘course\_title’ is the title i.e. “Intro. to Finite Element Methods”.  ‘count\_XX’ is an integer associated with the question number XX on the teaching evaluation and ‘mean\_XX’ is the evaluation value for that question.  make\_cv currently only uses the responses to question 19 and 20\.  These are the evaluations that go into the cv.  There are two output formats for teaching a long format that lists every class taught for each semester and a short format which just lists the classes taught and how many semesters they were taught.  This is controlled by a flag in the configuration file 'shortteachingtable \= true/false'.
+5. `teaching data.xlsx`.  See the notes tab for the format of this file.  make\_cv assumes there will be entries in this file under the column headings: “STRM, term, combined\_course\_num, combined\_num\_sec, course\_title, enrollment, count\_19, mean\_19,  count\_20, mean\_20”.  ‘Combined\_course\_num’ is the course catalog number i.e. something like “ME515/CE538” for a cross-listed class or just ME515 for a normal class.  ‘STRM’ is an integer associated with the term the class was taught that is just used to sort the teaching chronologically. I usually use (year-2019)\*10+X where X is an single digit integer i.e 2 for Spring, 4 for Summer, 6 for Fall.  ‘term’ is the text name of the term i.e. ‘Summer 2024’.  ‘combined\_num\_sec’ is a combined course & section number i.e “ME515-01” for a normal class or “ME515-01/CE538-01” for a cross-listed class.  This is used to count the number of sections taught for a given class.  ‘course\_title’ is the title i.e. “Intro. to Finite Element Methods”.  ‘count\_XX’ is an integer associated with the question number XX on the teaching evaluation and ‘mean\_XX’ is the evaluation value for that question.  make\_cv currently only uses the responses to question 19 and 20\.  These are the evaluations that go into the cv.  There are two output formats for teaching a long format that lists every class taught for each semester and a short format which just lists the classes taught and how many semesters they were taught.  This is controlled by a flag in the configuration file 'shortteachingtable \= true/false'.
 
 ### Configuration & Customization
 
-To use all of the features of make\_cv, some additional information must be provided.  The file `CV/make_cv.cfg` contains all of the configuration information.  As discussed above, you should put your Google Scholar ID here.  You can also add your ORCID and use the ORCID data to find publications.
-
-The other significant configuration that can be done with this file is to set the defaults for what sections of the cv make\_cv controls.  These are controlled by the entries under “CV”.  If a data file is empty or missing, make\_cv will automatically exclude it so you don’t need to turn off empty sections.  I often leave all the sections on, then use command line options (discussed below) to create a shorter c.v. when I need that.
+The file `CV/make_cv.cfg` contains all of the configuration information.  This file can be used to set the defaults for what sections of the cv make\_cv creates.  These are controlled by the entries under “CV”.  If a data file is empty or missing, make\_cv will automatically exclude it so you don’t need to turn off empty sections.  I often leave all the sections on, then use command line options (discussed below) to create a shorter c.v. when I need that.
 
 Further configurations can be done by editing `cv.tex` and `settings.sty` files. These are normal LaTeX files so you can modify them as you like.
 
-### Advanced Features & Command Line Options
+### Command Line Options
 
 The `make_cv` tool provides a range of command-line options to customize and automate CV generation. Below is a list of the most useful options. Run `make_cv -h` to see the full list.
 
@@ -213,13 +212,30 @@ When applying for grants from the National Science Foundation (NSF), faculty mem
     
 - **Collaborators**: A list of researchers with whom the faculty member has collaborated on publications within a specified time frame.
 
-make\_nsfcoa can generate these lists by using the following command.
+make\_nsfcoa can generate these lists by using the following command in the `make_cv/Collaborators` folder.
 
 `make_nsfcoa -y 4 -fmt xlsx`
 
 - **`-y`**: Specifies the number of **years** for which collaborators are listed. The default is 4 years, but this can be adjusted to include collaborators from the last n years.  
     
 - **`-fmt`**: Determines the output format, which can be either `xlsx` or `csv`. The default output format is `xlsx`.
+
+### make\_far \- Activity Reporting
+
+`make_far` generates a faculty activity report by using the following command (in the  `make_cv/FAR` folder.
+
+`make_far -y 1`
+
+- **`-y`**: Specifies the number of **years** of activity included. The default is 1 year, but this can be adjusted to include activity from the last n years.  
+- **`-p`**: Use pandoc to make a .docx file instead of a pdf file.  You must use the `far.tex` file in the `make_cv/FAR_docx` folder for this to work i.e. execute the command `make_far -p` in that folder.  Pandoc must be installed on the system for this to work.  Follow the instructions from their [site](https://pandoc.org) to install.
+
+### make\_web \- Web Pages
+
+`make_web` generates web pages based on the same data used in the cv.  In the `make_cv/Web` folder issue the following command
+
+`make_web`
+
+It will create linked web pages with your data.  Open the file `web.html` with a web browser to see the result.  The easiest way to configure the web pages is the exclude sections using the `make_cv.cfg` file in that folder
 
 ### Appendix A: Python & LaTex Installation Instructions
 
