@@ -3,11 +3,10 @@
 # Python code to create latex form of Undergraduate Research Data
 
 # import modules
-import datetime
+from datetime import date
 import pandas as pd
 import os
-import sys
-from datetime import date
+import argparse
 
 from .stringprotect import str2latex
 from .stringprotect import abbreviate_name_list
@@ -25,26 +24,23 @@ def UR2latex(f,years,inputfile,max_rows=-1):
 		today = date.today()
 		year = today.year
 		begin_year = year - years
-
 		df = df[(df['Calendar Year'] >= begin_year)]
-		df.sort_values(by=['Calendar Year','Term'], inplace=True, ascending = [False,True])
-		df.reset_index(inplace=True)
+	
+	df.sort_values(by=['Calendar Year','Term'], inplace=True, ascending = [False,True])
+	df.reset_index(inplace=True)
 	
 	nrows = df.shape[0]
 	if (nrows > 0):
 		#table = pd.pivot_table(df, values=['Calendar Year','Term'], index=['Students', 'Title', 'Program Type'], aggfunc={'Calendar Year': ('min','max'), 'Term': 'count'},observed=True)
 		table = pd.pivot_table(df, values=['Calendar Year','Term'], index=['Students', 'Title', 'Program Type'], aggfunc={'Calendar Year': ('min'), 'Term': 'count'},observed=True)
 		df = table.reset_index()
-		#print(df.columns)
 		nrows = df.shape[0]
 		
 		if max_rows > 0 and nrows > max_rows:
 			nrows = max_rows
 		
-		#df.sort_values(by=[('Calendar Year',   'max')], inplace=True, ascending = [False])
 		df.sort_values(by=['Calendar Year'], inplace=True, ascending = [False])
 		df = df.reset_index()
-		#print(df)
 		
 		f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXll}\n & Name: Title  & Program & Date(Semesters) \\tablehead\n")
 		f.write("\\tablecontinue{Undergraduate Research}\n")

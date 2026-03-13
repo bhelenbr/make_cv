@@ -93,7 +93,7 @@ def reviews2excel_orcid(orcid,outputfile):
 	except FileNotFoundError as e:
 		df_total = df1
 
-	excelfile = df_total.to_excel(outputfile, index=False)
+	excelfile = df_total.to_excel(outputfile, index=False,sheet_name='Data')
 
 
 # ------------------------------------------------------------

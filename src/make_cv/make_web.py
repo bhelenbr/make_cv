@@ -42,7 +42,8 @@ def main(argv = None):
 	shutil.copy2("sub_" +stem +".css", stem +".css")
 
 	# Insert two lines into every HTML file just before the closing </body>
-	for html_file in glob.glob(stem +"se" +"*.html"):
+	# for html_file in glob.glob(stem +"se" +"*.html"):
+	for html_file in glob.glob(stem +"*.html"):
 		try:
 			with open(html_file, 'r', encoding='utf-8') as fh:
 				content = fh.read()
@@ -52,8 +53,8 @@ def main(argv = None):
 			insert_text = '\n'
 			insert_text = insert_text + r'<script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.2/iframeResizer.contentWindow.min.js"></script>'
 			insert_text = insert_text + '\n'
-			insert_text = insert_text + r'<script src="navigation-sync.js"></script>'
-			insert_text = insert_text + '\n'
+			#insert_text = insert_text + r'<script src="navigation-sync.js"></script>'
+			#insert_text = insert_text + '\n'
 			if idx != -1:
 				new_content = content[:idx] + insert_text + content[idx:]
 			else:

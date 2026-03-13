@@ -157,7 +157,7 @@ dt.thebibliography {float:left; clear:left; margin-right:1em;}
 
 /* === Clarkson-like clean academic page styling for TeX4ht output === */
 
-/* === Clarkson-like clean academic page styling for TeX4ht output (CLEAN + FIXED) === */
+/* === Clarkson-like clean academic page styling for TeX4ht output === */
 
 :root{
   --bg: #ffffff;
@@ -165,8 +165,12 @@ dt.thebibliography {float:left; clear:left; margin-right:1em;}
   --muted: #6b7280;
   --brand: #0b5a46;
   --brand-dark: #094538;
+  --surface-soft: #eaf5ef;
+  --surface-alt: #f8fafc;
+  --surface-hover: #eef6f2;
+  --border: #e5e7eb;
+  --border-strong: #1f2937;
 
-  /* control page padding here */
   --page-pad-top: 16px;
   --page-pad-x: 14px;
   --page-pad-bottom: 48px;
@@ -175,25 +179,33 @@ dt.thebibliography {float:left; clear:left; margin-right:1em;}
 /* Basic reset */
 *,
 *::before,
-*::after{ box-sizing: border-box; }
+*::after{
+  box-sizing: border-box;
+}
 
-html{ -webkit-text-size-adjust: 100%; }
-html, body{ overflow-x: hidden; }
+html{
+  -webkit-text-size-adjust: 100%;
+}
+
+html,
+body{
+  overflow-x: hidden;
+}
 
 body{
-  margin: 0;
+  margin: 0 auto;
+  max-width: 1180px;
+  padding: var(--page-pad-top) var(--page-pad-x) var(--page-pad-bottom);
   background: var(--bg);
   color: #074132 !important;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   line-height: 1.65;
-
-  /* centered column */
-  max-width: 1180px;
-  padding: var(--page-pad-top) var(--page-pad-x) var(--page-pad-bottom);
-  margin: 0 auto;
 }
 
-p, div{ margin-top: 0; }
+p,
+div{
+  margin-top: 0;
+}
 
 /* If you add 'embedded' class on <html>, this removes extra spacing in WordPress iframe */
 html.embedded body{
@@ -202,26 +214,33 @@ html.embedded body{
 }
 
 /* Hide TeX4ht navigation */
-.crosslinks{ display: none !important; }
+.crosslinks{
+  display: none !important;
+}
 
 /* Title sizing like Clarkson */
 h3.sectionHead{
+  margin: 0 0 16px !important;
+  color: var(--brand) !important;
   font-size: 48px !important;
   font-weight: 500 !important;
   line-height: 1.1 !important;
-  margin: 0 0 16px !important;
-  color: var(--brand) !important;
   letter-spacing: -0.02em;
 }
 
-/* Hide section number "1" */
-h3.sectionHead .titlemark{ display:none !important; }
+/* Hide section number */
+h3.sectionHead .titlemark{
+  display: none !important;
+}
 
-/* tighten bibliography */
-dl.thebibliography{ margin: 0 !important; padding: 0 !important; }
+/* Tighten bibliography */
+dl.thebibliography{
+  margin: 0 !important;
+  padding: 0 !important;
+}
 
 dl.thebibliography > dt.thebibliography{
-  width: 2.0em !important;
+  width: 2em !important;
   text-align: right !important;
   color: var(--text) !important;
   font-weight: 600 !important;
@@ -232,16 +251,22 @@ dl.thebibliography > dd.thebibliography{
   line-height: 1.7 !important;
 }
 
-/* links */
+/* Links */
 a{
   color: var(--brand) !important;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
-a:hover{ color: var(--brand-dark) !important; }
+
+a:hover{
+  color: var(--brand-dark) !important;
+}
 
 /* =========================================================
-   TABLES (normal HTML tables)
+   TABLES (all tables)
+   ========================================================= */
+/* =========================================================
+   TABLES (all tables)
    ========================================================= */
 
 table{
@@ -251,168 +276,121 @@ table{
   border-collapse: collapse !important;
   border-spacing: 0 !important;
   font-size: 16px;
-  table-layout: fixed !important;
+  table-layout: auto !important;
 }
 
+table,
+th,
+td{
+  border-left: none !important;
+  border-right: none !important;
+}
+
+table th,
+table td{
+  padding: 10px 12px !important;
+}
+
+/* Normal HTML tables */
 thead th{
   text-align: left;
   font-weight: 400;
-  padding: 10px 12px;
-  border-bottom: 2px solid #1f2937;
   color: #09503e;
+  background: var(--surface-soft);
+  border-bottom: 2px solid var(--border-strong);
 }
 
 tbody td{
-  padding: 10px 12px;
-  border-bottom: 1px solid #e5e7eb;
   vertical-align: top;
-}
-
-tbody tr:nth-child(even){ background: #f8fafc; }
-tbody tr:hover{ background: #eef6f2; }
-
-/* Keep long text wrapping nicely */
-table td{
-  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--border);
+  white-space: normal;
+  overflow-wrap: break-word;
   word-break: normal;
 }
 
+tbody tr:nth-child(even){
+  background: var(--surface-alt);
+}
+
+tbody tr:hover{
+  background: var(--surface-hover);
+}
+
 /* =========================================================
-   TABLES (TeX4ht tables: <table class="tabular"> no thead/tbody)
+   TABLES (TeX4ht tables: <table class="tabular">)
    ========================================================= */
 
+table.tabular{
+  width: 100% !important;
+  max-width: 980px;
+}
+
 table.tabular td{
-  padding: 10px 12px !important;
-  border-bottom: 1px solid #e5e7eb !important;
-  vertical-align: top;
+  vertical-align: top !important;
+  border-bottom: 1px solid var(--border) !important;
+  white-space: normal !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
 }
 
 /* First row behaves like header */
 table.tabular tr:first-child td{
   font-weight: 400 !important;
-  border-bottom: 2px solid #1f2937 !important;
   color: #094234 !important;
-  background: #eaf5ef !important;
+  background: var(--surface-soft) !important;
+  border-bottom: 2px solid var(--border-strong) !important;
 }
 
 /* Zebra + hover */
-table.tabular tr:nth-child(even){ background: #f8fafc; }
-table.tabular tr:hover{ background: #eef6f2; }
-
-/* Width controls: keep these only if your TeX4ht outputs 6 cols often */
-table.tabular colgroup col:nth-child(1){ width: 55px !important; }   /* numbering/Year */
-table.tabular colgroup col:nth-child(2){ width: auto !important; }   /* Title */
-table.tabular colgroup col:nth-child(3){ width: 220px !important; }  /* Student / Amount */
-table.tabular colgroup col:nth-child(4){ width: 200px !important; }  /* Dates (if present) */
-/* DO NOT "kill" extra cols unless you're 100% sure they are always empty */
-/* table.tabular colgroup col:nth-child(5),
-table.tabular colgroup col:nth-child(6){ width: 0px !important; } */
-
-/* IMPORTANT FIX:
-   You had ellipsis/nowrap on col 3/4 which CUT OFF student names.
-   We allow wrapping so the full text is visible. */
-table.tabular td:nth-child(2),
-table.tabular td:nth-child(3),
-table.tabular td:nth-child(4){
-  white-space: normal !important;
-  overflow-wrap: anywhere !important;
-  overflow: visible !important;
-  text-overflow: clip !important;
+table.tabular tr:nth-child(even){
+  background: var(--surface-alt);
 }
 
-/* Optional: if you want dates to stay one line without hiding text, use nowrap ONLY */
-table.tabular td:nth-child(4){
+table.tabular tr:hover{
+  background: var(--surface-hover);
+}
+
+/* ---------------------------------------------------------
+   Generic TeX4ht column behavior for mixed table layouts
+   --------------------------------------------------------- */
+
+/* numbering / index columns */
+table.tabular td:first-child{
+  width: 1%;
   white-space: nowrap !important;
 }
 
-/* Force padding + remove side borders everywhere */
-td, th{ padding: 10px 12px !important; }
-table, th, td{
-  border-left: none !important;
-  border-right: none !important;
+/* main text/title/description columns usually sit in col 2 */
+table.tabular td:nth-child(2){
+  white-space: normal !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
 }
 
-/* =========================================================
-   Publications-style TOC bars (TeX4ht)
-   ========================================================= */
-
-.tableofcontents{
-  margin-top: 12px !important;
-  max-width: 1100px;
-  margin-left: auto !important;
-  margin-right: auto !important;
+/* short metadata columns: dates, terms, degree, rounds, hours, etc. */
+table.tabular td:nth-child(3),
+table.tabular td:nth-child(4),
+table.tabular td:nth-child(5),
+table.tabular td:nth-child(6){
+  white-space: nowrap !important;
 }
 
-.tableofcontents br{ display:none !important; }
+/* If a later column contains long text, let inline styles from HTML win naturally.
+   Do NOT hardcode colgroup widths. Do NOT force fixed layout. */
 
-/* Each TOC line */
-.tableofcontents .sectionToc,
-.tableofcontents .likesectionToc,
-.tableofcontents .subsectionToc,
-.tableofcontents .likesubsectionToc,
-.tableofcontents .subsubsectionToc,
-.tableofcontents .likesubsubsectionToc,
-.tableofcontents .paragraphToc,
-.tableofcontents .likeparagraphToc{
-  display:block !important;
-  margin: 0 0 14px !important;
-
-  /* hides raw leading numbering */
-  font-size: 0 !important;
+/* horizontal line rows from TeX4ht */
+table.tabular tr.hline td{
+  padding: 0 !important;
+  background: transparent !important;
+  border-bottom: none !important;
 }
 
-/* clickable bar */
-.tableofcontents .sectionToc a,
-.tableofcontents .likesectionToc a,
-.tableofcontents .subsectionToc a,
-.tableofcontents .likesubsectionToc a,
-.tableofcontents .subsubsectionToc a,
-.tableofcontents .likesubsubsectionToc a,
-.tableofcontents .paragraphToc a,
-.tableofcontents .likeparagraphToc a{
-  font-size: 18px !important; /* restore */
-  line-height: 1.25 !important;
-
-  display:flex !important;
-  align-items:center;
-  gap: 16px;
-
-  background: var(--brand) !important;
-  color: #ffffff !important;
-
-  padding: 18px 26px !important;
-  text-decoration: underline !important;
-  text-underline-offset: 4px;
-  font-weight: 700 !important;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+table.tabular tr.hline hr{
+  margin: 0 !important;
+  border: 0 !important;
+  border-top: 1px solid var(--border-strong) !important;
+  height: 0 !important;
 }
-
-.tableofcontents .sectionToc a::before,
-.tableofcontents .likesectionToc a::before,
-.tableofcontents .subsectionToc a::before,
-.tableofcontents .likesubsectionToc a::before,
-.tableofcontents .subsubsectionToc a::before,
-.tableofcontents .likesubsubsectionToc a::before,
-.tableofcontents .paragraphToc a::before,
-.tableofcontents .likeparagraphToc a::before{
-  content: "" !important;
-  width: 26px;
-  height: 26px;
-  flex: 0 0 26px;
-
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23facc15' d='M4 11h11.17l-4.58-4.59L12 5l7 7-7 7-1.41-1.41L15.17 13H4z'/></svg>");
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  background-position: center;
-  text-decoration: none !important;
-}
-
-.tableofcontents a:hover{
-  background: var(--brand-dark) !important;
-  color: #ffffff !important;
-}
-
-/* Hide TOC markers if TeX4ht uses spans */
-.tableofcontents .titlemark,
-.tableofcontents .label{ display:none !important; }
 

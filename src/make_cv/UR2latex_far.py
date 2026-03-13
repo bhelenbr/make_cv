@@ -7,7 +7,6 @@
 from datetime import date
 import pandas as pd
 import os
-import sys
 import argparse
 
 from .stringprotect import str2latex
@@ -19,11 +18,9 @@ def UR2latex_far(f,years,inputfile):
 		df = pd.read_excel(source,sheet_name="Data")
 	except OSError:
 		print("Could not open/read file: " + source)
-		return
+		return 0
 
 	df.fillna('',inplace=True)
-	#df['Calendar Year'] = pd.to_datetime(df['Calendar Year'],format = "%Y",exact=True)
-	
 	if years > 0:
 		today = date.today()
 		year = today.year
@@ -34,14 +31,13 @@ def UR2latex_far(f,years,inputfile):
 	df.reset_index(inplace=True)
 	
 	nrows = df.shape[0]
-	
 	if (nrows > 0):	
-		f.write("\\begin{tabularx}{\\linewidth}{Xll}\nName: Title  & Program & Term \\\\\n\\hline\n")
+		f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXll}\n & Name: Title  & Program & Term \\\\\n\\hline\n")
 		count = 0
 		newline=""
 		while count < nrows:
 			f.write(newline)
-			f.write(abbreviate_name_list(df.loc[count,"Students"])+": " +str2latex(df.loc[count,"Title"]) + " & " +df.loc[count,"Program Type"] + " & " +df.loc[count,"Term"] +" " +str(df.loc[count,"Calendar Year"]))
+			f.write(" & " +abbreviate_name_list(df.loc[count,"Students"])+": " +str2latex(df.loc[count,"Title"]) + " & " +df.loc[count,"Program Type"] + " & " +df.loc[count,"Term"] +" " +str(df.loc[count,"Calendar Year"]))
 			newline="\\\\\n"
 			count += 1
 		f.write("\n\\end{tabularx}\n")
