@@ -138,7 +138,7 @@ def make_far_tables(config,table_dir):
 		if config.getboolean('ShortTeachingTable'):
 			nrows = teaching2latex_short(fteaching,years,filename,private=hide_evals)
 		else:
-			nrows = teaching2latex_far(fteaching,years,filename,sortbycourse=True,private=hide_evals)
+			nrows = teaching2latex_far(fteaching,years,filename,sortbycourse=False,private=hide_evals)
 		fteaching.close()
 		if not(nrows):
 			os.remove(table_dir+os.sep +'Teaching.tex')

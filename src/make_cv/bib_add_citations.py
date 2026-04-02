@@ -18,7 +18,8 @@ import argparse
 # pip3 uninstall urllib3
 # pip3 install 'urllib3<=2'
 
-
+from .bib_get_entries_orcid import make_bibtex_id_list
+from .bib_get_entries_orcid import make_title_id
 
 def bib_add_citations(bibfile,author_id,outputfile,scraper_id=None):
 
@@ -45,13 +46,23 @@ def bib_add_citations(bibfile,author_id,outputfile,scraper_id=None):
 		bib_database = bibtexparser.load(bibtex_file, tbparser)
 	entries = bib_database.entries
 	
-	# Create list of titles in bibfile compressing out nonalphanumeric characters
-	titles = [re.sub('[\\W_]', '', entry['title']).lower() if 'title' in entry.keys() else None for entry in entries]
+	# # Create list of titles in bibfile compressing out nonalphanumeric characters
+	# titles = [re.sub('[\\W_]', '', entry['title']).lower() if 'title' in entry.keys() else None for entry in entries]
+
+	# Create list of existing index, title ids, and dois
+	titles = make_bibtex_id_list(entries)
+	
 	# Create list of google publication ids if they exist
 	google_pub_ids = [entry["google_pub_id"] if "google_pub_id" in entry.keys() else None for entry in entries]
-	
+
 	# Loop through google scholar entries
 	for pub in author['publications']:
+
+		if 'pub_year' in pub['bib']:
+			year = pub['bib']['pub_year']
+		else:
+			continue
+
 		ncites = pub['num_citations']
 		if int(ncites) < 1:
 			continue
@@ -66,10 +77,10 @@ def bib_add_citations(bibfile,author_id,outputfile,scraper_id=None):
 			continue
 		
 		# Try to match by title
-		cite_title = re.sub('[\\W_]', '', pub['bib']['title']).lower()
+		title_id = make_title_id(pub['bib']['title'],year)
 		citestring = pub['bib']['citation']
-		
-		indices = [i for i, x in enumerate(titles) if x == cite_title]
+
+		indices = [i for i, x, _ in titles if x == title_id]
 		if len(indices) == 1:
 			# found match
 			entries[indices[0]]['citations'] = str(ncites)

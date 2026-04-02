@@ -32,6 +32,8 @@ def make_bibtex_id_list(entries):
 	parsed_entries = []
 	for i, entry in enumerate(entries):
 		title = entry.get('title') or entry.get('TITLE')
+		if title is None:
+			continue
 		year_str = getyear(entry)
 
 		# Strip braces and other BibTeX bracketing

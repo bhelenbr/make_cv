@@ -52,13 +52,17 @@ def teaching2latex_short(f, years, inputfile, private=False):
 	df = df[~df['component'].isin(['DIS','IND','PRO','RSC','TUT','THE'])]	
 	df['weighted_19'] = df['count_19'] * df['mean_19']
 	df['weighted_20'] = df['count_20'] * df['mean_20']
+	df['ncomponents'] = df.groupby(['combined_course_num','STRM'])['component'].transform('nunique')
+
 
 	df['STRM_combined_num_sec'] = df['STRM'].astype(str) + df['combined_num_sec'].astype(str)
-	table = df.groupby(['combined_course_num']).agg({'course_title':['first'],'STRM':['min', 'max','nunique'],'enrollment':['sum'],'count_19':['sum'],'weighted_19':['sum'],'count_20':['sum'],'weighted_20':['sum']})	
+	table = df.groupby(['combined_course_num','component']).agg({'course_title':['first'],'STRM':['min', 'max','nunique'],'ncomponents':['first'],'enrollment':['sum'],'count_19':['sum'],'weighted_19':['sum'],'count_20':['sum'],'weighted_20':['sum']})	
 	df = table.reset_index()
+
 	df.sort_values(by=[('combined_course_num',''),('course_title','first')], inplace=True,ascending = [True,True])
 	df = table.reset_index()
-	df[('title_string','')] = df[('combined_course_num','')] + "-" + df[('course_title','first')]
+	mask = df[('ncomponents','first')] > 1
+	df[('title_string','')] = df[('combined_course_num','')] + np.where(mask, " ("+df[('component','')] + ")", "") + "-" + df[('course_title','first')]
 
 	nrows = df.shape[0] 
 	if (nrows > 0):	
@@ -77,11 +81,15 @@ def teaching2latex_short(f, years, inputfile, private=False):
 				f.write(" semester,")
 			else:
 				f.write(" semesters,")
-			f.write(" Av. Enrl.: " +"{:d}".format(int(df.iloc[count]['enrollment', 'sum']/df.iloc[count]['STRM', 'nunique'])))
+			#f.write(" \={Enrl}: " +"{:d}".format(int(df.iloc[count]['enrollment', 'sum']/df.iloc[count]['STRM', 'nunique'])))
+			f.write(" {:d}".format(int(df.iloc[count]['enrollment', 'sum']/df.iloc[count]['STRM', 'nunique'])))
+
 		
 			if not private:
-				f.write(", Q19: " +"{:3.2f}".format(df.iloc[count]['weighted_19', 'sum']/df.iloc[count]['count_19', 'sum']))
-			#f.write(", Q20 " +"{:3.2f}".format(df.iloc[count]['weighted_20', 'sum']/df.iloc[count]['count_20', 'sum']) +"\n")
+				if df.iloc[count]['count_19', 'sum'] > 0:
+					f.write(", {:3.2f}".format(df.iloc[count]['weighted_19', 'sum']/df.iloc[count]['count_19', 'sum']))
+					f.write(", {:3.2f}".format(df.iloc[count]['weighted_20', 'sum']/df.iloc[count]['count_20', 'sum']))
+			f.write("\n")
 			count += 1
 		f.write("\\end{itemize}\n")
 

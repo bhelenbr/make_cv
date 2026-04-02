@@ -187,19 +187,17 @@ html{
   -webkit-text-size-adjust: 100%;
 }
 
-html,
-body{
-  overflow-x: hidden;
-}
-
-body{
+/* BEFORE — remove these two body blocks and replace with this */
+body {
   margin: 0 auto;
-  max-width: 1180px;
+  max-width: 100%;          /* was 1180px — caused clipping in iframe */
   padding: var(--page-pad-top) var(--page-pad-x) var(--page-pad-bottom);
-  background: var(--bg);
+  background:  #ffffff;
   color: #074132 !important;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   line-height: 1.65;
+  overflow-x: hidden;       /* keep this — no horizontal scroll */
+  /* DO NOT add overflow: hidden — that cuts content */
 }
 
 p,
@@ -219,7 +217,8 @@ html.embedded body{
 }
 
 /* Title sizing like Clarkson */
-h3.sectionHead{
+h3.sectionHead,
+h3.likesectionHead{
   margin: 0 0 16px !important;
   color: var(--brand) !important;
   font-size: 48px !important;
@@ -394,3 +393,142 @@ table.tabular tr.hline hr{
   height: 0 !important;
 }
 
+/* =========================================================
+   MENU PAGE STYLING - centered compact cards
+   For web.html and webli1.html only
+   ========================================================= */
+
+body.menu-page{
+  background: #ffffff !important;
+  max-width: 1180px !important;
+  margin: 0 auto !important;
+  padding: 18px 24px 32px !important;
+}
+
+/* keep the top title/date on web.html */
+body.menu-page .maketitle{
+  display: block !important;
+  margin-bottom: 22px !important;
+}
+
+/* keep Contents visible on webli1.html */
+body.menu-page h3.likesectionHead{
+  display: block !important;
+  margin: 0 0 18px !important;
+  color: var(--brand) !important;
+  font-size: 42px !important;
+  font-weight: 500 !important;
+  line-height: 1.1 !important;
+  letter-spacing: -0.02em;
+}
+
+/* show the Contents link row on web.html */
+body.menu-page .tableofcontents .likesectionToc{
+  display: block !important;
+  margin: 0 0 14px !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+}
+
+/* hide TeX nav junk only */
+body.menu-page .crosslinks,
+body.menu-page .navibar,
+body.menu-page .next{
+  display: none !important;
+}
+
+/* wrapper */
+body.menu-page .tableofcontents{
+  margin: 0 !important;
+  padding: 0 !important;
+  max-width: 100% !important;
+}
+
+/* remove TeX line breaks between rows */
+body.menu-page .tableofcontents br{
+  display: none !important;
+}
+
+/* each toc row wrapper */
+body.menu-page .tableofcontents .sectionToc{
+  display: block !important;
+  margin: 0 0 12px !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+}
+/* compact centered green cards */
+body.menu-page .tableofcontents .likesectionToc > a,
+body.menu-page .tableofcontents .sectionToc > a{
+  position: relative !important;
+  display: block !important;
+  max-width: 1120px !important;
+  margin: 0 auto !important;
+  padding: 20px 26px 20px 66px !important;
+
+  background: #00584d !important;
+  color: #ffffff !important;
+  text-decoration: underline !important;
+  text-underline-offset: 2px !important;
+  text-decoration-thickness: 1.5px !important;
+
+  font-size: 18px !important;
+  line-height: 1.35 !important;
+  font-weight: 700 !important;
+
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  overflow-wrap: anywhere !important;
+}
+
+/* hover */
+body.menu-page .tableofcontents .likesectionToc > a:hover,
+body.menu-page .tableofcontents .likesectionToc > a:focus,
+body.menu-page .tableofcontents .sectionToc > a:hover,
+body.menu-page .tableofcontents .sectionToc > a:focus{
+  background: #064c43 !important;
+  color: #ffffff !important;
+}
+
+/* yellow arrow shaft */
+body.menu-page .tableofcontents .likesectionToc > a::before,
+body.menu-page .tableofcontents .sectionToc > a::before{
+  content: "" !important;
+  position: absolute !important;
+  left: 28px !important;
+  top: 50% !important;
+  width: 12px !important;
+  height: 3px !important;
+  background: #f0c10f !important;
+  transform: translateY(-50%) !important;
+}
+
+body.menu-page .tableofcontents .likesectionToc > a::after,
+body.menu-page .tableofcontents .sectionToc > a::after{
+  content: "" !important;
+  position: absolute !important;
+  left: 37px !important;
+  top: 50% !important;
+  width: 9px !important;
+  height: 9px !important;
+  border-top: 3px solid #f0c10f !important;
+  border-right: 3px solid #f0c10f !important;
+  transform: translateY(-50%) rotate(45deg) !important;
+}
+
+/* clean bottom spacing */
+body.menu-page p.noindent{
+  margin: 0 !important;
+}
+
+<style>
+#pubFrame {
+  width: 100%;
+  min-height: 0 !important;
+  height: 120px;
+  border: 0;
+  display: block;
+  overflow: hidden;
+  background: #fff !important;
+}
+</style>

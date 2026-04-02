@@ -7,6 +7,8 @@
 import pandas as pd
 import os
 import sys
+import argparse
+
 from datetime import date
 
 from .stringprotect import str2latex

@@ -53,8 +53,8 @@ def main(argv = None):
 			insert_text = '\n'
 			insert_text = insert_text + r'<script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.2/iframeResizer.contentWindow.min.js"></script>'
 			insert_text = insert_text + '\n'
-			#insert_text = insert_text + r'<script src="navigation-sync.js"></script>'
-			#insert_text = insert_text + '\n'
+			insert_text = insert_text + r'<script src="navigation.js?v=5"></script>'
+			insert_text = insert_text + '\n'
 			if idx != -1:
 				new_content = content[:idx] + insert_text + content[idx:]
 			else:
