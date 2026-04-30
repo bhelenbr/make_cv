@@ -78,14 +78,12 @@ def teaching2latex_short(f, years, inputfile, private=False):
 			
 			f.write(", " +str(df.iloc[count]['STRM', 'nunique']))
 			if df.iloc[count]['STRM', 'nunique'] == 1:
-				f.write(" semester,")
+				f.write(" semester")
 			else:
-				f.write(" semesters,")
-			#f.write(" \={Enrl}: " +"{:d}".format(int(df.iloc[count]['enrollment', 'sum']/df.iloc[count]['STRM', 'nunique'])))
-			f.write(" {:d}".format(int(df.iloc[count]['enrollment', 'sum']/df.iloc[count]['STRM', 'nunique'])))
-
+				f.write(" semesters")
 		
 			if not private:
+				f.write(", {:d}".format(int(df.iloc[count]['enrollment', 'sum']/df.iloc[count]['STRM', 'nunique'])))
 				if df.iloc[count]['count_19', 'sum'] > 0:
 					f.write(", {:3.2f}".format(df.iloc[count]['weighted_19', 'sum']/df.iloc[count]['count_19', 'sum']))
 					f.write(", {:3.2f}".format(df.iloc[count]['weighted_20', 'sum']/df.iloc[count]['count_20', 'sum']))

@@ -66,6 +66,26 @@ def main(argv = None):
 			pass
 
 	
+	for html_file in ['web.html','webli1.html']:
+		try:
+			with open(html_file, 'r', encoding='utf-8') as fh:
+				content = fh.read()
+
+			# find last occurrence of closing body tag (case-insensitive)
+			idx = content.lower().rfind('</head>')
+			insert_text = '\n'
+			insert_text = insert_text + r'<body class="menu-page">'
+			insert_text = insert_text + '\n'
+		
+			if idx != -1:
+				new_content = content[:idx] + insert_text + content[idx:]
+			else:
+				new_content = content + insert_text
+			with open(html_file, 'w', encoding='utf-8') as fh:
+				fh.write(new_content)
+		except Exception:
+			# ignore files we can't read/write
+			pass
 
 
 

@@ -11,3 +11,8 @@ python -m pip install --upgrade make_cv
 # For testing
 python -m twine upload --repository testpypi dist/*
 python -m pip install --index-url https://test.pypi.org/simple/ --upgrade make_cv
+
+# To install web pages
+scp * polaris.clarkson.edu:public_html/Helenbrook
+# On polaris
+cd public_html/Helenbrook; chmod o+rx *
