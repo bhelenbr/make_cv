@@ -1,0 +1,25 @@
+\input{web_header.tex}
+
+\title{My Web Page}
+\author{}
+
+\begin{document}
+%\maketitle
+\tableofcontents
+
+\nocite{*}
+
+\includeCheck{GradAdvisees}{
+\section{Graduate Advisees}
+\input{GradAdvisees.tex}
+}
+
+\includeCheck{UndergradResearch}{
+\section{Undergraduate Research}
+\input{UndergradResearch.tex}
+}
+
+
+
+\end{document}
+

@@ -1,0 +1,39 @@
+\input{web_header.tex}
+
+\title{My Web Page}
+\author{}
+
+\begin{document}
+%\maketitle
+\tableofcontents
+
+\nocite{*}
+
+\ifthenelse{\boolean{Journal}}{
+\printbibliography[heading={contbibnumbered},title={Journal Articles},keyword=journal]
+}{}
+
+\ifthenelse{\boolean{Refereed}}{
+\printbibliography[heading={contbibnumbered},title={Refereed Conference Papers},keyword=refereed]
+}{}
+
+
+\ifthenelse{\boolean{Book}}{
+\printbibliography[heading={contbibnumbered},title={Book Chapters},keyword=book]
+}{}
+
+\ifthenelse{\boolean{Patent}}{
+\printbibliography[heading={contbibnumbered},title={Patents},keyword=patent]
+}{}
+
+\ifthenelse{\boolean{Conference}}{
+\printbibliography[heading={contbibnumbered},title={Conference Presentations},keyword=conference]
+}{}
+
+\ifthenelse{\boolean{Invited}}{
+\printbibliography[heading={contbibnumbered},title={Invited Talks},keyword=invited]
+}{}
+
+
+\end{document}
+

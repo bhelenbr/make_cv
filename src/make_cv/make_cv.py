@@ -514,7 +514,10 @@ def typeset(config,filename,command):
 		subprocess.run(command,stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT,check=True) 
 	
 	print("\ncreating bibliography\n")
-	subprocess.run(["biber", bcffile],check=True) 
+	if os.path.exists(bcffile):
+		subprocess.run(["biber", bcffile],check=True)
+	else:
+		print(f{bcffile} not found, skipping biber") 
 	
 	print("\ntypesetting pass 2\n")
 	subprocess.run(command,stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT)
