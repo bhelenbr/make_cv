@@ -34,17 +34,20 @@ def main(argv = None):
 	process_default_args(config,args)
 	global_prefs.usePandoc = True
 
-	web = config['LaTexFile'][:-4]
-	folder = "Tables_" +web
-	make_far_tables(config,folder)
-
 	tex_files = glob.glob("*.tex")
+	for file_to_remove in ["exclusions.tex", "web_header.tex", "timestamp.tex"]:
+		if file_to_remove in tex_files:
+			tex_files.remove(file_to_remove)
+	
 	for tex_file in tex_files:
 		print("compiling " +tex_file)
 		stem = tex_file[0:-4]
+		folder = "Tables_" +stem
+		make_far_tables(config,folder)
+
 		typeset(config,stem,["mk4ht", "htlatex",stem +".tex","xhtml,3,next,charset=utf-8,pmathml","-cunihtf -utf8 -cvalidate"])		
 		# Replace css file
-		shutil.copy2("sub_" +web +".css", stem +".css")
+		shutil.copy2("sub_" +stem +".css", stem +".css")
 
 		# Insert two lines into every HTML file just before the closing </body>
 		# for html_file in glob.glob(stem +"se" +"*.html"):
@@ -92,14 +95,12 @@ def main(argv = None):
 				# ignore files we can't read/write
 				pass
 
-
-
-	# extra cleanup
-	for file in ["web.4ct","web.4tc","web.dvi","web.idv","web.tmp","web.xref","web.bdf.bbl","web.bdf.blg","web.lg"]:
-		try:
-			os.remove(file)
-		except OSError as err:
-			print("")
+		# extra cleanup
+		for file in [stem +".4ct",stem +".4tc",stem +".dvi",stem +".idv",stem +".tmp",stem +".xref",stem +".bdf.bbl",stem +".bdf.blg",stem +".lg"]:
+			try:
+				os.remove(file)
+			except OSError as err:
+				print("")
 
 if __name__ == "__main__":
 	main()

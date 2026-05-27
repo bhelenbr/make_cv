@@ -537,7 +537,7 @@ def typeset(config,filename,command):
 	
 	# cleanup
 	if "NoCleanUp" in config.keys() and not(config.getboolean("NoCleanUp")):
-		for file in [filename +".aux",filename +".bbl",filename +".bcf",filename +".blg",filename +".log",filename +".out",filename +".run.xml","biblatex-dm.cfg","exclusions.tex",filename +".toc","timestamp.tex"]:
+		for file in [filename +".aux",filename +".bbl",filename +".bcf",filename +".blg",filename +".log",filename +".out",filename +".run.xml","biblatex-dm.cfg",filename +".toc"]:
 			try:
 				os.remove(file)
 			except OSError as err:
