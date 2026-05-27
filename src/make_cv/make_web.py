@@ -40,6 +40,7 @@ def main(argv = None):
 
 	tex_files = glob.glob("*.tex")
 	for tex_file in tex_files:
+		print("compiling " +tex_file)
 		stem = tex_file[0:-4]
 		typeset(config,stem,["mk4ht", "htlatex",stem +".tex","xhtml,3,next,charset=utf-8,pmathml","-cunihtf -utf8 -cvalidate"])		
 		# Replace css file
