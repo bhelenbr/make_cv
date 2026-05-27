@@ -37,55 +37,59 @@ def main(argv = None):
 	stem = config['LaTexFile'][:-4]
 	folder = "Tables_" +stem
 	make_far_tables(config,folder)
-	typeset(config,stem,["mk4ht", "htlatex",config['LaTexFile'],"xhtml,3,next,charset=utf-8,pmathml","-cunihtf -utf8 -cvalidate"])		
-	# Replace css file
-	shutil.copy2("sub_" +stem +".css", stem +".css")
 
-	# Insert two lines into every HTML file just before the closing </body>
-	# for html_file in glob.glob(stem +"se" +"*.html"):
-	for html_file in glob.glob(stem +"*.html"):
-		try:
-			with open(html_file, 'r', encoding='utf-8') as fh:
-				content = fh.read()
+	tex_files = glob.glob("*.tex")
+	for tex_file in tex_files:
+		stem = tex_file[0:-4]
+		typeset(config,stem,["mk4ht", "htlatex",stem +".tex","xhtml,3,next,charset=utf-8,pmathml","-cunihtf -utf8 -cvalidate"])		
+		# Replace css file
+		shutil.copy2("sub_" +stem +".css", stem +".css")
 
-			# find last occurrence of closing body tag (case-insensitive)
-			idx = content.lower().rfind('</body>')
-			insert_text = '\n'
-			insert_text = insert_text + r'<script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.2/iframeResizer.contentWindow.min.js"></script>'
-			insert_text = insert_text + '\n'
-			insert_text = insert_text + r'<script src="navigation.js?v=5"></script>'
-			insert_text = insert_text + '\n'
-			if idx != -1:
-				new_content = content[:idx] + insert_text + content[idx:]
-			else:
-				new_content = content + insert_text
-			with open(html_file, 'w', encoding='utf-8') as fh:
-				fh.write(new_content)
-		except Exception:
-			# ignore files we can't read/write
-			pass
+		# Insert two lines into every HTML file just before the closing </body>
+		# for html_file in glob.glob(stem +"se" +"*.html"):
+		for html_file in glob.glob("*.html"):
+			try:
+				with open(html_file, 'r', encoding='utf-8') as fh:
+					content = fh.read()
 
-	
-	for html_file in ['web.html','webli1.html']:
-		try:
-			with open(html_file, 'r', encoding='utf-8') as fh:
-				content = fh.read()
+				# find last occurrence of closing body tag (case-insensitive)
+				idx = content.lower().rfind('</body>')
+				insert_text = '\n'
+				insert_text = insert_text + r'<script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.2/iframeResizer.contentWindow.min.js"></script>'
+				insert_text = insert_text + '\n'
+				insert_text = insert_text + r'<script src="navigation.js?v=5"></script>'
+				insert_text = insert_text + '\n'
+				if idx != -1:
+					new_content = content[:idx] + insert_text + content[idx:]
+				else:
+					new_content = content + insert_text
+				with open(html_file, 'w', encoding='utf-8') as fh:
+					fh.write(new_content)
+			except Exception:
+				# ignore files we can't read/write
+				pass
 
-			# find last occurrence of closing body tag (case-insensitive)
-			idx = content.lower().rfind('</head>')
-			insert_text = '\n'
-			insert_text = insert_text + r'<body class="menu-page">'
-			insert_text = insert_text + '\n'
 		
-			if idx != -1:
-				new_content = content[:idx] + insert_text + content[idx:]
-			else:
-				new_content = content + insert_text
-			with open(html_file, 'w', encoding='utf-8') as fh:
-				fh.write(new_content)
-		except Exception:
-			# ignore files we can't read/write
-			pass
+		for html_file in [stem +'.html',stem +'li1.html']:
+			try:
+				with open(html_file, 'r', encoding='utf-8') as fh:
+					content = fh.read()
+
+				# find last occurrence of closing body tag (case-insensitive)
+				idx = content.lower().rfind('</head>')
+				insert_text = '\n'
+				insert_text = insert_text + r'<body class="menu-page">'
+				insert_text = insert_text + '\n'
+			
+				if idx != -1:
+					new_content = content[:idx] + insert_text + content[idx:]
+				else:
+					new_content = content + insert_text
+				with open(html_file, 'w', encoding='utf-8') as fh:
+					fh.write(new_content)
+			except Exception:
+				# ignore files we can't read/write
+				pass
 
 
 
