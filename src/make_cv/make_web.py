@@ -34,8 +34,8 @@ def main(argv = None):
 	process_default_args(config,args)
 	global_prefs.usePandoc = True
 
-	stem = config['LaTexFile'][:-4]
-	folder = "Tables_" +stem
+	web = config['LaTexFile'][:-4]
+	folder = "Tables_" +web
 	make_far_tables(config,folder)
 
 	tex_files = glob.glob("*.tex")
@@ -43,7 +43,7 @@ def main(argv = None):
 		stem = tex_file[0:-4]
 		typeset(config,stem,["mk4ht", "htlatex",stem +".tex","xhtml,3,next,charset=utf-8,pmathml","-cunihtf -utf8 -cvalidate"])		
 		# Replace css file
-		shutil.copy2("sub_" +stem +".css", stem +".css")
+		shutil.copy2("sub_" +web +".css", stem +".css")
 
 		# Insert two lines into every HTML file just before the closing </body>
 		# for html_file in glob.glob(stem +"se" +"*.html"):
