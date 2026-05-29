@@ -18,6 +18,9 @@ import datetime
 import warnings
 import re
 import pybliometrics
+from git import Repo
+
+
 
 from .create_config import create_config
 from .create_config import verify_config, load_personal_data
@@ -237,11 +240,9 @@ def read_args(parser,argv):
 			print("This directory already exists.  Please provide a different directory name")
 			exit()
 		else:
+			Repo.clone_from("https://github.com/bhelenbr/make_cv_files.git",args.begin)
+
 			# IDs will be kept in PersonalData/personal_data.txt rather than in the config files
-			dst = Path(args.begin)
-			#dst = path.parent.absolute()
-			myDir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) # script directory
-			shutil.copytree(myDir +os.sep +"files",dst)
 			# Override google/orcid/scopus/scraper args to empty strings if not provided
 			if args.GoogleID is None:
 				args.GoogleID = ""
@@ -253,6 +254,7 @@ def read_args(parser,argv):
 				args.WebScraperID = ""
 
 			# Create PersonalData/personal_data.txt in the new project
+			dst = Path(args.begin)
 			personal_dir = os.path.join(dst, 'make_cv', 'PersonalData')
 			pfile = os.path.join(personal_dir, 'personal_data.txt')
 			with open(pfile, 'w', encoding='utf-8') as pf:
