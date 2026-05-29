@@ -49,7 +49,7 @@
 
 \flavor{abet}
 
-\input{ContactInfo.abet.tex}
+\input{\biodir/ContactInfo.abet.tex}
 
 \begin{document}
 % Turn on logging
@@ -57,40 +57,40 @@
 
 \makeheaders[c]
 
-\makerubric{Education}
+\makerubric{\biodir/Education}
 
-\makerubric{Employment}
+\makerubric{\biodir/Employment}
 
-\makerubric{Credentials}
+\makerubric{\biodir/Credentials}
 
-\includeCheck{ProfDevelopment}{
-\makerubric{ProfDevelopment}
+\includeCheck{\tabledir/ProfDevelopment}{
+\makerubric{\tabledir/ProfDevelopment}
 }
 
-\includeCheck{Conference}{
+\includeCheck{\tabledir/Conference}{
 {\sffamily Recent Conference Presentations}
-\input{Tables_cv/Conference.tex}
+\input{\tabledir/Conference.tex}
 }
 
-\includeCheck{Service}{
-\makerubric{Service}
+\includeCheck{\tabledir/Service}{
+\makerubric{\tabledir/Service}
 }
 
 \makerubrichead{Recent Contributions to the Discipline}
 
-\includeCheck{Journal}{
+\includeCheck{\tabledir/Journal}{
 {\sffamily Journal Papers}
-\input{Tables_cv/Journal.tex}
+\input{\tabledir/Journal.tex}
 }
 
-\includeCheck{Book}{
+\includeCheck{\tabledir/Book}{
 {\sffamily Books \& Book Chapters}
-\input{Tables_cv/Book.tex}
+\input{\tabledir/Book.tex}
 }
 
-\includeCheck{Patent}{
+\includeCheck{\tabledir/Patent}{
 {\sffamily Patents}
-\input{Tables_cv/Patent.tex}
+\input{\tabledir/Patent.tex}
 }
 
 \IfFileExists{timestamp.tex}{\input{timestamp.tex}}

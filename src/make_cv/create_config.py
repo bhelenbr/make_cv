@@ -19,7 +19,8 @@ sections = {'PersonalAwards': 'true',
 				'UndergradResearch': 'true',
 				'Teaching': 'true',
 				'Grants': 'true',
-				'Proposals': 'true'} 
+				'Proposals': 'true',
+				'References': 'false'} 
 
 defaults = {'data_dir': '../..',
 				'bio_dir': '../PersonalData',

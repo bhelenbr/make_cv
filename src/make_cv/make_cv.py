@@ -45,7 +45,7 @@ from .copy_with_timestamp import copy_with_timestamp
 from . import global_prefs
 	
 pub_categories = ['Journal','Conference','Patent','Book','Invited','Refereed','arXiv']
-other_sections = ['PersonalAwards','StudentAwards','Service','Reviews','GradAdvisees','UndergradResearch','Teaching','Grants','Proposals'] 
+other_sections = ['PersonalAwards','StudentAwards','Service','Reviews','GradAdvisees','UndergradResearch','Teaching','Grants','Proposals','References'] 
 sections = pub_categories +other_sections
 datafiles = ['Scholarship','PersonalAwards','StudentAwards','Service','Reviews','CurrentGradAdvisees','GradTheses','UndergradResearch','Teaching','Grants','Proposals']
 
@@ -483,7 +483,13 @@ def add_timestamp_to_cv():
 def typeset(config,filename,command):
 	# Create exclusion file
 	with open('exclusions.tex', 'w') as exclusions:
-		exclusions.write('\\makeatletter\n\\def\\input@path{{Tables_' +filename +'/}{' +config['bio_dir'] +'/}} % Add folder to file search path\n\\makeatother\n')
+		#exclusions.write('\\makeatletter\n\\def\\input@path{{Tables_' +filename +'/}{' +config['bio_dir'] +'/}} % Add folder to file search path\n\\makeatother\n')
+		#exclusions.write('\\def\\input@path{{' +config['bio_dir'] +'/}} % Add folder to file search path\n')
+		exclusions.write('\\makeatletter\n')
+		exclusions.write('\\def\\tabledir{Tables_' +filename +'}\n')
+		exclusions.write('\\def\\biodir{' +config['bio_dir'] +'}\n')
+		exclusions.write('\\makeatother\n')
+
 		for section in sections:
 			if not config.getboolean(section): exclusions.write('\\setboolean{' +section +'}{false}\n')
 		if not config.getboolean('IncludeCitationCounts'): exclusions.write('\\DeclareFieldFormat{citations}{}\n')
@@ -537,7 +543,7 @@ def typeset(config,filename,command):
 	
 	# cleanup
 	if "NoCleanUp" in config.keys() and not(config.getboolean("NoCleanUp")):
-		for file in [filename +".aux",filename +".bbl",filename +".bcf",filename +".blg",filename +".log",filename +".out",filename +".run.xml","biblatex-dm.cfg",filename +".toc"]:
+		for file in [filename +".aux",filename +".bbl",filename +".bcf",filename +".blg",filename +".log",filename +".out",filename +".run.xml","biblatex-dm.cfg",filename +".toc","exclusions.tex","timestamp.tex"]:
 			try:
 				os.remove(file)
 			except OSError as err:

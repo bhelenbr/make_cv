@@ -27,7 +27,7 @@
 %% For publication List
 \addbibresource{../../Scholarship/scholarship.bib}
 
-\input{ContactInfo}
+\input{\biodir/ContactInfo}
 
 \begin{document}
 % Turn on logging
@@ -36,23 +36,22 @@
 \makeheaders[c]
 
 % education
-\makerubric{Education}
+\makerubric{\biodir/Education}
 
 % employment
-\makerubric{Employment}
+\makerubric{\biodir/Employment}
 
 \includeCheck{Admin}{
 \makerubrichead{Administrative Accomplishments}
-These are primarily accomplishments from my time as chair, and also as a member of the ``Task Force for Reimagining Clarkson''.
-\input{admin.tex}
+\input{Admin.tex}
 }
 
-\includeCheck{Credentials}{
-\makerubric{Credentials}}
+\includeCheck{\biodir/Credentials}{
+\makerubric{\biodir/Credentials}}
 
-\includeCheck{PersonalAwards}{
+\includeCheck{\tabledir/PersonalAwards}{
 \keyalignment{r}
-\makerubric{PersonalAwards}
+\makerubric{\tabledir/PersonalAwards}
 }
 
 \makerubrichead{Research Publications}
@@ -84,46 +83,48 @@ In the following a + indicates a graduate advisee, and a * indicates an undergra
 \printbibliography[heading={contbibnumbered},title={Invited Talks},keyword=invited]
 }{}
 
-\includeCheck{Service}{
-\makerubric{Service}
+\includeCheck{\tabledir/Service}{
+\makerubric{\tabledir/Service}
 }
 
-\includeCheck{Reviews}{
+\includeCheck{\tabledir/Reviews}{
 \makerubrichead{Reviewing Activity}
-\input{Reviews}
+\input{\tabledir/Reviews}
 }
 
-\includeCheck{StudentAwards}{
-\makerubric{StudentAwards}
+\includeCheck{\tabledir/StudentAwards}{
+\makerubric{\tabledir/StudentAwards}
 }
 
-\includeCheck{GradAdvisees}{
+\includeCheck{\tabledir/GradAdvisees}{
 \makerubrichead{Graduate Advisees}
-\input{GradAdvisees.tex}
+\input{\tabledir/GradAdvisees.tex}
 }
 
-\includeCheck{UndergradResearch}{
+\includeCheck{\tabledir/UndergradResearch}{
 \makerubrichead{Undergraduate Research}
-\input{UndergradResearch.tex}
+\input{\tabledir/UndergradResearch.tex}
 }
 
-\includeCheck{Teaching}{
+\includeCheck{\tabledir/Teaching}{
 \makerubrichead{Teaching}
 This table includes all classes taught that had reported teaching evaluations.  The three values are the average enrollment, the average response to question 19, ``Overall, how would you rate this instructor?'', and the average response to question 20, ``Overall, how would you rate this course?''.   The scores are out of 5 and the University average evaluation is approximately 4.1. 
-\input{Teaching.tex}
+\input{\tabledir/Teaching.tex}
 }
 
-\includeCheck{Grants}{
-\makerubrichead{Grants}
-\input{Grants}
+\includeCheck{\tabledir/Grants}{
+\makerubrichead{\tabledir/Grants}
+\input{\tabledir/Grants}
 }
 
-\includeCheck{Proposals}{
-\makerubrichead{Proposals}
-\input{Proposals}
+\includeCheck{\tabledir/Proposals}{
+\makerubrichead{\tabledir/Proposals}
+\input{\tabledir/Proposals}
 }
 
-%\makerubric{references}
+\includeCheck{\biodir/References}{
+\makerubric{\biodir/references}
+}
 
 \IfFileExists{timestamp.tex}{\input{timestamp.tex}}
 

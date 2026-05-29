@@ -107,15 +107,25 @@
     \closestep\saveendenumerate%
 }
 
-% Define the cvsection command
-% optional argument is name of boolean and filename (defaults to second argument)
-% second argument is the text to put in the pdf table of contents
-% Third argument is the content to include  
+\makeatletter
+\newcommand{\getbasename}[2]{%
+% #1 = full path
+% #2 = macro to store basename
+    \filename@parse{#1}%
+    \edef#2{\filename@base}%
+}
+\makeatother
+
+ % Define the includeCheck command
+% optional argument is name of boolean  (defaults to base filename of second argument)
+% second argument is the stem of the tex filename to check exists (everything but .tex)
+% Third argument is the content to include (usually an \input{filename.tex})
 \NewDocumentCommand\includeCheck{O{#2} m m}{
-\ifthenelse{\boolean{#1}}{%
+\getbasename{#1}{\bname}
+\ifthenelse{\boolean{\bname}}{%
   \IfFileExists{#2.tex}{%
         #3%
-  }{}%
+  }%
   }{}%
  }
 
@@ -135,6 +145,7 @@
 \newboolean{Teaching}
 \newboolean{Grants}
 \newboolean{Proposals}
+\newboolean{References}
 
 \setboolean{Journal}{true}
 \setboolean{Refereed}{true}
@@ -151,6 +162,7 @@
 \setboolean{Teaching}{true}
 \setboolean{Grants}{true}
 \setboolean{Proposals}{true}
+\setboolean{References}{true}
 
 \IfFileExists{exclusions.tex} {
 \input{exclusions.tex}
