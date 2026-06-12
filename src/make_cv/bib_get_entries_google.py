@@ -26,9 +26,9 @@ from .bib_add_keywords import add_keyword
 from .bib_get_entries_orcid import make_bibtex_id_list
 from .bib_get_entries_orcid import make_title_id
 from .bib_get_entries_orcid import getyear
-from .bib_get_entries_uspto import lookup_application
-from .bib_get_entries_uspto import lookup_patent
-from .bib_get_entries_uspto import lookup_publication	
+from .bib_get_entries_uspto_odp import lookup_application
+from .bib_get_entries_uspto_odp import lookup_patent
+from .bib_get_entries_uspto_odp import lookup_publication	
 
 from bs4 import BeautifulSoup
 import requests
@@ -137,21 +137,21 @@ def bib_get_entries_google(bibfile, author_id, years, outputfile, scraper_id=Non
 			print(pub['bib']['title'] +' ' +pub['bib']['pub_year'])
 
 		try:
-			if pub['bib']['citation'].find('Patent') > -1 and global_prefs.uspto_api_key is not None:
+			if pub['bib']['citation'].find('Patent') > -1 and global_prefs.odp_api_key is not None:
 				num_search = re.search(r'([0-9][0-9]/[0-9,]+)', pub['bib']['citation'])
 				if num_search is not None:
 					# US Patent App. 12/335,794,
-					bibtex_str = lookup_application(num_search.group(1), global_prefs.uspto_api_key)
+					bibtex_str = lookup_application(num_search.group(1), global_prefs.odp_api_key)
 				else:
 					# US Patent document US20210238065A1
 					num_search = re.search(r'([A-Za-z]{2}[\d]{4}[^,]*)', pub['bib']['citation'])
 					if num_search is not None:
-						bibtex_str = lookup_publication(num_search.group(1), global_prefs.uspto_api_key)
+						bibtex_str = lookup_publication(num_search.group(1), global_prefs.odp_api_key)
 					else:
 						# US Patent 7,942,929
 						num_search = re.search(r'Patent ([0-9,]+)', pub['bib']['citation'])
 						if num_search is not None:
-							bibtex_str = lookup_patent(num_search.group(1), global_prefs.uspto_api_key)
+							bibtex_str = lookup_patent(num_search.group(1), global_prefs.odp_api_key)
 						else:
 							bibtex_str = None
 				
