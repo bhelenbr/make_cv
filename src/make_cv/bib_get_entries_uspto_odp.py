@@ -67,29 +67,37 @@ def search_applications(
         response.raise_for_status()
     except requests.HTTPError as http_err:
         print(f"HTTP error occurred: {http_err}")  # e.g., 404 Client Error
+        return None
     except Exception as err:
         print(f"An unexpected error occurred: {err}")
+        return None
 
     return response.json()
 
 
 def get_application(application_number: str, api_key: str) -> dict:
 
-    response = requests.get(
-        APPLICATION_URL.format(app=application_number),
-        headers=_headers(api_key),
-        timeout=30,
-    )
+    try:
+        response = requests.get(
+            APPLICATION_URL.format(app=application_number),
+            headers=_headers(api_key),
+            timeout=30,
+        )
 
-    response.raise_for_status()
+        response.raise_for_status()
+    except requests.HTTPError as http_err:
+        print(f"HTTP error occurred: {http_err}")  # e.g., 404 Client Error
+        return None
+    except Exception as err:
+        print(f"An unexpected error occurred: {err}")
+        return None
 
     data = response.json()
 
     records = data.get("patentFileWrapperDataBag", [])
     if not records:
-        raise ValueError(
-            f"No application record found for {application_number}"
-        )
+        print(f"No application record found for {application_number}")
+        return None 
 
     return records[0]
 
@@ -123,6 +131,9 @@ def _extract_authors(meta: dict) -> str:
 
 
 def record_to_bibtex(record: dict) -> Optional[str]:
+
+    if record is None:
+        return None
 
     meta = record.get("applicationMetaData", {})
 
@@ -222,6 +233,8 @@ def lookup_patent(
         fields=["applicationNumberText"],
         limit=1,
     )
+    if response is None:
+        return None
 
     records = response.get("patentFileWrapperDataBag", [])
 
@@ -248,6 +261,9 @@ def lookup_publication(
         fields=["applicationNumberText"],
         limit=1,
     )
+
+    if response is None:
+        return None
 
     records = response.get("patentFileWrapperDataBag", [])
 
