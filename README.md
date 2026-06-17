@@ -109,7 +109,7 @@ Scholarship
 
         title \= {Why is Fluid Mechanics Interesting?}}
 
-      Patents use the “Misc” type as well.  These can be found from Google Scholar with bibliographic data pulled from the USPTO’s repository.
+      Patents use the “Misc” type as well.  The titles are found from Google Scholar with bibliographic data pulled from the USPTO’s open data portal repository.  To look up patent data from the USPTO you will need an application key for the Open Data Portal.  Follow the instructions here for that: [https://data.uspto.gov/home](https://data.uspto.gov/home). 
 
 Service
 
@@ -168,6 +168,7 @@ The `make_cv` tool provides a range of command-line options to customize and aut
 | `-m {true,false}` | Update student author markers in the `.bib` file. |
 | `-I {true,false}` | Use `bibtexautocomplete` to search for and add missing DOIs to the `.bib` file. |
 | `-e {SECTION}` | Exclude a section from the CV. Sections include: `Grants`, `PersonalAwards`, `Conference`, `GradAdvisees`, `Proposals`, `UndergradResearch`, `Reviews`, `Refereed`, `Invited`, `Service`, `Teaching`, `Book`, `Patent`, `StudentAwards`, `Journal`. |
+| `-E {column name}` | Title of the column used to control what individual entries from service, personal awards, student awards, and teaching excel files are excluded from cv. The column should be a list of True / False statements. |
 | `-d {PATH TO DATA DIRECTORY}` | Override the default data directory location specified in the config file. |
 | `-f {PATH TO CONFIGURATION FILE}` | Specify a configuration file. Defaults to `make_cv.cfg`. |
 | `-F {NAME}` | Override data file location in config file for specific sections.  Format is `-F NAME=<file name>` where NAME can be `Scholarship`, `PersonalAwards`, `StudentAwards`, `Service`, `Reviews`, `CurrentGradAdvisees`, `GradTheses`, `UndergradResearch`, `Teaching`, `Proposals`, `Grants`. |
