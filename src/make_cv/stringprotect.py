@@ -9,7 +9,7 @@ def str2latex(text):
 	else:
 		# Only replace characters that do not already have a preceding backslash
 		# Order matters: handle multi-character entities first (e.g. '&amp;')
-		repl_order = [("&amp;", r"\&"), ("&", r"\&"), ("#", r"\#")]
+		repl_order = [("&amp;", r"\&"), ("&", r"\&"), ("#", r"\#"), ("%", r"\%"), ("~", r"\textasciitilde{}"), ("^", r"\textasciicircum{}")]
 		for old, new in repl_order:
 			pattern = re.compile(r'(?<!\\)'+re.escape(old))
 			text = pattern.sub(lambda m, r=new: r, text)

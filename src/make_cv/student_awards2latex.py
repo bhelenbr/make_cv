@@ -13,10 +13,12 @@ from datetime import date
 from .stringprotect import str2latex
 from .stringprotect import abbreviate_name_list
 
-def student_awards2latex(f,years,inputfile,max_rows=-1):
+def student_awards2latex(f,years,inputfile,max_rows=-1,ExcludeColumn=None):
 	source = inputfile # file to read
 	try:
 		source_data = pd.read_excel(source,sheet_name="Data")
+		if ExcludeColumn is not None and ExcludeColumn in source_data.columns:
+			source_data = source_data[source_data[ExcludeColumn] != True]
 	except OSError:
 		print("Could not open/read file: " + source)
 		return

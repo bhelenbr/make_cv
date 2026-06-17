@@ -57,14 +57,19 @@ def search_applications(
     if fields:
         payload["fields"] = fields
 
-    response = requests.post(
-        SEARCH_URL,
-        json=payload,
-        headers=_headers(api_key),
-        timeout=30,
-    )
+    try:
+        response = requests.post(
+            SEARCH_URL,
+            json=payload,
+            headers=_headers(api_key),
+            timeout=30,
+        )
+        response.raise_for_status()
+    except requests.HTTPError as http_err:
+        print(f"HTTP error occurred: {http_err}")  # e.g., 404 Client Error
+    except Exception as err:
+        print(f"An unexpected error occurred: {err}")
 
-    response.raise_for_status()
     return response.json()
 
 

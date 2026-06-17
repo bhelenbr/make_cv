@@ -17,10 +17,12 @@ def term2year(term):
 
 from .stringprotect import str2latex
 
-def teaching2latex_short(f, years, inputfile, private=False):
+def teaching2latex_short(f, years, inputfile, private=False, ExcludeColumn=None):
 	source = inputfile  # File to read
 	try:
 		df = pd.read_excel(source, sheet_name="Data")
+		if ExcludeColumn is not None and ExcludeColumn in df.columns:
+			df = df[df[ExcludeColumn] != True]
 	except OSError:
 		print("Could not open/read file: " + source)
 		return 0

@@ -122,14 +122,15 @@ def get_work(orcid, put_code):
 
 
 def extract_doi(work):
-	for ext in (work.get("external-ids", {}).get("external-id") or []):
+	exts = safe_value(work, "external-ids", "external-id") or []
+	for ext in exts:
 		if ext.get("external-id-type") == "doi":
 			return ext.get("external-id-value")
 	return None
 
 
 def extract_authors(work):
-	contributors = work.get("contributors", {}).get("contributor", [])
+	contributors = safe_value(work, "contributors", "contributor") or []
 	authors = []
 	for c in contributors:
 		name = safe_value(c, "credit-name", "value")

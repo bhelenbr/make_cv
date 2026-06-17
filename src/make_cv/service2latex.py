@@ -11,10 +11,12 @@ from datetime import date
 
 from .stringprotect import str2latex
 
-def service2latex(f,years,inputfile,name,max_rows=-1):
+def service2latex(f,years,inputfile,name,max_rows=-1,ExcludeColumn=None):
 	source = inputfile # file to read
 	try:
 		source_data = pd.read_excel(source,sheet_name="Data")
+		if ExcludeColumn is not None and ExcludeColumn in source_data.columns:
+			source_data = source_data[source_data[ExcludeColumn] != True]
 	except OSError:
 		print("Could not open/read file: " + source)
 		return(0)

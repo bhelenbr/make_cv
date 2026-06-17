@@ -32,7 +32,6 @@ defaults = {'data_dir': '../..',
 				'GetNewOrcidEntries':'0',
 				'GetNewScopusEntries':'0'}
 
-
 def load_personal_data(configuration):
 	"""Read personal_data.txt from the given bio_dir and return dict of values.
 	Keys returned (lowercase): googleid, webscraperid, scopusid, orcid
@@ -97,6 +96,7 @@ cv_keys = {'Years': '-1',
 			'ShortTeachingTable' : 'true', 
 			'HideTeachingEvals' : 'false',
 			'Timestamp': 'false',
+			'ExcludeColumn': 'None'
 			}
 
 def verify_config(config):

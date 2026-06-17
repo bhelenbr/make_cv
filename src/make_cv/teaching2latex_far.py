@@ -47,10 +47,12 @@ def term2STRM(term):
 	# If nothing matches, return NaN so pandas can handle it
 	return(np.nan)
 
-def teaching2latex_far(f,years,inputfile,private=False,sortbycourse=False,shortform=False):
+def teaching2latex_far(f,years,inputfile,private=False,sortbycourse=False,shortform=False,ExcludeColumn=None):
 	source = inputfile # file to read
 	try:
 		df = pd.read_excel(source,sheet_name="Data")
+		if ExcludeColumn is not None and ExcludeColumn in df.columns:
+			df = df[df[ExcludeColumn] != True]
 	except OSError:
 		print("Could not open/read file: " + source)
 		return(0)

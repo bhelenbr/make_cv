@@ -33,13 +33,13 @@ def bib_add_student_markers(years,ugrads,grads,cur_grad,bibfile,outputfile):
 		cur_grad_names = pd.read_excel(cur_grad,sheet_name="Data",parse_dates=['Start Date'])
 	except OSError:
 		print("Could not open/read file: " + cur_grad)
-		cur_grad_names = pd.DataFrame([],columns=('Student Name','Start Date','Term'))
+		cur_grad_names = pd.DataFrame([],columns=('Student Name','Start Date'))
 		
 	try:
-		grad_names = pd.read_excel(grads,sheet_name="Data",dtype={'Start Date':int,'Year':int})
+		grad_names = pd.read_excel(grads,sheet_name="Data",dtype={'Year':int})
 	except OSError:
 		print("Could not open/read file: " + grads)
-		grad_names = pd.DataFrame([],columns=('Student','Start Date'))
+		grad_names = pd.DataFrame([],columns=('Student','Year'))
 	
 	try:
 		ugrad_names = pd.read_excel(ugrads,sheet_name="Data")
@@ -66,11 +66,10 @@ def bib_add_student_markers(years,ugrads,grads,cur_grad,bibfile,outputfile):
 	# Combine graduate student lists
 	# Rename Column for current students
 	cur_grad_names.rename(columns={"Student Name": "Student"},inplace=True)
-	cur_grad_names['Start Date'] = cur_grad_names['Start Date'].apply(lambda x : x.year)
+	cur_grad_names['Year'] = cur_grad_names['Start Date'].apply(lambda x : x.year)
 	grad_list = pd.concat([cur_grad_names,grad_names],ignore_index=True,join="inner")
 	grad_list['Student'] = grad_list['Student'].apply(lambda x : abbreviate_name(x,first_initial_only=True))
-	grad_list.rename(columns={'Start Date':'Calendar Year'},inplace=True)
-	grad_list = grad_list.pivot_table(values=['Calendar Year'], index=['Student'], aggfunc={'Calendar Year': 'max'},fill_value=0,observed=False)
+	grad_list = grad_list.pivot_table(values=['Year'], index=['Student'], aggfunc={'Year': 'max'},fill_value=0,observed=False)
 
 	# homogenize_fields: Sanitize BibTeX field names, for example change `url` to `link` etc.
 	tbparser = BibTexParser(common_strings=True)
@@ -95,7 +94,7 @@ def bib_add_student_markers(years,ugrads,grads,cur_grad,bibfile,outputfile):
 				newauths = newauths +spacer +first_last(author)
 
 				if abbrev in grad_list.index:
-					if grad_list.loc[abbrev,'Calendar Year']+years > pubyear:
+					if grad_list.loc[abbrev,'Year']+years > pubyear:
 						newauths = newauths +'\\gs'
 				if abbrev in ugrad_list.index:
 					if ugrad_list.loc[abbrev,'Calendar Year']+years > pubyear:

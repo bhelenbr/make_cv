@@ -96,7 +96,7 @@ def make_cv_tables(config,table_dir):
 		print('Updating personal awards table')
 		fpawards = open(table_dir +os.sep +'PersonalAwards.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['PersonalAwardsFile'])
-		nrows = personal_awards2latex(fpawards,years,filename,max_rows=max_rows)
+		nrows = personal_awards2latex(fpawards,years,filename,max_rows=max_rows,ExcludeColumn=config['ExcludeColumn'])
 		fpawards.close()
 		if not(nrows):
 			os.remove(table_dir+os.sep +'PersonalAwards.tex')
@@ -107,7 +107,7 @@ def make_cv_tables(config,table_dir):
 		print('Updating student awards table')
 		fsawards = open(table_dir +os.sep +'StudentAwards.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['StudentAwardsFile'])
-		nrows = student_awards2latex(fsawards,years,filename,max_rows=max_rows)	
+		nrows = student_awards2latex(fsawards,years,filename,max_rows=max_rows,ExcludeColumn=config['ExcludeColumn'])	
 		fsawards.close()
 		if not(nrows):
 			os.remove(table_dir+os.sep +'StudentAwards.tex')
@@ -118,7 +118,7 @@ def make_cv_tables(config,table_dir):
 		print('Updating service table')
 		fservice = open(table_dir +os.sep +'Service.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['ServiceFile'])
-		nrows = service2latex(fservice,years,filename,'Service',max_rows=max_rows)	
+		nrows = service2latex(fservice,years,filename,'Service',max_rows=max_rows,ExcludeColumn=config['ExcludeColumn'])	
 		fservice.close()
 		if not(nrows):
 			os.remove(table_dir+os.sep +'Service.tex')
@@ -128,7 +128,7 @@ def make_cv_tables(config,table_dir):
 		print('Updating professional development table')
 		fprof_development = open(table_dir +os.sep +'ProfDevelopment.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['ProfDevelopmentFile'])
-		nrows = service2latex(fprof_development,years,filename,'Professional Development',max_rows=max_rows)	
+		nrows = service2latex(fprof_development,years,filename,'Professional Development',max_rows=max_rows,ExcludeColumn=config['ExcludeColumn'])	
 		fprof_development.close()
 		if not(nrows):
 			os.remove(table_dir+os.sep +'ProfDevelopment.tex')
@@ -173,9 +173,9 @@ def make_cv_tables(config,table_dir):
 		filename = os.path.join(faculty_source,config['TeachingFile'])
 		hide_evals = config.getboolean('HideTeachingEvals')
 		if config.getboolean('ShortTeachingTable'):
-			nrows = teaching2latex_short(fteaching,years,filename,private=hide_evals)
+			nrows = teaching2latex_short(fteaching,years,filename,private=hide_evals,ExcludeColumn=config['ExcludeColumn'])
 		else:
-			nrows = teaching2latex_far(fteaching,years,filename,sortbycourse=True,private=hide_evals)
+			nrows = teaching2latex_far(fteaching,years,filename,sortbycourse=True,private=hide_evals,ExcludeColumn=config['ExcludeColumn'])
 		fteaching.close()
 		if not(nrows):
 			os.remove(table_dir+os.sep +'Teaching.tex')
@@ -214,7 +214,8 @@ def add_default_args(parser):
 	parser.add_argument('-C','--IncludeCitationCounts', help='put citation counts in cv', choices=['true','false'])
 	parser.add_argument('-m','--UpdateStudentMarkers', help='update the student author markers', choices=['true','false'])
 	parser.add_argument('-M','--IncludeStudentMarkers', help='put student author markers in cv', choices=['true','false'])
-	parser.add_argument('-e','--exclude', help='exclude section from cv', choices=sections,action='append')
+	parser.add_argument('-E','--ExcludeColumn', help='Title of the column used to control what entries from service, personal awards, student awards, and teaching excel files are excluded from cv')
+	parser.add_argument('-e','--Exclude', help='exclude section from cv', choices=sections,action='append')
 	parser.add_argument('-T','--Timestamp', help='Include last update timestamp at the bottom of cv', nargs='?', const='true')
 	parser.add_argument('-o','--GetNewOrcidEntries', help='search for and add new entries from the last N (default 1) years to the .bib file', nargs='?', const='1')
 	parser.add_argument('-O','--ORCID', help='ORCID (used for finding new publications()')
@@ -309,6 +310,7 @@ def process_default_args(config,args):
 	if args.SearchForDOIs is not None: config['SearchForDOIs'] = args.SearchForDOIs
 	if args.IncludeStudentMarkers is not None: config['IncludeStudentMarkers'] = args.IncludeStudentMarkers
 	if args.IncludeCitationCounts is not None: config['IncludeCitationCounts'] = args.IncludeCitationCounts
+	if args.ExcludeColumn is not None: config['ExcludeColumn'] = args.ExcludeColumn
 	if args.Timestamp is not None: config['Timestamp'] = args.Timestamp
 	if args.years is not None: config['Years'] = args.years
 	
@@ -322,8 +324,8 @@ def process_default_args(config,args):
 	else:
 		config['verbose'] = 'false'
 	
-	if args.exclude is not None:
-		for section in args.exclude:
+	if args.Exclude is not None:
+		for section in args.Exclude	:
 			config[section] = 'false'
 	
 	if args.file is not None:
@@ -431,13 +433,13 @@ def process_default_args(config,args):
 	# add/update citations counts in .bib file	
 	if config.getboolean('UpdateCitations'):
 		print("Updating citation counts using Google Scholar")
-		if config['GoogleID'] == "":
-			print("Can't update without providing Google ID")
-			exit()
-		filename = os.path.join(faculty_source,config['ScholarshipFile'])
-		backup_path= os.path.join(faculty_source,'make_cv','Backups')
-		copy_with_timestamp(filename, str(backup_path))
-		bib_add_citations(filename,config['GoogleID'],filename,webscraperID)
+		if not config['GoogleID'] == "":
+			filename = os.path.join(faculty_source,config['ScholarshipFile'])
+			backup_path= os.path.join(faculty_source,'make_cv','Backups')
+			copy_with_timestamp(filename, str(backup_path))
+			bib_add_citations(filename,config['GoogleID'],filename,webscraperID)
+		else:
+			print("Can't update citations without providing Google ID")
 		
 	# add/update citations counts in .bib file	
 	if config.getboolean('UpdateStudentMarkers'):
@@ -560,6 +562,7 @@ def main(argv = None):
 	[configuration,args] = read_args(parser,argv)
 	
 	config = configuration['CV']
+	print(config['ExcludeColumn'])
 	process_default_args(config,args)
 	
 	stem = config['LaTexFile'][:-4]

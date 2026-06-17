@@ -15,10 +15,12 @@ from .stringprotect import str2latex
 
 names = ["Department","School","University","Professional","Community"]
 
-def personal_awards2latex(f,years,inputfile,max_rows=-1):
+def personal_awards2latex(f,years,inputfile,max_rows=-1,ExcludeColumn=None):
 	source = inputfile # file to read
 	try:
 		source_data = pd.read_excel(source,sheet_name="Data")
+		if ExcludeColumn is not None and ExcludeColumn in source_data.columns:
+			source_data = source_data[source_data[ExcludeColumn] != True]
 	except OSError:
 		print("Could not open/read file: " + source)
 		return(0)
@@ -43,6 +45,15 @@ def personal_awards2latex(f,years,inputfile,max_rows=-1):
 		#print(df.columns)
 		nrows = df.shape[0]
 		ncols = df.shape[1]
+
+		maxyear = [0] * nrows
+		for count in range(0,nrows):
+			for year in range(2,ncols):
+				if (df.iloc[count,year] > 0):
+					maxyear[count] = year
+		df["maxyear"] = maxyear
+		df.sort_values(by=["maxyear","Title"],inplace=True,ascending=[False,True])
+		df.reset_index()
 		
 		if max_rows > 0 and nrows > max_rows:
 			nrows = max_rows
