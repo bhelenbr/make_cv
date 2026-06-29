@@ -67,7 +67,13 @@ def bib_add_student_markers(years,ugrads,grads,cur_grad,bibfile,outputfile):
 	# Rename Column for current students
 	cur_grad_names.rename(columns={"Student Name": "Student"},inplace=True)
 	cur_grad_names['Year'] = cur_grad_names['Start Date'].apply(lambda x : x.year)
-	grad_list = pd.concat([cur_grad_names,grad_names],ignore_index=True,join="inner")
+
+	if not(cur_grad_names.empty) and not(grad_names.empty):
+		grad_list = pd.concat([cur_grad_names,grad_names],ignore_index=True,join="inner")
+	elif not(cur_grad_names.empty):
+		grad_list = cur_grad_names
+	else:
+		grad_list = grad_names
 	grad_list['Student'] = grad_list['Student'].apply(lambda x : abbreviate_name(x,first_initial_only=True))
 	grad_list = grad_list.pivot_table(values=['Year'], index=['Student'], aggfunc={'Year': 'max'},fill_value=0,observed=False)
 

@@ -312,7 +312,7 @@ def process_default_args(config,args):
 	if args.IncludeCitationCounts is not None: config['IncludeCitationCounts'] = args.IncludeCitationCounts
 	if args.ExcludeColumn is not None: config['ExcludeColumn'] = args.ExcludeColumn
 	if args.Timestamp is not None: config['Timestamp'] = args.Timestamp
-	if args.years is not None: config['Years'] = args.years
+	if args.years is not None: config['Years'] = str(args.years)
 	
 	if args.NoCleanUp is True: 
 		config['NoCleanUp'] = 'true'
