@@ -74,6 +74,10 @@ def get_collaborator_list(config, output_format):
 			grad_names = pd.DataFrame(columns=["Student","Start Date","Year","Degree","Advisor","Title","Comments"])
 		
 	grantfile = os.path.join(faculty_source, config['GrantsFile'])
+	if not os.path.isfile(grantfile):
+		print('Falling back to using Proposals file for Grants table')
+		grantfile = os.path.join(faculty_source,config['ProposalsFile'])
+	
 	try:
 		grants = pd.read_excel(grantfile,sheet_name="Data")
 		# This allows us to either use a proposals file with a Y/N or a separate grants file that has similar columns but no Funded? column

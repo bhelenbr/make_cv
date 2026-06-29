@@ -35,12 +35,18 @@ def advising2latex_far(f,years,inputfile,private=False):
 	q5 = df[(df['Number']==5)]
 	evals = q5['EvalCount'].sum()
 	weight = q5['Weighted'].sum()
-	f.write("Advising Evaluations: Question 5 - Is in his/her office during office hours: " +"{:3.2f}".format(weight/evals)+" (\\# of Evals: " +str(evals) +" ) \\par\n")	
-	
+	if evals > 0:
+		f.write("Advising Evaluations: Question 5 - Is in his/her office during office hours: " +"{:3.2f}".format(weight/evals)+" (\\# of Evals: " +str(evals) +" ) \\par\n")	
+	else:
+		f.write("Advising Evaluations: Question 5 - Is in his/her office during office hours: No evaluations available \\par\n")
+
 	q11 = df[(df['Number']==11)]
 	evals = q11['EvalCount'].sum()
 	weight = q11['Weighted'].sum()
-	f.write("Advising Evaluations: Question 11 - In general, I am pleased with my advisor: " +"{:3.2f}".format(weight/evals) +" (\\# of Evals: " +str(evals) +" ) \\par\n\n")
+	if evals > 0:
+		f.write("Advising Evaluations: Question 11 - In general, I am pleased with my advisor: " +"{:3.2f}".format(weight/evals) +" (\\# of Evals: " +str(evals) +" ) \\par\n\n")
+	else:
+		f.write("Advising Evaluations: Question 11 - In general, I am pleased with my advisor: No evaluations available \\par\n\n")
 	return(1)	
 	
 

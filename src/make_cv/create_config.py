@@ -87,7 +87,7 @@ files = {'ScholarshipFile': 'Scholarship/scholarship.bib',
 			'UndergradResearchFile': 'Service/undergraduate research data.xlsx',
 			'TeachingFile': 'Teaching/teaching evaluation data.xlsx',
 			'ProposalsFile': 'Proposals & Grants/proposals & grants.xlsx',
-			'GrantsFile': 'Proposals & Grants/proposals & grants.xlsx'} 
+			'GrantsFile': 'Proposals & Grants/grants.xlsx'} 
 			
 cv_keys = {'Years': '-1',
 			'LaTexFile':'cv.tex',
