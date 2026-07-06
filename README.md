@@ -17,7 +17,7 @@ You don’t need any of the IDs to use make\_cv, but to automatically update you
 
 For ORCID, go to their [site](https://orcid.org) and search for your last name.  If you don’t have an ORCID,  the instructions are [here](https://support.orcid.org/hc/en-us/articles/360006897454-How-do-I-register-for-an-ORCID-ID) for obtaining one.  If you click on your ORCID number it will take you to your personal information and in the left sidebar it will also list your Scopus ID if that exists.   Note that Scopus requires a subscription which your University may or may not have.  Just eliminate the \-S \<stuff if you don’t want to use Scopus.
 
-The `-b` flag tells make\_cv to create a new data directory.  For example “`make_cv -b myData”` creates the default data folders and files in a folder called `myData` in the current working directory.  The folder “`make_cv”`in the `myData` folder contains subfolders for several different outputs.  To make the example cv, cd to “`<folder name>/make_cv/CV”`. In this folder is a text file called “`make_cv.cfg”.` This is a text file that can be edited with any text editor and can be used to control things like what sections are included and limiting the number of entries in each section either by year or by number of entries.  
+The `-b` flag tells make\_cv to create a new data directory.  For example “`make_cv -b myData”` creates the default data folders and files in a folder called `myData` in the current working directory.  The folder “`make_cv”`in the `myData` folder contains subfolders for several different outputs.  To make the example cv, cd to “`<folder name>/make_cv/CV”`. In this folder is a text file called “`make_cv.cfg”.` This is a text file that can be edited with any text editor and can be used to control things like what sections are included and limiting the number of entries in each section either by year or by number of entries.  To make the folder, a `”git clone”`  command is used so if there are updates to the template files in the folder, they can be retrieved by executing the command `”git pull”` in the `myData` folder.
 
 Look through the folders and files created and add any additional data that you would like or leave it blank and that section will be ignored.  The format and usage of these files is described below.
 
@@ -45,7 +45,7 @@ The files created within the `mydata/make_cv/` folder are
 `Web/web.tex` –  LaTeX file used to create web pages using `make_web`  
 `Collaborator/` folder to create an NSF collaborator list using `make_nsfcoa`
 
-`make_cv.cfg` – configuration file (in each folder).  The other files in the folders contain settings for XeLaTex that do not need to be modified.
+`make_cv.cfg` – configuration file (in each folder).  
 
 The data files created within the `myData` folder are  
 `Awards/personal awards data.xlsx`  
@@ -152,7 +152,7 @@ Teaching
 
 The file `CV/make_cv.cfg` contains all of the configuration information.  This file can be used to set the defaults for what sections of the cv make\_cv creates.  These are controlled by the entries under “CV”.  If a data file is empty or missing, make\_cv will automatically exclude it so you don’t need to turn off empty sections.  I often leave all the sections on, then use command line options (discussed below) to create a shorter c.v. when I need that.
 
-Further configurations can be done by editing `cv.tex` and `settings.sty` files. These are normal LaTeX files so you can modify them as you like.
+Further configurations can be done by editing `cv.tex` and the style files in the folder `make_cv/LaTeXStyles`. These are normal LaTeX files so you can modify them as you like.
 
 ### Command Line Options
 
@@ -168,7 +168,7 @@ The `make_cv` tool provides a range of command-line options to customize and aut
 | `-m {true,false}` | Update student author markers in the `.bib` file. |
 | `-I {true,false}` | Use `bibtexautocomplete` to search for and add missing DOIs to the `.bib` file. |
 | `-e {SECTION}` | Exclude a section from the CV. Sections include: `Grants`, `PersonalAwards`, `Conference`, `GradAdvisees`, `Proposals`, `UndergradResearch`, `Reviews`, `Refereed`, `Invited`, `Service`, `Teaching`, `Book`, `Patent`, `StudentAwards`, `Journal`. |
-| `-E {column name}` | Title of the column used to control what individual entries from service, personal awards, student awards, and teaching excel files are excluded from cv. The column should be a list of True / False statements. |
+| `-E {column name}` | Title of the column that will be used to control the exclusion of individual entries from `personal awards data.xlsx, student awards data.xlsx, service data.xlsx,`and `teaching data.xlsx`.   The column should be a list of True / False statements in the .`xlsx`  files.  If the column doesn’t exist it will include all entries |
 | `-d {PATH TO DATA DIRECTORY}` | Override the default data directory location specified in the config file. |
 | `-f {PATH TO CONFIGURATION FILE}` | Specify a configuration file. Defaults to `make_cv.cfg`. |
 | `-F {NAME}` | Override data file location in config file for specific sections.  Format is `-F NAME=<file name>` where NAME can be `Scholarship`, `PersonalAwards`, `StudentAwards`, `Service`, `Reviews`, `CurrentGradAdvisees`, `GradTheses`, `UndergradResearch`, `Teaching`, `Proposals`, `Grants`. |

@@ -143,17 +143,31 @@ def make_cv_tables(config,table_dir):
 		if not(nrows):
 			os.remove(table_dir+os.sep +'Reviews.tex')
 	
-	# Thesis Publications & Graduate Advisees
+	# Graduate Advisees & Theses
 	[include,years,max_rows] = getSectionVals(config,'GradAdvisees')	
 	if include:
 		print('Updating graduate advisees table')
-		fthesis = open(table_dir +os.sep +'GradAdvisees.tex', 'w') # file to write
+		fadvisees = open(table_dir +os.sep +'GradAdvisees.tex', 'w') # file to write
 		filename1 = os.path.join(faculty_source,config['CurrentGradAdviseesFile'])
 		filename2 = os.path.join(faculty_source,config['GradThesesFile'])
-		nrows = thesis2latex_far(fthesis,years,filename1,filename2,max_rows=max_rows)
-		fthesis.close()
+		if config.getboolean('SplitAdviseesAndTheses'):
+			nrows = thesis2latex_far(fadvisees,years,filename1,"empty",max_rows=max_rows)
+		else:
+			nrows = thesis2latex_far(fadvisees,years,filename1,filename2,max_rows=max_rows)
+		fadvisees.close()
 		if not(nrows):
 			os.remove(table_dir+os.sep +'GradAdvisees.tex')
+
+	# Theses
+	[include,years,max_rows] = getSectionVals(config,'Theses')	
+	if include and config.getboolean('SplitAdviseesAndTheses'):
+		print('Updating graduate thesis table')
+		fthesis = open(table_dir +os.sep +'Theses.tex', 'w') # file to write
+		filename = os.path.join(faculty_source,config['GradThesesFile'])
+		nrows = thesis2latex_far(fthesis,years,"empty",filename,max_rows=max_rows)
+		fthesis.close()
+		if not(nrows):
+			os.remove(table_dir+os.sep +'Theses.tex')
 	
 	# Undergraduate Research
 	[include,years,max_rows] = getSectionVals(config,'UndergradResearch')	
@@ -185,6 +199,9 @@ def make_cv_tables(config,table_dir):
 		print('Updating grants table')
 		fgrants = open(table_dir +os.sep +'Grants.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['GrantsFile'])
+		if not os.path.isfile(filename):
+			print('Falling back to using Proposals file for Grants table')
+			filename = os.path.join(faculty_source,config['ProposalsFile'])
 		nrows = grants2latex_far(fgrants,years,filename,max_rows=max_rows)
 		fgrants.close()
 		if not(nrows):

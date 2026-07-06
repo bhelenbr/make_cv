@@ -16,6 +16,7 @@ sections = {'PersonalAwards': 'true',
 				'ProfDevelopment': 'false',
 				'StudentAwards': 'true',
 				'GradAdvisees': 'true',
+				'Theses': 'true',
 				'UndergradResearch': 'true',
 				'Teaching': 'true',
 				'Grants': 'true',
@@ -30,7 +31,9 @@ defaults = {'data_dir': '../..',
 				'GetNewGoogleEntries': '0',
 				'SearchForDOIs': 'false',
 				'GetNewOrcidEntries':'0',
-				'GetNewScopusEntries':'0'}
+				'GetNewScopusEntries':'0',
+				'SplitAdviseesAndTheses': 'true',
+				'UsePandoc': 'false'}
 
 def load_personal_data(configuration):
 	"""Read personal_data.txt from the given bio_dir and return dict of values.

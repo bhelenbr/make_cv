@@ -152,8 +152,8 @@ def main(argv = None):
 	[configuration,args] = read_args(parser,argv)
 	config = configuration['CV']
 	process_default_args(config,args)
-	global_prefs.usePandoc = args.pandoc
-	
+	global_prefs.usePandoc = (args.pandoc or config.getboolean('UsePandoc'))
+
 	stem = config['LaTexFile'][:-4]
 	folder = "Tables_" +stem
 	make_far_tables(config,folder)

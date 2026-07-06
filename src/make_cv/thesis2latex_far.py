@@ -144,6 +144,10 @@ def thesis2latex_far(f,years,studentfile,thesisfile,max_rows=-1):
 	if (student_found):
 		source = source.fillna({'Start Date':today})
 		source.sort_values(by=['Start Date','Current Program','Student Name'], inplace=True, ascending = [False,True,True])
+		if not "Title" in source.columns:
+			source["Title"] = "in progress"
+		else:
+			source["Title"] = source["Title"].fillna("in progress")
 		df = source.reset_index()
 		nrows = df.shape[0]
 	else:
@@ -172,7 +176,7 @@ def thesis2latex_far(f,years,studentfile,thesisfile,max_rows=-1):
 				f.write(newline)
 				if global_prefs.usePandoc:
 					f.write(str(count+1) +".")
-				f.write(" & " +abbreviate_name(df.loc[count,"Student Name"])+": in progress"  + " &  & " +str2latex(df.loc[count,"Current Program"][(df.loc[count,"Current Program"].find("-")+1):]))
+				f.write(" & " +abbreviate_name(df.loc[count,"Student Name"])+": " +str2latex(df.loc[count,"Title"]) + " &  & " +str2latex(df.loc[count,"Current Program"][(df.loc[count,"Current Program"].find("-")+1):]))
 				newline="\\\\\n"
 				count += 1
 		
