@@ -47,10 +47,7 @@ from .copy_with_timestamp import copy_with_timestamp
 
 from . import global_prefs
 	
-pub_categories = ['Journal','Conference','Patent','Book','Invited','Refereed','arXiv']
-other_sections = ['PersonalAwards','StudentAwards','Service','Reviews','GradAdvisees','UndergradResearch','Teaching','Grants','Proposals','References'] 
-sections = pub_categories +other_sections
-datafiles = ['Scholarship','PersonalAwards','StudentAwards','Service','Reviews','CurrentGradAdvisees','GradTheses','UndergradResearch','Teaching','Grants','Proposals']
+sections = global_prefs.pub_categories +global_prefs.other_sections
 
 def getSectionVals(config,section):
 	include = config.getboolean(section)
@@ -78,7 +75,7 @@ def make_cv_tables(config,table_dir):
 	print('Updating scholarship tables')
 	filename = os.path.join(faculty_source,config['ScholarshipFile'])
 	if os.path.isfile(filename):
-		for name in pub_categories:
+		for name in global_prefs.pub_categories:
 			[include,years,max_pubs] = getSectionVals(config,name)
 			if include:
 				# allow possibility of overriding category name 
@@ -348,7 +345,7 @@ def process_default_args(config,args):
 	if args.file is not None:
 		for file in args.file:
 			strings = file.split('=')
-			if len(strings) == 2 and strings[0] in datafiles:
+			if len(strings) == 2 and strings[0] in global_prefs.files.keys():
 				config[strings[0]+'File'] = strings[1]
 			else:
 				print('Unable to parse filename ' + file)

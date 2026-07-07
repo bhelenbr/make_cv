@@ -163,12 +163,21 @@ def thesis2latex_far(f,years,studentfile,thesisfile,max_rows=-1):
 	else:
 		nrows2 = 0
 	
+	if (nrows2 == 0):
+		DateHeader = "Start Date"
+	else:
+		DateHeader = "Year"
+	
+	TableHeader = "Graduate Advisees"
+	if (nrows == 0):
+		TableHeader = "Theses"
+
 	if (nrows+nrows2 > 0):
 		if global_prefs.usePandoc:
-			f.write("\\begin{tabularx}{\\linewidth}{lXll}\n & Name: Title  & Date & Degree \\\\\n")
+			f.write("\\begin{tabularx}{\\linewidth}{lXll}\n & Name: Title  &" + DateHeader + " & Degree \\\\\n")
 		else:
-			f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXll}\n & Name: Title  & Date & Degree \\tablehead\n")
-			f.write("\\tablecontinue{Graduate Advisees}\n")
+			f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXll}\n & Name: Title  & " + DateHeader + " & Degree \\tablehead\n")
+			f.write("\\tablecontinue{" + TableHeader + "}\n")
 		newline=""
 		if nrows > 0:
 			count = 0
@@ -176,7 +185,10 @@ def thesis2latex_far(f,years,studentfile,thesisfile,max_rows=-1):
 				f.write(newline)
 				if global_prefs.usePandoc:
 					f.write(str(count+1) +".")
-				f.write(" & " +abbreviate_name(df.loc[count,"Student Name"])+": " +str2latex(df.loc[count,"Title"]) + " &  & " +str2latex(df.loc[count,"Current Program"][(df.loc[count,"Current Program"].find("-")+1):]))
+				if (nrows2 > 0):
+					f.write(" & " +abbreviate_name(df.loc[count,"Student Name"])+": " +str2latex(df.loc[count,"Title"]) + " & "-" & " +str2latex(df.loc[count,"Current Program"][(df.loc[count,"Current Program"].find("-")+1):]))
+				else:
+					f.write(" & " +abbreviate_name(df.loc[count,"Student Name"])+": " +str2latex(df.loc[count,"Title"]) + " & " +str(df.loc[count,"Start Date"].year) + " & " +str2latex(df.loc[count,"Current Program"][(df.loc[count,"Current Program"].find("-")+1):]))
 				newline="\\\\\n"
 				count += 1
 		

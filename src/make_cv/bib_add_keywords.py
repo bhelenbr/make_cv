@@ -17,6 +17,8 @@ from bibtexparser.bparser import BibTexParser
 import argparse
 from . import global_prefs
 
+pub_categories = global_prefs.pub_categories +['ignore']
+
 def guess_type(paperbibentry):
 	entrytype = str(paperbibentry["ENTRYTYPE"])
 	if entrytype  == "misc":
@@ -55,20 +57,18 @@ def guess_type(paperbibentry):
 	else:
 		return('ignore')
 		
-keyword_list =['journal','refereed','conference', 'book', 'patent', 'invited','arXiv','techreport','ignore']
-
 def input_keyword(keyword):
 	print('Guessing type is ' +keyword +'.')
 	if not global_prefs.quiet:
 		print(' If so hit return, otherwise enter:')
 		while True:
-			for (n,key) in enumerate(keyword_list):
+			for (n,key) in enumerate(pub_categories):
 				print(str(n) +' for ' +key)
 			response = input()
 			if response.isdigit():
 				intr = int(response)
-				if intr >= 0 and intr < len(keyword_list):
-					keyword = keyword_list[intr]
+				if intr >= 0 and intr < len(pub_categories):
+					keyword = pub_categories[intr]
 					break
 			elif response == '':
 				break
@@ -96,7 +96,7 @@ def check_keyword_exists(paperbibentry):
 		klist = re.split(';|,', paperbibentry["keywords"])
 		keyfound = False
 		for key in klist:
-			if key.strip() in keyword_list:
+			if key.strip() in pub_categories:
 				keyfound = True
 				break
 		if not keyfound:

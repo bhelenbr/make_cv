@@ -3,25 +3,10 @@
 import configparser
 import os
 
-sections = {'PersonalAwards': 'true',
-				'Journal': 'true',
-				'arXiv': 'true',
-				'Refereed': 'true',
-				'Book': 'true',
-				'Patent': 'true',
-				'Conference': 'true',
-				'Invited': 'true',
-				'Service': 'true',
-				'Reviews': 'true',
-				'ProfDevelopment': 'false',
-				'StudentAwards': 'true',
-				'GradAdvisees': 'true',
-				'Theses': 'true',
-				'UndergradResearch': 'true',
-				'Teaching': 'true',
-				'Grants': 'true',
-				'Proposals': 'true',
-				'References': 'false'} 
+from . import global_prefs
+
+sections = {name: 'true' for name in global_prefs.pub_categories + global_prefs.other_sections}
+sections['References'] = 'false'
 
 defaults = {'data_dir': '../..',
 				'bio_dir': '../PersonalData',
@@ -34,6 +19,16 @@ defaults = {'data_dir': '../..',
 				'GetNewScopusEntries':'0',
 				'SplitAdviseesAndTheses': 'true',
 				'UsePandoc': 'false'}
+
+cv_keys = {'Years': '-1',
+			'LaTexFile':'cv.tex',
+			'IncludeStudentMarkers': 'true',
+			'IncludeCitationCounts': 'true',
+			'ShortTeachingTable' : 'true', 
+			'HideTeachingEvals' : 'false',
+			'Timestamp': 'false',
+			'ExcludeColumn': 'None'
+			}
 
 def load_personal_data(configuration):
 	"""Read personal_data.txt from the given bio_dir and return dict of values.
@@ -79,36 +74,13 @@ def load_personal_data(configuration):
 	
 	return(None)
 
-files = {'ScholarshipFile': 'Scholarship/scholarship.bib',
-			'PersonalAwardsFile': 'Awards/personal awards data.xlsx',
-			'StudentAwardsFile': 'Awards/student awards data.xlsx',
-			'ServiceFile': 'Service/service data.xlsx',
-			'ReviewsFile': 'Service/reviews data.json',
-			'ProfDevelopmentFile': 'Service/professional development data.xlsx',
-			'CurrentGradAdviseesFile':'Scholarship/current student data.xlsx',
-			'GradThesesFile': 'Scholarship/thesis data.xlsx',
-			'UndergradResearchFile': 'Service/undergraduate research data.xlsx',
-			'TeachingFile': 'Teaching/teaching evaluation data.xlsx',
-			'ProposalsFile': 'Proposals & Grants/proposals & grants.xlsx',
-			'GrantsFile': 'Proposals & Grants/grants.xlsx'} 
-			
-cv_keys = {'Years': '-1',
-			'LaTexFile':'cv.tex',
-			'IncludeStudentMarkers': 'true',
-			'IncludeCitationCounts': 'true',
-			'ShortTeachingTable' : 'true', 
-			'HideTeachingEvals' : 'false',
-			'Timestamp': 'false',
-			'ExcludeColumn': 'None'
-			}
-
 def verify_config(config):
 	for key in defaults:
 		if not key in config['DEFAULT'].keys():
 			print(key +' is missing from config file')
 			return False
 	
-	for key in files:
+	for key in global_prefs.files.keys():
 		if not key in config['DEFAULT'].keys():
 			print(key +' is missing from config file')
 			return False
@@ -139,7 +111,7 @@ def verify_config(config):
 
 def create_config(filename, old_config=None):
 	config = configparser.ConfigParser()
-	config['DEFAULT'] = defaults | files	
+	config['DEFAULT'] = defaults | global_prefs.files	
 	sectionYears = {str(key) + 'Years': "-1" for key in sections}
 	sectionCounts = {str(key) + 'Count': "-1" for key in sections}
 	config['CV'] = cv_keys | sections | sectionYears | sectionCounts

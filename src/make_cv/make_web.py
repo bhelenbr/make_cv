@@ -47,7 +47,7 @@ def main(argv = None):
 
 		typeset(config,stem,["mk4ht", "htlatex",stem +".tex","xhtml,3,next,charset=utf-8,pmathml","-cunihtf -utf8 -cvalidate"])		
 		# Replace css file
-		shutil.copy2("sub_" +stem +".css", stem +".css")
+		shutil.copy2(stem +".sub", stem +".css")
 
 		# Insert two lines into every HTML file just before the closing </body>
 		# for html_file in glob.glob(stem +"se" +"*.html"):
