@@ -17,7 +17,7 @@ defaults = {'data_dir': '../..',
 				'SearchForDOIs': 'false',
 				'GetNewOrcidEntries':'0',
 				'GetNewScopusEntries':'0',
-				'SplitAdviseesAndTheses': 'true',
+				'SplitAdviseesAndTheses': 'false',
 				'UsePandoc': 'false'}
 
 cv_keys = {'Years': '-1',
