@@ -42,7 +42,7 @@ def UR2latex(f,years,inputfile,max_rows=-1):
 		df.sort_values(by=['Calendar Year'], inplace=True, ascending = [False])
 		df = df.reset_index()
 		
-		f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXM{4cm}l}\n & Name: Title  & Program & Date(Semesters) \\tablehead\n")
+		f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXV{4cm}l}\n & Name: Title  & Program & Date(Semesters) \\tablehead\n")
 		f.write("\\tablecontinue{Undergraduate Research}\n")
 		count = 0
 		newline=""
