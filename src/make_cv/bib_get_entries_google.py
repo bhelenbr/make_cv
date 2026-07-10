@@ -84,7 +84,14 @@ def bib_get_entries_google(bibfile, author_id, years, outputfile, scraper_id=Non
 		last_name = last_first(author_name).split(',')[0]
 
 	author = scholarly.fill(author, sections=['indices', 'publications'])
-
+	
+	author_stats =	{'i10index': author['i10index'], 
+					'hindex': author['hindex'], 
+					'citedby': author['citedby'], 
+					'hindex5y': author['hindex5y'], 
+					'i10index5y': author['i10index5y'], 
+					'citedby5y': author['citedby5y']}
+	
 	# Set starting year for search
 	if years > 0:
 		today = date.today()
@@ -100,6 +107,10 @@ def bib_get_entries_google(bibfile, author_id, years, outputfile, scraper_id=Non
 	with open(bibfile,encoding='utf-8') as bibtex_file:
 		bib_database = bibtexparser.load(bibtex_file, tbparser)
 	entries = bib_database.entries
+
+	# Add stats as comment to bib_database
+	bib_database.comments = [c for c in bib_database.comments if not c.startswith('author_stats')]
+	bib_database.comments.append('author_stats: ' + json.dumps(author_stats))
 
 	# Create list of existing index, title ids, and dois
 	bib_entry_ids = make_bibtex_id_list(entries)

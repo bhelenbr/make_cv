@@ -186,7 +186,7 @@ def thesis2latex_far(f,years,studentfile,thesisfile,max_rows=-1):
 				if global_prefs.usePandoc:
 					f.write(str(count+1) +".")
 				if (nrows2 > 0):
-					f.write(" & " +abbreviate_name(df.loc[count,"Student Name"])+": " +str2latex(df.loc[count,"Title"]) + " & "in progress" & " +str2latex(df.loc[count,"Current Program"][(df.loc[count,"Current Program"].find("-")+1):]))
+					f.write(" & " +abbreviate_name(df.loc[count,"Student Name"])+": " +str2latex(df.loc[count,"Title"]) + " & in progress & " +str2latex(df.loc[count,"Current Program"][(df.loc[count,"Current Program"].find("-")+1):]))
 				else:
 					f.write(" & " +abbreviate_name(df.loc[count,"Student Name"])+": " +str2latex(df.loc[count,"Title"]) + " & " +str(df.loc[count,"Start Date"].year) + " & " +str2latex(df.loc[count,"Current Program"][(df.loc[count,"Current Program"].find("-")+1):]))
 				newline="\\\\\n"

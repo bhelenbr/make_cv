@@ -17,7 +17,6 @@ defaults = {'data_dir': '../..',
 				'SearchForDOIs': 'false',
 				'GetNewOrcidEntries':'0',
 				'GetNewScopusEntries':'0',
-				'SplitAdviseesAndTheses': 'false',
 				'UsePandoc': 'false'}
 
 cv_keys = {'Years': '-1',
@@ -25,9 +24,11 @@ cv_keys = {'Years': '-1',
 			'IncludeStudentMarkers': 'true',
 			'IncludeCitationCounts': 'true',
 			'ShortTeachingTable' : 'true', 
+			'SplitAdviseesAndTheses': 'false',
 			'HideTeachingEvals' : 'false',
 			'Timestamp': 'false',
-			'ExcludeColumn': 'None'
+			'ExcludeColumn': 'None',
+			'ScholarshipStats': 'true'
 			}
 
 def load_personal_data(configuration):
