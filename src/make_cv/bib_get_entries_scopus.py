@@ -122,6 +122,11 @@ def bib_get_entries_scopus(bibfile, author_id, years, outputfile):
     existing_ids = make_bibtex_id_list(entries)
 
     author = AuthorRetrieval(author_id)
+    author_stats =	{ 'hindex': author.h_index, 
+                'citedby': author.cited_by_count,
+                'citations': author.citation_count
+                }
+    
     eids = author.get_documents(refresh=10)
     for doc in eids:
         # Extract a usable identifier (EID/Scopus ID/DOI) from the returned document
@@ -154,7 +159,7 @@ def bib_get_entries_scopus(bibfile, author_id, years, outputfile):
             # Reset the citation key to our generated one, preserving entry type
             # scopus citation keys can cause errors
             bib = str2latex(bib)
-            bib = re.sub(r'@([a-zA-Z]+)\w*{[^,]+',f'@\\1{{{title_id}', bib, count=1)
+            bib = re.sub(r'@([a-zA-Z]+)\w*{[^\n]+',f'@\\1{{{title_id},', bib, count=1)
         except Exception:
             bib = None
 

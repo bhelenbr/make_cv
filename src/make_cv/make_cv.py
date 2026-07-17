@@ -582,7 +582,6 @@ def main(argv = None):
 	[configuration,args] = read_args(parser,argv)
 	
 	config = configuration['CV']
-	print(config['ExcludeColumn'])
 	process_default_args(config,args)
 	
 	stem = config['LaTexFile'][:-4]
