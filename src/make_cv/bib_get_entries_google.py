@@ -85,12 +85,12 @@ def bib_get_entries_google(bibfile, author_id, years, outputfile, scraper_id=Non
 
 	author = scholarly.fill(author, sections=['indices', 'publications'])
 	
-	author_stats =	{'i10index': author['i10index'], 
-					'hindex': author['hindex'], 
-					'citedby': author['citedby'], 
-					'hindex5y': author['hindex5y'], 
-					'i10index5y': author['i10index5y'], 
-					'citedby5y': author['citedby5y']}
+	author_stats =	{'i10index': author.get('i10index'), 
+					'hindex': author.get('hindex'), 
+					'citedby': author.get('citedby'), 
+					'hindex5y': author.get('hindex5y'), 
+					'i10index5y': author.get('i10index5y'), 
+					'citedby5y': author.get('citedby5y')}
 	
 	# Set starting year for search
 	if years > 0:
