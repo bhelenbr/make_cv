@@ -24,7 +24,8 @@ from .create_config import create_config
 from .create_config import verify_config, load_personal_data
 from .reviews2excel_publons import reviews2excel_publons
 from .reviews2excel_orcid import reviews2excel_orcid
-from .author_stats2latex import author_stats2latex
+from .author_stats2latex import Google_stats2latex
+from .author_stats2latex import Scopus_stats2latex
 from .bib_add_citations import bib_add_citations
 from .bib_get_entries_google import bib_get_entries_google
 from .bib_get_entries_orcid import bib_get_entries_orcid
@@ -73,11 +74,15 @@ def make_cv_tables(config,table_dir):
 	print('Updating scholarship tables')
 	filename = os.path.join(faculty_source,config['ScholarshipFile'])
 	if os.path.isfile(filename):
-		fpstats = open(table_dir +os.sep +'ScholarshipStats.tex', 'w') # file to write
-		success = author_stats2latex(fpstats,filename)
-		fpstats.close()
-		if not success:
-			os.remove(table_dir +os.sep +'ScholarshipStats.tex')
+		for Statname in ['GoogleStats','ScopusStats']:
+			fpstats = open(table_dir +os.sep +Statname +'.tex', 'w') # file to write
+			if Statname == 'GoogleStats':
+				success = Google_stats2latex(fpstats,filename)
+			elif Statname == 'ScopusStats':
+				success = Scopus_stats2latex(fpstats,filename)
+			fpstats.close()
+			if not success:
+				os.remove(table_dir +os.sep +Statname +'.tex')
 
 		for name in global_prefs.pub_categories:
 			[include,years,max_pubs] = getSectionVals(config,name)
@@ -520,7 +525,8 @@ def typeset(config,filename,command):
 			exclusions.write('\\renewcommand{\\gs}{}\n')
 		exclusions.write('\n')
 
-		if not config.getboolean('ScholarshipStats'): exclusions.write('\\setboolean{ScholarshipStats}{false}\n')
+		if not config.getboolean('GoogleStats'): exclusions.write('\\setboolean{GoogleStats}{false}\n')
+		if not config.getboolean('ScopusStats'): exclusions.write('\\setboolean{ScopusStats}{false}\n')
 
 	
 	if "Timestamp" in config.keys() and config.getboolean("Timestamp"):
