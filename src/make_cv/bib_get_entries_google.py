@@ -109,7 +109,7 @@ def bib_get_entries_google(bibfile, author_id, years, outputfile, scraper_id=Non
 	entries = bib_database.entries
 
 	# Add stats as comment to bib_database
-	bib_database.comments = [c for c in bib_database.comments if not c.startswith('author_stats')]
+	bib_database.comments = [c for c in bib_database.comments if not c.startswith('Google_stats')]
 	bib_database.comments.append('Google_stats: ' + json.dumps(author_stats))
 
 	# Create list of existing index, title ids, and dois

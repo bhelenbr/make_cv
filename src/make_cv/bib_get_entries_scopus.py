@@ -2,6 +2,8 @@
 import os
 import re
 import argparse
+import json
+
 from datetime import date
 
 import bibtexparser
@@ -126,6 +128,10 @@ def bib_get_entries_scopus(bibfile, author_id, years, outputfile):
                 'citedby': author.cited_by_count,
                 'citations': author.citation_count
                 }
+    
+    # Add stats as comment to bib_database
+    bib_db.comments = [c for c in bib_db.comments if not c.startswith('Scopus_stats')]
+    bib_db.comments.append('Scopus_stats: ' + json.dumps(author_stats))
     
     eids = author.get_documents(refresh=10)
     for doc in eids:
