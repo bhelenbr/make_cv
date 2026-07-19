@@ -28,7 +28,8 @@ cv_keys = {'Years': '-1',
 			'HideTeachingEvals' : 'false',
 			'Timestamp': 'false',
 			'ExcludeColumn': 'None',
-			'ScholarshipStats': 'true'
+			'GoogleStats': 'true',
+			'ScopusStats': 'true'
 			}
 
 def load_personal_data(configuration):

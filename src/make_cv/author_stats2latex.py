@@ -8,15 +8,15 @@ from bibtexparser.bibdatabase import BibDatabase
 from bibtexparser.customization import convert_to_unicode
 from bibtexparser.bparser import BibTexParser
 
-def author_stats2latex(f,bibfile):
+def Google_stats2latex(f,bibfile):
     tbparser = BibTexParser(common_strings=True)
     tbparser.alt_dict['url'] = 'url'	# this prevents change 'url' to 'link'
     tbparser.expect_multiple_parse = True
     with open(bibfile, encoding='utf-8') as bibtex_file:
         bib_database = bibtexparser.load(bibtex_file, tbparser)
 
-    author_stats_string = [c for c in bib_database.comments if c.startswith('author_stats')]
-    author_stats = json.loads(author_stats_string[0].split('author_stats: ')[1]) if author_stats_string else {}
+    author_stats_string = [c for c in bib_database.comments if c.startswith('Google_stats')]
+    author_stats = json.loads(author_stats_string[0].split('Google_stats: ')[1]) if author_stats_string else {}
 
     if author_stats:
         f.write("\\par\nGoogle Stats -- ")
@@ -29,3 +29,24 @@ def author_stats2latex(f,bibfile):
         return True
     else:
         return False
+    
+def Scopus_stats2latex(f,bibfile):
+    tbparser = BibTexParser(common_strings=True)
+    tbparser.alt_dict['url'] = 'url'	# this prevents change 'url' to 'link'
+    tbparser.expect_multiple_parse = True
+    with open(bibfile, encoding='utf-8') as bibtex_file:
+        bib_database = bibtexparser.load(bibtex_file, tbparser)
+
+    author_stats_string = [c for c in bib_database.comments if c.startswith('Scopus_stats')]
+    author_stats = json.loads(author_stats_string[0].split('Scopus_stats: ')[1]) if author_stats_string else {}
+
+    if author_stats:
+        f.write("\\par\nScopus Stats -- ")
+        f.write("Hindex: " + str(author_stats.get('hindex', '')) +", ")
+        f.write("Cited by: " + str(author_stats.get('citedby', '')) +", ")
+        f.write("Cites: " + str(author_stats.get('citations', ''))  +"\n")
+        return True
+    else:
+        return False
+
+    
