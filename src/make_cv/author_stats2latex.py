@@ -25,7 +25,7 @@ def Google_stats2latex(f,bibfile):
         f.write("Cites: " + str(author_stats.get('citedby', '')) +", ")
         f.write("Hindex 5y: " + str(author_stats.get('hindex5y', ''))  +", ")
         f.write("i10index 5y: " + str(author_stats.get('i10index5y', ''))  +", ")
-        f.write("Cites 5y: " + str(author_stats.get('citedby5y', ''))  +"\n")
+        f.write("Cites 5y: " + str(author_stats.get('citedby5y', ''))  +"\\par\n")
         return True
     else:
         return False
@@ -44,7 +44,7 @@ def Scopus_stats2latex(f,bibfile):
         f.write("\\par\nScopus Stats -- ")
         f.write("Hindex: " + str(author_stats.get('hindex', '')) +", ")
         f.write("Cited by: " + str(author_stats.get('citedby', '')) +", ")
-        f.write("Cites: " + str(author_stats.get('citations', ''))  +"\n")
+        f.write("Cites: " + str(author_stats.get('citations', ''))  +"\\par\n")
         return True
     else:
         return False
