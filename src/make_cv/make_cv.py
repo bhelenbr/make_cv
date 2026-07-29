@@ -301,12 +301,14 @@ def read_args(parser,argv):
 
 	# Check command and file versions
 	files_repo = Repo(configuration['CV']['data_dir'])
-	files_tag = (files_repo.git.describe("--tags")).split('-')[0]
+	files_tag = files_repo.git.tag('-l')
+	files_tag = files_tag.split('\n')[-1].split('-')[0]
 
 	try:
 		cmd_root = Path(__file__).resolve().parents[2]
 		cmd_repo = Repo(cmd_root)
-		cmd_tag = (cmd_repo.git.describe("--tags")).split('-')[0]
+		cmd_tag = cmd_repo.git.tag('-l')
+		cmd_tag = cmd_tag.split('\n')[-1].split('-')[0]
 	except:
 		cmd_tag = metadata.version("make_cv")
 
