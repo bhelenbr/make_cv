@@ -123,7 +123,12 @@ def bib_get_entries_scopus(bibfile, author_id, years, outputfile):
     entries = bib_db.entries
     existing_ids = make_bibtex_id_list(entries)
 
-    author = AuthorRetrieval(author_id)
+    try:
+        author = AuthorRetrieval(author_id)
+    except:
+        print("Unable to get author data using Scopus.  Make sure you have Scopus access")
+        return
+    
     author_stats =	{ 'hindex': author.h_index, 
                 'citedby': author.cited_by_count,
                 'citations': author.citation_count

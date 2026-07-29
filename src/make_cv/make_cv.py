@@ -19,6 +19,7 @@ import warnings
 import re
 import pybliometrics
 from git import Repo
+from importlib import metadata
 
 from .create_config import create_config
 from .create_config import verify_config, load_personal_data
@@ -298,6 +299,23 @@ def read_args(parser,argv):
 	# Load personal data from bio_dir/personal_data.txt and inject into configuration
 	configuration = load_personal_data(configuration)
 
+	# Check command and file versions
+	files_repo = Repo(configuration['CV']['data_dir'])
+	files_tag = (files_repo.git.describe("--tags")).split('-')[0]
+
+	try:
+		cmd_root = Path(__file__).resolve().parents[2]
+		cmd_repo = Repo(cmd_root)
+		cmd_tag = (cmd_repo.git.describe("--tags")).split('-')[0]
+	except:
+		cmd_tag = metadata.version("make_cv")
+
+	if not cmd_tag == files_tag:
+		print('Error: Mismatch between command and folder file versions: ' +cmd_tag +', ' +files_tag)
+		print('Please upgrade command: pip install --upgrade make_cv')
+		print('Please upgrade files in folder: git pull')
+		exit(1)
+
 	# verify configuration file
 	ok = verify_config(configuration)
 	if (not ok):
@@ -390,7 +408,7 @@ def process_default_args(config,args):
 	elif config['GetNewScopusEntries'] == 'true':
 		config['GetNewScopusEntries'] = '1'
 		
-	# convert a reviewin history json file from Web of Science
+	# convert a reviewing history json file from Web of Science
 	reviewfile = config['ReviewsFile']
 	name_extension_tuple = os.path.splitext(reviewfile)
 	if name_extension_tuple[1] == '.json':
