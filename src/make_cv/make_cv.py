@@ -129,7 +129,8 @@ def make_cv_tables(config,table_dir):
 		fservice.close()
 		if not(nrows):
 			os.remove(table_dir+os.sep +'Service.tex')
-		
+
+	# Professional Development
 	[include,years,max_rows] = getSectionVals(config,'ProfDevelopment')	
 	if include:
 		print('Updating professional development table')
@@ -139,7 +140,8 @@ def make_cv_tables(config,table_dir):
 		fprof_development.close()
 		if not(nrows):
 			os.remove(table_dir+os.sep +'ProfDevelopment.tex')
-	
+
+	# Reviewing Activity
 	[include,years,max_rows] = getSectionVals(config,'Reviews')	
 	if include:
 		print('Updating reviews table')
@@ -196,7 +198,7 @@ def make_cv_tables(config,table_dir):
 		if config.getboolean('ShortTeachingTable'):
 			nrows = teaching2latex_short(fteaching,years,filename,private=hide_evals,ExcludeColumn=config['ExcludeColumn'])
 		else:
-			nrows = teaching2latex_far(fteaching,years,filename,sortbycourse=True,private=hide_evals,ExcludeColumn=config['ExcludeColumn'])
+			nrows = teaching2latex_far(fteaching,years,filename,sortbycourse=config['SortTeachingByCourse'],private=hide_evals,ExcludeColumn=config['ExcludeColumn'])
 		fteaching.close()
 		if not(nrows):
 			os.remove(table_dir+os.sep +'Teaching.tex')
