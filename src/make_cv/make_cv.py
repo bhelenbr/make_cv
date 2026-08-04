@@ -198,7 +198,7 @@ def make_cv_tables(config,table_dir):
 		if config.getboolean('ShortTeachingTable'):
 			nrows = teaching2latex_short(fteaching,years,filename,private=hide_evals,ExcludeColumn=config['ExcludeColumn'])
 		else:
-			nrows = teaching2latex_far(fteaching,years,filename,sortbycourse=config['SortTeachingByCourse'],private=hide_evals,ExcludeColumn=config['ExcludeColumn'])
+			nrows = teaching2latex_far(fteaching,years,filename,sortbycourse=config.getboolean('SortTeachingByCourse'),private=hide_evals,ExcludeColumn=config['ExcludeColumn'])
 		fteaching.close()
 		if not(nrows):
 			os.remove(table_dir+os.sep +'Teaching.tex')
