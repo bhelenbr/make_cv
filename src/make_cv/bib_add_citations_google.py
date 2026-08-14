@@ -21,7 +21,7 @@ import argparse
 from .bib_get_entries_orcid import make_bibtex_id_list
 from .bib_get_entries_orcid import make_title_id
 
-def bib_add_citations(bibfile,author_id,outputfile,scraper_id=None):
+def bib_add_citations_google(bibfile,author_id,outputfile,scraper_id=None):
 
 	# Set up a ProxyGenerator object to use free proxies
 	# This needs to be done only once per session
@@ -45,9 +45,6 @@ def bib_add_citations(bibfile,author_id,outputfile,scraper_id=None):
 	with open(bibfile,encoding='utf-8') as bibtex_file:
 		bib_database = bibtexparser.load(bibtex_file, tbparser)
 	entries = bib_database.entries
-	
-	# # Create list of titles in bibfile compressing out nonalphanumeric characters
-	# titles = [re.sub('[\\W_]', '', entry['title']).lower() if 'title' in entry.keys() else None for entry in entries]
 
 	# Create list of existing index, title ids, and dois
 	titles = make_bibtex_id_list(entries)
@@ -139,4 +136,4 @@ if __name__ == "__main__":
 		with open("google_id") as google_file:
 			args.author_id = google_file.readline().strip('\n\r')
 	
-	bib_add_citations(args.bibfile,args.author_id,args.output,args.scraperID)
+	bib_add_citations_google(args.bibfile,args.author_id,args.output,args.scraperID)

@@ -3,7 +3,7 @@ scrapeGoogle = False
 usePandoc = False
 odp_api_key = None
 pub_categories = ['journal','refereed','conference', 'book', 'patent', 'invited','arXiv','techreport','user1','user2']
-other_sections = ['PersonalAwards','StudentAwards','Service','Reviews','GradAdvisees','UndergradResearch','Teaching','Grants','Proposals','References'] 
+other_sections = ['PersonalAwards','StudentAwards','Service','Reviews','GradAdvisees','UndergradResearch','Teaching','Grants','Proposals','References','Admin','ProfDevelopment'] 
 files = {'ScholarshipFile': 'Scholarship/scholarship.bib',
 			'PersonalAwardsFile': 'Awards/personal awards data.xlsx',
 			'StudentAwardsFile': 'Awards/student awards data.xlsx',

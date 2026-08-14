@@ -21,13 +21,15 @@ import pybliometrics
 from git import Repo
 from importlib import metadata
 
+from make_cv.bib_add_citations_scopus import bib_add_citations_scopus
+
 from .create_config import create_config
 from .create_config import verify_config, load_personal_data
 from .reviews2excel_publons import reviews2excel_publons
 from .reviews2excel_orcid import reviews2excel_orcid
 from .author_stats2latex import Google_stats2latex
 from .author_stats2latex import Scopus_stats2latex
-from .bib_add_citations import bib_add_citations
+from .bib_add_citations_google import bib_add_citations_google
 from .bib_get_entries_google import bib_get_entries_google
 from .bib_get_entries_orcid import bib_get_entries_orcid
 from .bib_get_entries_scopus import bib_get_entries_scopus
@@ -70,6 +72,10 @@ def make_cv_tables(config,table_dir):
 	
 	if not os.path.exists(table_dir):
 		os.makedirs(table_dir)
+	else:
+		# remove all .tex files in table_dir
+		for path in glob.glob(os.path.join(table_dir, '*.tex')):
+			os.remove(path)
 
  	# Scholarly Works
 	print('Updating scholarship tables')
@@ -236,7 +242,7 @@ def add_default_args(parser):
 	parser.add_argument('-G','--GoogleID', help='GoogleID (used for finding new publications()')
 	parser.add_argument('-g','--GetNewGoogleEntries', help='search for and add new entries from the last N (default 1) years to the .bib file', nargs='?', const='1')
 	parser.add_argument('-I','--SearchForDOIs', help='search for and add missing DOIs to the .bib file',  choices=['true','false'])
-	parser.add_argument('-c','--UpdateCitations', help='update citation counts',  choices=['true','false'])
+	parser.add_argument('-c','--UpdateCitations', help='update citation counts',  choices=['false','Google','Scopus'])
 	parser.add_argument('-C','--IncludeCitationCounts', help='put citation counts in cv', choices=['true','false'])
 	parser.add_argument('-m','--UpdateStudentMarkers', help='update the student author markers', choices=['true','false'])
 	parser.add_argument('-M','--IncludeStudentMarkers', help='put student author markers in cv', choices=['true','false'])
@@ -476,15 +482,26 @@ def process_default_args(config,args):
 			print("Can't get entries from Google without providing Google ID")
 	
 	# add/update citations counts in .bib file	
-	if config.getboolean('UpdateCitations'):
+	if config['UpdateCitations'].lower() == 'google':
 		print("Updating citation counts using Google Scholar")
 		if not config['GoogleID'] == "":
 			filename = os.path.join(faculty_source,config['ScholarshipFile'])
 			backup_path= os.path.join(faculty_source,'make_cv','Backups')
 			copy_with_timestamp(filename, str(backup_path))
-			bib_add_citations(filename,config['GoogleID'],filename,webscraperID)
+			bib_add_citations_google(filename,config['GoogleID'],filename,webscraperID)
 		else:
 			print("Can't update citations without providing Google ID")
+
+	# add/update citations counts in .bib file	
+	if config['UpdateCitations'].lower() == 'scopus':
+		print("Updating citation counts using Scopus")
+		if not config['ScopusID'] == "":
+			filename = os.path.join(faculty_source,config['ScholarshipFile'])
+			backup_path= os.path.join(faculty_source,'make_cv','Backups')
+			copy_with_timestamp(filename, str(backup_path))
+			bib_add_citations_scopus(filename,config['ScopusID'],filename)
+		else:
+			print("Can't update citations without providing Scopus ID")
 		
 	# add/update citations counts in .bib file	
 	if config.getboolean('UpdateStudentMarkers'):
