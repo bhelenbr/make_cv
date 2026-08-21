@@ -4,9 +4,8 @@ make\_cv is a program that uses Python and LaTex to make a faculty curriculum vi
 
 ### Installation & Quick Start:
 
-This assumes you have LaTeX and Python installed on your system.  If not see Appendix A for how to install those programs.  To install, use pip:
+This assumes you have LaTeX, Python, and Git installed on your system and added the python executable path to your system.  If not see Appendix A for how to install those programs.  To install, use pip:
 
-`python pip install --upgrade pip`  
 `pip install make_cv`
 
 Once make\_cv is installed, you need to create the data directories and default files for adding data.  Choose a name for the root folder for keeping your c.v. related data.  To create this folder, execute the command
@@ -15,7 +14,7 @@ Once make\_cv is installed, you need to create the data directories and default 
 
 You don’t need any of the IDs to use make\_cv, but to automatically update your published works and find citation counts, you should at least have a Google ID.   To find your Google ID, go to [Google Scholar](https://scholar.google.com) and click on “My profile” in the top left.  (If you don't have a public Google Scholar profile, follow [these instructions](https://scholar.google.com/intl/en/scholar/citations.html)). If you examine the url for your profile page it should have a section that looks like: user=m\_of3wYAAAAJ\&hl=en.  Your user id is the string after the \= sign up to but not including the &.  So in this case it is “m\_of3wYAAAAJ”.   (If your Google ID starts with a “-” you may have to put it in quotation marks or you can just stick it in the personal\_data.txt file yourself) 
 
-For ORCID, go to their [site](https://orcid.org) and search for your last name.  If you don’t have an ORCID,  the instructions are [here](https://support.orcid.org/hc/en-us/articles/360006897454-How-do-I-register-for-an-ORCID-ID) for obtaining one.  If you click on your ORCID number it will take you to your personal information and in the left sidebar it will also list your Scopus ID if that exists.   Note that Scopus requires a subscription which your University may or may not have.  Just eliminate the \-S \<stuff if you don’t want to use Scopus.
+For ORCID, go to their [site](https://orcid.org) and search for your last name.  If you don’t have an ORCID,  the instructions are [here](https://support.orcid.org/hc/en-us/articles/360006897454-How-do-I-register-for-an-ORCID-ID) for obtaining one.  If you click on your ORCID number it will take you to your personal information and in the left sidebar it will also list your Scopus ID if that exists.   Note that Scopus requires a subscription which your University may or may not have.  Just eliminate the \-S stuff if you don’t want to use Scopus.
 
 The `-b` flag tells make\_cv to create a new data directory.  For example “`make_cv -b myData”` creates the default data folders and files in a folder called `myData` in the current working directory.  The folder “`make_cv”`in the `myData` folder contains subfolders for several different outputs.  To make the example cv, cd to “`<folder name>/make_cv/CV”`. In this folder is a text file called “`make_cv.cfg”.` This is a text file that can be edited with any text editor and can be used to control things like what sections are included and limiting the number of entries in each section either by year or by number of entries.  To make the folder, a `”git clone”`  command is used so if there are updates to the template files in the folder, they can be retrieved by executing the command `”git pull”` in the `myData` folder.
 
@@ -138,7 +137,7 @@ Service
       6. Under Reviews click “List the manuscripts you reviewed in the selected period”  
       7. Click the Download Icon (down arrow thingy)  
       8. Rename the downloaded json file `reviews data.json` and put it in your `mydata/Service` folder on the s-drive.  The .json file will get converted to `reviews data.xlsx` when the cv is created.     
-      9. If you have your own reviewing records from before you started using Web of Science you can add them to a separate file called `reviews_non-publons.xlsx`   Use the same format as the `reviews data.xlsx` file i.e. ”Journal, Date, Rounds” and that will automatically get added to the reviews data whenever your c.v. or FAR is generated.
+      9. If you have your own reviewing records from before you started using Web of Science you can add them to a separate file called `reviews_nonpublons.xlsx`   Use the same format as the `reviews data.xlsx` file i.e. ”Journal, Date, Rounds” and that will automatically get added to the reviews data whenever your c.v. or FAR is generated.
 
       
 
@@ -146,7 +145,15 @@ Service
 
 Teaching
 
-5. `teaching data.xlsx`.  See the notes tab for the format of this file.  make\_cv assumes there will be entries in this file under the column headings: “term, combined\_course\_num, combined\_num\_sec, course\_title, enrollment, count\_19, mean\_19,  count\_20, mean\_20”.  ‘Combined\_course\_num’ is the course catalog number i.e. something like “ME515/CE538” for a cross-listed class or just ME515 for a normal class.  ‘term’ is the text name of the term i.e. ‘Summer 2024’.  ‘combined\_num\_sec’ is a combined course & section number i.e “ME515-01” for a normal class or “ME515-01/CE538-01” for a cross-listed class.  This is used to count the number of sections taught for a given class.  An optional column is “component” which can take values like “LEC”,“LAB”,”DIS”, or “TUT”  for classes with both a lab, lecture, discussion, or tutorial components.  This forces those sections to be treated as separate entries.   ‘course\_title’ is the title i.e. “Intro. to Finite Element Methods”.  ‘count\_XX’ is an integer associated with the question number XX on the teaching evaluation and ‘mean\_XX’ is the evaluation value for that question.  make\_cv currently only uses the responses to question 19 and 20\.  These are the evaluations that go into the cv.  There are two output formats for teaching: a long format that lists every class taught for each semester and a short format which just lists the classes taught and how many semesters they were taught.  This is controlled by a flag in the configuration file 'shortteachingtable \= true/false'.  You can also control where teaching evaluation numbers appear or not with the flag ‘hideteachingevals \= true/false’.
+5. `teaching data.xlsx`.  See the notes tab for the format of this file.  make\_cv assumes there will be entries in this file under the column headings: “term, combined\_course\_num, combined\_num\_sec, course\_title, enrollment, count\_19, mean\_19,  count\_20, mean\_20”.  ‘Combined\_course\_num’ is the course catalog number i.e. something like “ME515/CE538” for a cross-listed class or just ME515 for a normal class.  ‘term’ is the text name of the term i.e. ‘Summer 2024’.  ‘combined\_num\_sec’ is a combined course & section number i.e “ME515-01” for a normal class or “ME515-01/CE538-01” for a cross-listed class.  This is used to count the number of sections taught for a given class.  An optional column is “component” which can take values like “LEC”,“LAB”,”DIS”, or “TUT”  for classes with both a lab, lecture, discussion, or tutorial components.  This forces those sections to be treated as separate entries.   ‘course\_title’ is the title i.e. “Intro. to Finite Element Methods”.  ‘count\_XX’ is an integer associated with the question number XX on the teaching evaluation and ‘mean\_XX’ is the evaluation value for that question.  make\_cv currently only uses the responses to question 19 and 20\.  These are the evaluations that go into the cv.  There are two output formats for teaching: a long format that lists every class taught for each semester and a short format which just lists the classes taught and how many semesters they were taught.  The flags in the configuration file that control teaching format are
+
+| Configuration flag | Values | Meaning |
+| :---- | :---- | :---- |
+| shortteachingtable | true/false | Use condensed teaching format |
+| hideteachingevals | true/false | Hide teaching evaluation numbers |
+| sortbycourse | true/false | For the long format sort by course then date versus date then course |
+
+   
 
 ### Configuration & Customization
 
@@ -160,11 +167,13 @@ The `make_cv` tool provides a range of command-line options to customize and aut
 
 | Option | Description |
 | :---- | :---- |
-| `-g {NUMBER OF YEARS}` | Search for and add new entries from Google Scholar to the `.bib` file for the past specified number of years. Use `-g -1` to search for all available entries. Defaults to `1` if `-g` is used without specifying a number. |
 | `-G {GOOGLEID}` | Override/Specify `GoogleID` (stored in “personal\_data.txt”) |
+| `-g {NUMBER OF YEARS}` | Search for and add new entries from Google Scholar to the `.bib` file for the past specified number of years. Use `-g -1` to search for all available entries. Defaults to `1` if `-g` is used without specifying a number. |
 | `-O {ORCID}` | Override/Specify `ORCID` (stored in “personal\_data.txt”) |
+| `-o {NUMBER OF YEARS}` | Search for and add new entries from ORCID to the `.bib` file for the past specified number of years. Use `-o -1` to search for all available entries. Defaults to `1` if `-o` is used without specifying a number. |
 | `-S {Scopus ID}` | Override/Specify `Scopus ID` (stored in “personal\_data.txt”) |
-| `-c {true,false}` | Update citation counts stored in the `.bib` file. |
+| `-s {NUMBER OF YEARS}` | Search for and add new entries from Scopus to the `.bib` file for the past specified number of years. Use `-s -1` to search for all available entries. Defaults to `1` if `-s` is used without specifying a number. |
+| `-c {false,Google,Scopus}` | Update citation counts stored in the `.bib` file using either Google or Scopus.  This overwrites existing citation counts if a matching paper is found and leaves the pre-existing data otherwise. |
 | `-m {true,false}` | Update student author markers in the `.bib` file. |
 | `-I {true,false}` | Use `bibtexautocomplete` to search for and add missing DOIs to the `.bib` file. |
 | `-e {SECTION}` | Exclude a section from the CV. Sections include: `Grants`, `PersonalAwards`, `Conference`, `GradAdvisees`, `Proposals`, `UndergradResearch`, `Reviews`, `Refereed`, `Invited`, `Service`, `Teaching`, `Book`, `Patent`, `StudentAwards`, `Journal`. |
@@ -179,13 +188,13 @@ The `make_cv` tool provides a range of command-line options to customize and aut
 | `-T`  | Include the last update timestamp at the bottom of the CV. If the flag is passed, it adds a timestamp to indicate the last update of the CV. |
 | `-p` | This is for make\_far only, to output a docx file instead of a pdf for the activity report. |
 | `-y` | Set number of years of data to use in generating cv or far or collaborator list |
-| `-q` | Quiet \- when importing data make\_cv will not ask for confirmations and just makes its best guess as to how to import data from Google Scholar and ORCID. |
+| `-q` | Quiet \- when importing data make\_cv will not ask for confirmations and just makes its best guess as to how to import data from Google Scholar, ORCID, and Scopus. |
 | `-n` | No clean up \- leave files generated by XeLaTeX (for debugging purposes) |
 | `-v` | Verbose output (use when make\_cv gets stuck but is not showing the error) |
 
 For example, the following will look for any new google scholar entries in the 4 last years, help you categorize them, then update the citation counts using google scholar, update the student markers, and exclude the proposals and conferences section when making a c.v.
 
-`make_cv -g 4 -c true -m true -e Conference -e Proposals`
+`make_cv -g 4 -c Google -m true -e Conference -e Proposals`
 
 Most of the advanced features are by default off, but you can turn them on by default by editing the make\_cv.cfg file in your CV folder.   I usually only use the advanced features intermittently so I leave the advanced features off by default and then use the command line options when I need to use them.  make\_cv.cfg also gives more fine-grained control of the number of items that appear in each section if you need to shorten the c.v.  
 
@@ -197,7 +206,7 @@ If you add `-m true`, it uses the files “undergraduate research data.xlsx”, 
 
 If you add `-M false`, it will redefine the \\us and \\gs markers so that no markers are produced in the file. This is also configurable in the `make_cv.cfg` file with the entry includestudentmarkers.
 
-If you add `-c true`, it will use google scholar to update/add the field “citations” in the .bib file.  This is the number of times this article has been cited.  It will appear in brackets after the bibliographic entry in the c.v.  i.e.
+If you add `-c Google`, it will use google scholar to update/add the field “citations” in the .bib file.  This is the number of times this article has been cited.  It will appear in brackets after the bibliographic entry in the c.v.  i.e.
 
 19. N. Bagheri-Sadeghi+, B. T. Helenbrook, and K. D. Visser. “Ducted Wind Turbine Optimization and Sensitivity to Rotor Position”, Wind Energy Science 3, no. 1 (Apr. 2018), pp. 221–229. doi: 10.5194/wes-3-221-2018. \[42\]
 
@@ -253,14 +262,16 @@ Make a virtual environment for python scripts so they can be separate from syste
 `python3 -m venv ~/.venv`  
 `source ~/.venv/bin/activate`
 
-To make this python installation work every time you open a new terminal window:  
-`cat ~/.venv/bin/activate >> .zprofile`
+To make this python installation works every time you open a new terminal window:  
+`echo “source ~/.venv/bin/activate” >> .zprofile`
 
 ##### Windows Installation
 
 Install python from Windows App Store
 
 Install LaTeX from [https://miktex.org/download](https://miktex.org/download).  When installing LaTeX change the default paper size to letter and also click “automatically install missing packages” (something like that anyway).  If you choose to only install for yourself you will have to open the MikTeX Console program and click “Settings” in the left side bar, then the “Directories” tab,  copy the “Link target directory” and add it to the path. (See below for modifying the Windows path).  Probably easier to install for all users but that has not been tested.
+
+Install git from [https://git-scm.com/install/windows](https://git-scm.com/install/windows). You can accept all of the installation defaults.
 
 Add the python scripts path to your environment variables as well.  The path should have printed out when you installed make\_cv (at the end of the long spew of text. If you can’t find it, pip uninstall make\_cv and then pip install make\_cv and it should print again).  It should be something like: `C:\Users\<username>\AppData\Local\Programs\Python\Python38\Scripts`
 
@@ -286,3 +297,15 @@ To edit an entry itself, all you need to do is click on the entry, wait for the 
 
 Jabref can try to import entries from a text citation list.  It's a little sketchy but can save a lot of work if you have a list of invited talks you want converted.  There is a menu entry under the “Library” menu called “New entry from plain text”  Follow the instructions from there.
 
+### Appendix C: Upgrading
+
+`make_cv` is under active development.  To upgrade your installation of make\_cv use the command:  `pip install --upgrade make_cv.`  This gets you halfway there.  It’s important to upgrade your LaTeX files in your personal directory as well otherwise the files will be incompatible with the new version of make\_cv.  To upgrade your files to the most current version, `cd` to your data folder, then issue the command `git pull.` Every make\_cv folder is created as a git repository so this will attempt to pull changes to the files.  If you have modified any of the standard distribution files, this may refuse to pull changes because it doesn’t want to overwrite your personal changes.  It will say something like  
+error: Your local changes to the following files would be overwritten by merge:  
+	make\_cv/CV/cv.tex  
+	make\_cv/CV/make\_cv.cfg  
+	.  
+.  
+.  
+Please commit your changes or stash them before you merge.  
+Aborting  
+In that case, read the list of files that are causing problems and make backups of those files.  Then do a `git checkout <file>` for each file that caused problems (and you backed up).  When this is done, issue the `git pull` command again and this should pull all the changes.  If you have customized files, you will have to copy your customizations from your backup files into the newly upgraded files. 
