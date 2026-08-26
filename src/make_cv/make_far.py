@@ -155,12 +155,20 @@ def main(argv = None):
 	stem = config['LaTexFile'][:-4]
 	folder = "Tables_" +stem
 	make_far_tables(config,folder)
+
+	if "verbose" in config.keys() and config.getboolean("verbose"):
+		typeset(config,stem,['xelatex',config['LaTexFile']])
+	else:
+		typeset(config,stem,['xelatex','-interaction=batchmode',config['LaTexFile']])
 	
 	if global_prefs.usePandoc:
 		docxfile = config['LaTexFile'][0:-4] +".docx"
 		subprocess.run(['pandoc','--citeproc','--csl=no-bib-full.csl','--toc',config['LaTexFile'],'-o',docxfile],check=True)
 	else:
-		typeset(config,stem,['xelatex',config['LaTexFile']])
+		if "verbose" in config.keys() and config.getboolean("verbose"):
+			typeset(config,stem,['xelatex',config['LaTexFile']])
+		else:
+			typeset(config,stem,['xelatex','-interaction=batchmode',config['LaTexFile']])
 
 if __name__ == "__main__":
 	main()

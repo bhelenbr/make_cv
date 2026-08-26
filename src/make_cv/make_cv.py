@@ -309,8 +309,12 @@ def read_args(parser,argv):
 
 	# Check command and file versions
 	files_repo = Repo(configuration['CV']['data_dir'])
-	files_tag = files_repo.git.tag('-l')
-	files_tag = files_tag.split('\n')[-1].split('-')[0]
+	try:
+		files_tag = files_repo.git.tag('-l')
+		files_tag = files_tag.split('\n')[-1].split('-')[0]
+	except:
+		# Not a git folder
+		files_tag = None
 
 	try:
 		cmd_root = Path(__file__).resolve().parents[2]
@@ -320,11 +324,13 @@ def read_args(parser,argv):
 	except:
 		cmd_tag = metadata.version("make_cv")
 
-	if not cmd_tag == files_tag:
-		print('Error: Mismatch between command and folder file versions: ' +cmd_tag +', ' +files_tag)
+	
+	if files_tag and (not cmd_tag == files_tag):
+		print('Warning: Mismatch between command and folder file versions: ' +cmd_tag +', ' +files_tag)
 		print('Please upgrade command: pip install --upgrade make_cv')
 		print('Please upgrade files in folder: git pull')
-		exit(1)
+	else:
+		print('Unable to confirm matching versions between command and folder files.  Please make sure you have the latest version of both the command and the files in the folder')
 
 	# verify configuration file
 	ok = verify_config(configuration)
