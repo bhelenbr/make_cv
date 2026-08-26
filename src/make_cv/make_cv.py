@@ -316,6 +316,7 @@ def read_args(parser,argv):
 		# Not a git folder
 		files_tag = None
 
+
 	try:
 		cmd_root = Path(__file__).resolve().parents[2]
 		cmd_repo = Repo(cmd_root)
@@ -324,13 +325,13 @@ def read_args(parser,argv):
 	except:
 		cmd_tag = metadata.version("make_cv")
 
-	
-	if files_tag and (not cmd_tag == files_tag):
+
+	if files_tag == None:
+		print('Unable to verify compatibility command and data folder versions; no .git folder in data folder.')
+	elif not cmd_tag == files_tag:
 		print('Warning: Mismatch between command and folder file versions: ' +cmd_tag +', ' +files_tag)
 		print('Please upgrade command: pip install --upgrade make_cv')
-		print('Please upgrade files in folder: git pull')
-	else:
-		print('Unable to confirm matching versions between command and folder files.  Please make sure you have the latest version of both the command and the files in the folder')
+		print('Please upgrade files in data folder: git pull')
 
 	# verify configuration file
 	ok = verify_config(configuration)
