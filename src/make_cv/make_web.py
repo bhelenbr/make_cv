@@ -49,31 +49,6 @@ def main(argv = None):
 		# Replace css file
 		shutil.copy2(stem +".sub", stem +".css")
 
-		# Insert two lines into every HTML file just before the closing </body>
-		# for html_file in glob.glob(stem +"se" +"*.html"):
-		for html_file in glob.glob("*.html"):
-			try:
-				with open(html_file, 'r', encoding='utf-8') as fh:
-					content = fh.read()
-
-				# find last occurrence of closing body tag (case-insensitive)
-				idx = content.lower().rfind('</body>')
-				insert_text = '\n'
-				insert_text = insert_text + r'<script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.2/iframeResizer.contentWindow.min.js"></script>'
-				insert_text = insert_text + '\n'
-				insert_text = insert_text + r'<script src="navigation.js?v=5"></script>'
-				insert_text = insert_text + '\n'
-				if idx != -1:
-					new_content = content[:idx] + insert_text + content[idx:]
-				else:
-					new_content = content + insert_text
-				with open(html_file, 'w', encoding='utf-8') as fh:
-					fh.write(new_content)
-			except Exception:
-				# ignore files we can't read/write
-				pass
-
-		
 		for html_file in [stem +'.html',stem +'li1.html']:
 			try:
 				with open(html_file, 'r', encoding='utf-8') as fh:
@@ -84,7 +59,7 @@ def main(argv = None):
 				insert_text = '\n'
 				insert_text = insert_text + r'<body class="menu-page">'
 				insert_text = insert_text + '\n'
-			
+		
 				if idx != -1:
 					new_content = content[:idx] + insert_text + content[idx:]
 				else:
@@ -101,6 +76,31 @@ def main(argv = None):
 				os.remove(file)
 			except OSError as err:
 				print("")
+
+	# Insert two lines into every HTML file just before the closing </body>
+	# for html_file in glob.glob(stem +"se" +"*.html"):
+	for html_file in glob.glob("*.html"):
+		try:
+			with open(html_file, 'r', encoding='utf-8') as fh:
+				content = fh.read()
+
+			# find last occurrence of closing body tag (case-insensitive)
+			idx = content.lower().rfind('</body>')
+			insert_text = '\n'
+			insert_text = insert_text + r'<script src="https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/4.3.2/iframeResizer.contentWindow.min.js"></script>'
+			insert_text = insert_text + '\n'
+			insert_text = insert_text + r'<script src="navigation.js?v=5"></script>'
+			insert_text = insert_text + '\n'
+			if idx != -1:
+				new_content = content[:idx] + insert_text + content[idx:]
+			else:
+				new_content = content + insert_text
+			with open(html_file, 'w', encoding='utf-8') as fh:
+				fh.write(new_content)
+		except Exception:
+			# ignore files we can't read/write
+			pass
+
 
 if __name__ == "__main__":
 	main()

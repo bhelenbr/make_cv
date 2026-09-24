@@ -22,6 +22,7 @@ from .bib_add_keywords import add_keyword
 from .bib_get_entries_orcid import make_bibtex_id_list
 from .bib_get_entries_orcid import make_title_id
 from .bib_get_entries_orcid import getyear
+from .bib_get_entries_orcid import bibtex_str2latex
 
 # -------------------------------
 # Scopus helpers
@@ -169,7 +170,7 @@ def bib_get_entries_scopus(bibfile, author_id, years, outputfile):
             
             # Reset the citation key to our generated one, preserving entry type
             # scopus citation keys can cause errors
-            bib = str2latex(bib)
+            bib = bibtex_str2latex(bib)
             bib = re.sub(r'@([a-zA-Z]+)\w*{[^\n]+',f'@\\1{{{title_id},', bib, count=1)
         except Exception:
             bib = None
@@ -180,7 +181,7 @@ def bib_get_entries_scopus(bibfile, author_id, years, outputfile):
             completer.load_string(bib)
             completer.autocomplete()
             bib = completer.write_string()[0]
-            bib = str2latex(bib)
+            bib = bibtex_str2latex(bib)
         print(bib)
 
         if not global_prefs.quiet:

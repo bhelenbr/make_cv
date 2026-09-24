@@ -34,48 +34,48 @@ cv_keys = {'Years': '-1',
 			}
 
 def load_personal_data(configuration):
-	"""Read personal_data.txt from the given bio_dir and return dict of values.
-	Keys returned (lowercase): googleid, webscraperid, scopusid, orcid
-	If file does not exist, returns empty values.
-	"""
-	bio_dir = configuration['DEFAULT'].get('bio_dir')
-
+	"""Read IDs (googleid, webscraperid, scopusid, orcid) from bio_dir/personal_data.txt
+	and put them in configuration['DEFAULT']. If the file doesn't exist, create it.
+	Missing IDs are set to "". Always returns the configuration."""
 	pdata = {'googleid': '', 'webscraperid': '', 'scopusid': '', 'orcid': ''}
-	if bio_dir is None:
-		return pdata
-	pfile = os.path.join(bio_dir, 'personal_data.txt')
-	if (not os.path.isfile(pfile)):
-		with open(pfile, 'w', encoding='utf-8') as f:
-			f.write('# Personal data (IDs) for make_cv\n')
-			f.write('# Fill in the values without quotes. Example:\n')
-			f.write('# googleid = ABCDEFGHIJ\n')
-			for k in ['googleid', 'webscraperid', 'scopusid', 'orcid']:
-				if k in configuration['DEFAULT'].keys():
-					f.write(f'{k} = {configuration["DEFAULT"][k]}\n')
-				else:
-					f.write(f'{k} = \n')
-		return(configuration)
-	else:
-		with open(pfile, 'r', encoding='utf-8') as f:
-			for line in f:
-				line = line.strip()
-				if not line or line.startswith('#'):
-					continue
-				if '=' in line:
-					key, val = line.split('=', 1)
-				elif ':' in line:
-					key, val = line.split(':', 1)
-				else:
-					continue
-				key = key.strip().lower()
-				val = val.strip()
-				if key in pdata:
-					pdata[key] = val
-		for k, v in pdata.items():
-			configuration['DEFAULT'][k] = v
-		return configuration
-	
-	return(None)
+	# keep any IDs already in the config (e.g. from an old-style config file)
+	for k in pdata:
+		if k in configuration['DEFAULT'].keys():
+			pdata[k] = configuration['DEFAULT'][k]
+
+	bio_dir = configuration['DEFAULT'].get('bio_dir')
+	if bio_dir is not None:
+		pfile = os.path.join(bio_dir, 'personal_data.txt')
+		if os.path.isfile(pfile):
+			with open(pfile, 'r', encoding='utf-8') as f:
+				for line in f:
+					line = line.strip()
+					if not line or line.startswith('#'):
+						continue
+					if '=' in line:
+						key, val = line.split('=', 1)
+					elif ':' in line:
+						key, val = line.split(':', 1)
+					else:
+						continue
+					key = key.strip().lower()
+					val = val.strip()
+					if key in pdata and val:
+						pdata[key] = val
+		elif os.path.isdir(bio_dir):
+			with open(pfile, 'w', encoding='utf-8') as f:
+				f.write('# Personal data (IDs) for make_cv\n')
+				f.write('# Fill in the values without quotes. Example:\n')
+				f.write('# googleid = ABCDEFGHIJ\n')
+				for k, v in pdata.items():
+					f.write(f'{k} = {v}\n')
+			print('Created ' + pfile + '; add your Google Scholar, Scopus and ORCID IDs there')
+		else:
+			print('Folder ' + bio_dir + ' (bio_dir in the config file) not found; no personal IDs loaded')
+
+	for k, v in pdata.items():
+		configuration['DEFAULT'][k] = v
+	return configuration
 
 def verify_config(config):
 	for key in defaults:

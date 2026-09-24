@@ -101,10 +101,11 @@ def bib_add_citations_google(bibfile,author_id,outputfile,scraper_id=None):
 					elif "pages" in entries[i].keys():
 						pages = re.search('[0-9]+',entries[i]['pages'])
 						if pages:
-							pages = re.search('[0-9]+',pages.group(0))
-							vol_list.append(pages)
+							vol_list.append(pages.group())
 						else:
-							vol_list.append('-1')
+							vol_list.append('not' +str(i))
+					else:
+						vol_list.append('not' +str(i))
 							
 				vol_indices = [i for i, x in enumerate(vol_list) if x == vol]
 				

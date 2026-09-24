@@ -26,6 +26,7 @@ from .bib_add_keywords import add_keyword
 from .bib_get_entries_orcid import make_bibtex_id_list
 from .bib_get_entries_orcid import make_title_id
 from .bib_get_entries_orcid import getyear
+from .bib_get_entries_orcid import bibtex_str2latex
 from .bib_get_entries_uspto_odp import lookup_application
 from .bib_get_entries_uspto_odp import lookup_patent
 from .bib_get_entries_uspto_odp import lookup_publication	
@@ -172,7 +173,7 @@ def bib_get_entries_google(bibfile, author_id, years, outputfile, scraper_id=Non
 					bib_database_patent.entries[-1]['google_pub_id'] = pub_id
 					continue
 				else:
-					print('Patent not found: ' + num_search.group(1))
+					print('Patent not found: ' + (num_search.group(1) if num_search else pub['bib']['citation']))
 		except KeyError:
 			pass
 
@@ -207,7 +208,7 @@ def bib_get_entries_google(bibfile, author_id, years, outputfile, scraper_id=Non
 					print('Skipped entry since doi already exists')
 					continue
 					
-			bibtex_str = str2latex(bibtex_str)
+			bibtex_str = bibtex_str2latex(bibtex_str)
 			bib_database = bibtexparser.loads(bibtex_str, tbparser)
 			print(BibTexWriter()._entry_to_bibtex(bib_database.entries[-1]))
 			YN = 'Y'

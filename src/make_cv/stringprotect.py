@@ -1,8 +1,25 @@
 #! /usr/bin/env python3
 
 import re
+from datetime import date
+
+def years2range(years):
+	"""Turn a list of years into a compact string, e.g. [2018,2019,2020,2022] -> "2018-2020,2022"."""
+	years = sorted(set(int(y) for y in years))
+	parts = []
+	i = 0
+	while i < len(years):
+		start = years[i]
+		while i + 1 < len(years) and years[i + 1] == years[i] + 1:
+			i += 1
+		parts.append(str(start) if years[i] == start else f"{start}-{years[i]}")
+		i += 1
+	return ",".join(parts)
 
 def str2latex(text):
+	if text is None:
+		return("")
+	
 	text = str(text)
 	if text=="nan":
 		return("")

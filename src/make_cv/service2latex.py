@@ -10,6 +10,7 @@ import argparse
 from datetime import date
 
 from .stringprotect import str2latex
+from .stringprotect import years2range
 
 def service2latex(f,years,inputfile,name,max_rows=-1,ExcludeColumn=None):
 	source = inputfile # file to read
@@ -65,25 +66,9 @@ def service2latex(f,years,inputfile,name,max_rows=-1,ExcludeColumn=None):
 		f.write("\\subrubric{" +name +"}\n")
 		count = 0
 		while count < nrows:
-			# make date string
-			date_string = ""
-			separ = ""
-			prev_found = False
-			found = False
-			for year in range(2,ncols):
-				if (df.iloc[count,year] > 0):
-					if (found==False):
-						date_string = date_string +separ +"{:d}".format(int(df.columns[year][1]))
-						separ = ","
-					prev_found = found
-					found = True
-				else:
-					if ((prev_found == True) and (found == True)):
-						date_string = date_string +"-" +"{:d}".format(int(df.columns[year-1][1]))
-					prev_found = found
-					found = False
-			if ((prev_found == True) and (found == True)):
-				date_string = date_string +"-" +"{:d}".format(int(df.columns[ncols-1][1]))
+			# make date string from the actual years with entries
+			years_list = [df.columns[year][1] for year in range(2,ncols) if df.iloc[count,year] > 0]
+			date_string = years2range(years_list)
 			f.write("\\entry*[" +date_string +"] " +str2latex(df.iloc[count,1]) +"\n")
 			count += 1
 	f.write("\\end{rubric}\n")

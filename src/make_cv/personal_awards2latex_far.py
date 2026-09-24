@@ -19,19 +19,18 @@ def personal_awards2latex_far(f,years,inputfile):
 	except OSError:
 		print("Could not open/read file: " + source)
 		return(0)
-	
-	today = date.today()
-	year = today.year
-	begin_year = year - years
 
-	df = df[(df['Year'] >= begin_year)]
-	df.reset_index(inplace=True)
+	if years > 0:
+		today = date.today()
+		year = today.year
+		begin_year = year - years
+		df = df[(df['Year'] >= begin_year)]
+
 	nrows = df.shape[0] 
-
 	if (nrows > 0):
 		df = df.fillna('')
 		df.sort_values(by=['Year','Type','Title'], inplace=True, ascending = [False,True,True])
-		df.reset_index()
+		df.reset_index(inplace=True)
 
 		#print(df)
 		#print(df.columns)

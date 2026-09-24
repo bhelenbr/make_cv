@@ -12,7 +12,7 @@ def copy_with_timestamp(src_file, dest_dir):
     dest_dir.mkdir(parents=False, exist_ok=True)
 
     # Build timestamped filename
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
     dest_file = dest_dir / f"{src_file.stem}_{timestamp}{src_file.suffix}"
 
     # Copy file

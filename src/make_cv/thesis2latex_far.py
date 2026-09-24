@@ -101,7 +101,7 @@ def read_thesis_bib(thesisfile):
 def read_thesis_excel(thesisfile):
     """Read thesis data from Excel file"""
     try:
-        df = pd.read_excel(thesisfile, sheet_name="Data", dtype={'Start Date':int,'Year':int})
+        df = pd.read_excel(thesisfile, sheet_name="Data").fillna({'Year': date.today().year}).astype({'Year': int})
         return df
     except OSError:
         print("Could not open/read file: " + thesisfile)
@@ -142,7 +142,7 @@ def thesis2latex_far(f,years,studentfile,thesisfile,max_rows=-1):
 		thesis_found = True
 	
 	if (student_found):
-		source = source.fillna({'Start Date':today})
+		source = source.fillna({'Start Date':pd.Timestamp(today)})
 		source.sort_values(by=['Start Date','Current Program','Student Name'], inplace=True, ascending = [False,True,True])
 		if not "Title" in source.columns:
 			source["Title"] = "--"

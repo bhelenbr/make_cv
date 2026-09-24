@@ -42,15 +42,19 @@ def reviews2latex_far(f,years,inputfile,max_rows=-1):
 	#print(table)
 	
 	nrows = table.shape[0] 
-	
-	if max_rows > 0 and nrows > max_rows:
-		nrows = max_rows
 			
 	if (nrows > 0):		
 		table.columns=['Journal','Reviews','Rounds']
 		
+		# totals over all journals, before any truncation
 		nreviews = table["Reviews"].sum()
 		nrounds = table["Rounds"].sum()
+		
+		# keep the max_rows journals with the most reviews, listed alphabetically
+		if max_rows > 0 and nrows > max_rows:
+			nrows = max_rows
+			table = table.sort_values(by=['Reviews'],ascending=False).head(nrows)
+			table = table.sort_values(by=['Journal']).reset_index(drop=True)
 		f.write("Reviewing activity since " +str(yearmin)+ ": " +str(nreviews) +" reviews (" +str(nrounds) +" total review rounds)\\par\\vspace\\baselineskip\n")
 
 		if global_prefs.usePandoc:

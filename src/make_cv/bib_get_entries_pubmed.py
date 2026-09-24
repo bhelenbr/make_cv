@@ -20,7 +20,7 @@ from .bib_add_keywords import add_keyword
 from .bib_get_entries_orcid import make_bibtex_id_list
 from .bib_get_entries_orcid import make_title_id
 from .bib_get_entries_orcid import getyear
-
+from .bib_get_entries_orcid import bibtex_str2latex
 
 # -------------------------------
 # PubMed helpers
@@ -185,7 +185,7 @@ def bib_get_entries_pubmed(bibfile, author_name, years, outputfile):
         completer.load_string(bib)
         completer.autocomplete()
         bib = completer.write_string()[0]
-        bib = str2latex(bib)
+        bib = bibtex_str2latex(bib)
 
         print(bib)
 

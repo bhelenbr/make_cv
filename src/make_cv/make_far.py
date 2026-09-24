@@ -90,8 +90,7 @@ def make_far_tables(config,table_dir):
 		advising2latex_far(f,years,filename,private=False)
 		f.close()
 		
-		filename = faculty_source +os.sep +"Proposals & Grants" +os.sep + "expenditures.xlsx"
-
+	filename = faculty_source +os.sep +"Proposals & Grants" +os.sep + "expenditures.xlsx"
 	# Expenditures
 	if Path(filename).is_file():
 		print('Updating expenditures')
@@ -156,11 +155,6 @@ def main(argv = None):
 	folder = "Tables_" +stem
 	make_far_tables(config,folder)
 
-	if "verbose" in config.keys() and config.getboolean("verbose"):
-		typeset(config,stem,['xelatex',config['LaTexFile']])
-	else:
-		typeset(config,stem,['xelatex','-interaction=batchmode',config['LaTexFile']])
-	
 	if global_prefs.usePandoc:
 		docxfile = config['LaTexFile'][0:-4] +".docx"
 		subprocess.run(['pandoc','--citeproc','--csl=no-bib-full.csl','--toc',config['LaTexFile'],'-o',docxfile],check=True)

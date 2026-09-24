@@ -8,12 +8,9 @@ from datetime import date
 from zipfile import BadZipFile
 import argparse
 
-def STRM2Year(strm):
-	return(int((strm-4190)/10 +2019))
-
-# Last 4 digits of term should be year
-def term2year(term):
-	return(int(term[-4:]))
+from .teaching2latex_far import STRM2Year
+from .teaching2latex_far import term2year
+from .teaching2latex_far import term2STRM
 
 from .stringprotect import str2latex
 
@@ -48,7 +45,7 @@ def teaching2latex_short(f, years, inputfile, private=False, ExcludeColumn=None)
 		df['course_title'] = df['course_title'].fillna("")
 
 	if 'STRM' not in df.columns:
-		df['STRM'] = df.index
+		df['STRM'] = df['term'].apply(term2STRM)
 
 	# components: CLN -clinical DIS-discussion FLD-fieldwork IND-independent study LAB-lab LEC-lecture PHY-physical education PRA-practacum PRO-project RSC-research SEM-seminar THE-thesis TUT-tutorial						
 	df = df[~df['component'].isin(['DIS','IND','PRO','RSC','TUT','THE'])]	

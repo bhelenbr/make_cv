@@ -17,12 +17,7 @@ import numpy as np
 
 from . import global_prefs
 
-def getyear(paperbibentry):
-	if "year" in paperbibentry.keys(): 
-		return(int(paperbibentry["year"]))
-	if "date" in paperbibentry.keys():
-		return(int(paperbibentry["date"][:4]))
-	return(0)
+from .bib_get_entries_orcid import getyear
 
 def bib2latex_far(f,inputfile,keywords,years=-1,max_pubs=-1):
 

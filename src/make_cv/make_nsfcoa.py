@@ -38,12 +38,7 @@ from bibtexparser.bparser import BibTexParser
 
 from pylatexenc.latex2text import LatexNodes2Text
 
-def getyear(paperbibentry):
-	if "year" in paperbibentry.keys(): 
-		return int(paperbibentry["year"])
-	if "date" in paperbibentry.keys():
-		return int(paperbibentry["date"][:4])
-	return 0
+from .bib_get_entries_orcid import getyear
 
 def get_collaborator_list(config, output_format):
 	years = config.getint('years')
@@ -68,7 +63,7 @@ def get_collaborator_list(config, output_format):
 		grad_names = read_thesis_bib(grads)
 	else:
 		try:
-			grad_names = pd.read_excel(grads, sheet_name="Data", dtype={'Start Date': int, 'Year': int})
+			grad_names = pd.read_excel(grads, sheet_name="Data").fillna({'Year': date.today().year}).astype({'Year': int})
 		except OSError:
 			print("Could not open/read file: " + grads)
 			grad_names = pd.DataFrame(columns=["Student","Start Date","Year","Degree","Advisor","Title","Comments"])
@@ -89,10 +84,10 @@ def get_collaborator_list(config, output_format):
 	except OSError:
 		print("Could not open/read file: " + grantfile)
 		grants = pd.DataFrame(columns=["Proposal_ID","Faculty","Sponsor","Allocated Amt","Total Cost","Funded?","Title","Begin Date","End Date","Submit Date","Principal Investigators"])
-		
+
+	today = date.today()
+	year = today.year
 	if years > 0:
-		today = date.today()
-		year = today.year
 		begin_year = year - years
 	else:
 		begin_year = 0
@@ -111,7 +106,7 @@ def get_collaborator_list(config, output_format):
 	grad_list = pd.concat([cur_grad_names,grad_names], ignore_index=True, join="inner")	
 	
 	cnames= grad_list.columns
-	grad_list = grad_list[grad_list["Degree"].apply(lambda x: "PhD" in x)]
+	grad_list = grad_list[grad_list["Degree"].apply(lambda x: "phd" in re.sub(r"[^a-z]", "", str(x).lower()))]
 	# Check if the filtered DataFrame is empty
 	if grad_list.empty:
 		# Reassign the column names from the original DataFrame
@@ -151,7 +146,7 @@ def get_collaborator_list(config, output_format):
 		names_no_PI = re.sub(r"\([a-zA-Z-]*\)","",row['Principal Investigators'])
 		for author in split_names(names_no_PI):
 			abbrev = abbreviate_name(author, first_initial_only=True)
-			if abbrev in grad_list.index:
+			if abbrev in grad_list['Student'].values:
 				continue
 			key = last_first(abbrev)
 			if key in collab_list.keys():

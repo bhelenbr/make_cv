@@ -4,13 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "make_cv"
-version = "1.1.0"
+version = "1.1.1"
 authors = [
   { name="Brian Helenbrook", email="brian.helenbrook@gmail.com" },
 ]
 description = "A package to make a faculty c.v. using python and LaTeX"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",

@@ -46,11 +46,40 @@ def make_bibtex_id_list(entries):
 	return parsed_entries
 
 
+
+# Fields that must be left exactly as-is
+RAW_FIELDS = {'ID', 'ENTRYTYPE', 'author', 'editor', 'doi', 'url', 'eprint', 'file', 'urldate'}
+
+def bibtex_str2latex(bibtex_str, skip_fields=RAW_FIELDS):
+	"""Apply str2latex to every field of every entry in a BibTeX string,
+	except the fields in skip_fields. Returns a BibTeX string."""
+	parser = BibTexParser(common_strings=True)
+	parser.homogenize_fields = False
+	parser.alt_dict['url'] = 'url'   # don't rename url -> link
+	db = bibtexparser.loads(bibtex_str, parser)
+
+	skip = {f.lower() for f in skip_fields}
+	for entry in db.entries:
+		for field, value in entry.items():
+			if field.lower() not in skip:
+				entry[field] = str2latex(value)
+
+	writer = BibTexWriter()
+	writer.order_entries_by = None
+	return bibtexparser.dumps(db, writer)
+
 def getyear(paperbibentry):
-	if "year" in paperbibentry.keys(): 
-		return int(paperbibentry["year"])
-	if "date" in paperbibentry.keys():
-		return int(paperbibentry["date"][:4])
+	"""Year of a bibtex entry as an int.
+	Uses the first 4-digit number in the year (or date) field, so "{2024}", "2024a"
+	and "2024-05-01" all work. If the field exists but has no year in it (e.g. "in press"),
+	returns the current year. If the entry has no year or date field, returns 0."""
+	for field in ("year", "date"):
+		if field in paperbibentry.keys():
+			match = re.search(r"\d{4}", str(paperbibentry[field]))
+			if match:
+				return int(match.group(0))
+			print("Could not read year '" +str(paperbibentry[field]) +"' in " +str(paperbibentry.get("ID", "unknown entry")) +"; using current year")
+			return date.today().year
 	return 0
 
 
@@ -80,7 +109,6 @@ def safe_value(d, *keys):
 		if d is None:
 			return None
 	return d
-
 
 def normalize_key(text):
 	if text is None:
@@ -294,7 +322,7 @@ def bib_get_entries_orcid(bibfile, orcid, years, outputfile):
 		completer.autocomplete()
 		
 		bibtex_str = completer.write_string()[0]
-		bibtex_str = str2latex(bibtex_str)
+		bibtex_str = bibtex_str2latex(bibtex_str)
 		print(bibtex_str)
 		
 		if not global_prefs.quiet:

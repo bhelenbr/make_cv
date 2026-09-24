@@ -196,7 +196,8 @@ def make_cv_tables(config,table_dir):
 			os.remove(table_dir +os.sep +'UndergradResearch.tex')
 	
 	# Teaching
-	if config.getboolean('Teaching'):
+	[include,years,max_rows] = getSectionVals(config,'Teaching')	
+	if include:
 		print('Updating teaching table')
 		fteaching = open(table_dir +os.sep +'Teaching.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['TeachingFile'])
@@ -307,10 +308,33 @@ def read_args(parser,argv):
 	# Load personal data from bio_dir/personal_data.txt and inject into configuration
 	configuration = load_personal_data(configuration)
 
+	# verify configuration file
+	ok = verify_config(configuration)
+	if (not ok):
+		print("Incomplete or Unreadable configuration file " +args.configfile +".\n") 
+		if not global_prefs.quiet:
+			YN = input('Would you like to update configuration file named ' +args.configfile +' [Y/N]?')
+		else:
+			YN = 'Y'
+			print('Auto-updating configuration file named ' +args.configfile)
+
+		if YN == 'Y' or YN =='y':
+			# create_config drops the personal IDs, so carry them over to the new configuration
+			ids = {k: configuration['DEFAULT'].get(k, '') for k in ('googleid', 'webscraperid', 'scopusid', 'orcid')}
+			configuration = create_config(args.configfile,configuration)
+			for k, v in ids.items():
+				if v:
+					configuration['DEFAULT'][k] = v
+			configuration = load_personal_data(configuration)
+		else:
+			print("Couldn't proceed due to Incomplete or Unreadable configuration file")
+			exit(1)
+
+
 	# Check command and file versions
-	files_repo = Repo(configuration['CV']['data_dir'])
 	try:
-		files_tag = files_repo.git.tag('-l')
+		files_repo = Repo(configuration['CV']['data_dir'])
+		files_tag = files_repo.git.tag('-l','--sort=v:refname')
 		files_tag = files_tag.split('\n')[-1].split('-')[0]
 	except:
 		# Not a git folder
@@ -320,7 +344,7 @@ def read_args(parser,argv):
 	try:
 		cmd_root = Path(__file__).resolve().parents[2]
 		cmd_repo = Repo(cmd_root)
-		cmd_tag = cmd_repo.git.tag('-l')
+		cmd_tag = cmd_repo.git.tag('-l','--sort=v:refname')
 		cmd_tag = cmd_tag.split('\n')[-1].split('-')[0]
 	except:
 		cmd_tag = metadata.version("make_cv")
@@ -332,23 +356,6 @@ def read_args(parser,argv):
 		print('Warning: Mismatch between command and folder file versions: ' +cmd_tag +', ' +files_tag)
 		print('Please upgrade command: pip install --upgrade make_cv')
 		print('Please upgrade files in data folder: git pull')
-
-	# verify configuration file
-	ok = verify_config(configuration)
-	if (not ok):
-		print("Incomplete or Unreadable configuration file " +args.configfile +".\n") 
-		if not global_prefs.quiet:
-			YN = input('Would you like to update configuration file named make_cv.cfg [Y/N]?')
-		else:
-			YN = 'Y'
-			print('Auto-updating configuration file named make_cv.cfg')
-
-		if YN == 'Y' or YN =='y':
-			configuration = create_config('make_cv.cfg',configuration)
-			load_personal_data(configuration)
-		else:
-			print("Couldn't proceed due to Incomplete or Unreadable configuration file")
-			exit(1)
 
 	return([configuration,args])
 
@@ -438,11 +445,13 @@ def process_default_args(config,args):
 			if not (config['ORCID'] == ""):
 				reviews2excel_orcid(config['ORCID'],xls)
 		config['ReviewsFile'] = name_extension_tuple[0] +'.xlsx'
-	
+
+	pybliometricsInit = False
 	if config.getint('GetNewScopusEntries') != 0:
 		if not (config['ScopusID'] == ""):
 			print("Trying to find new .bib entries from Scopus")
 			pybliometrics.init()
+			pybliometricsInit = True
 			filename = os.path.join(faculty_source,config['ScholarshipFile'])
 			backup_path= os.path.join(faculty_source,'make_cv','Backups')
 			copy_with_timestamp(filename, str(backup_path))
@@ -503,6 +512,8 @@ def process_default_args(config,args):
 	if config['UpdateCitations'].lower() == 'scopus':
 		print("Updating citation counts using Scopus")
 		if not config['ScopusID'] == "":
+			if not (pybliometricsInit):
+				pybliometrics.init()
 			filename = os.path.join(faculty_source,config['ScholarshipFile'])
 			backup_path= os.path.join(faculty_source,'make_cv','Backups')
 			copy_with_timestamp(filename, str(backup_path))
@@ -533,8 +544,7 @@ def process_default_args(config,args):
 	if os.path.isfile(filename):
 		print('Checking for .bib entries that are missing type specifiers')
 		backup_path= os.path.join(faculty_source,'make_cv','Backups')
-		copy_with_timestamp(filename, str(backup_path))
-		bib_add_keywords(filename,filename)
+		bib_add_keywords(filename,filename,backup_dir=str(backup_path))
 
 def add_timestamp_to_cv():
 	# Get current timestamp

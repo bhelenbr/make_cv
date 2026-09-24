@@ -91,7 +91,9 @@ def bib_add_citations_scopus(bibfile,author_id,outputfile):
 				vol_list = []
 				for i in indices:
 					if "volume" in entries[i].keys():
-						vol_list.append(entries[i]['volume'])							
+						vol_list.append(entries[i]['volume'])	
+					else:
+						vol_list.append('not' +str(i))						
 
 				vol_indices = [i for i, x in enumerate(vol_list) if x == vol]
 				

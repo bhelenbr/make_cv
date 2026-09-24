@@ -16,17 +16,13 @@ from bibtexparser.bparser import BibTexParser
 import argparse
 import pandas as pd
 import datetime
+from datetime import date
 
 from .stringprotect import abbreviate_name
 from .stringprotect import split_names
 from .stringprotect import first_last
 
-def getyear(paperbibentry):
-	if "year" in paperbibentry.keys(): 
-		return(int(paperbibentry["year"]))
-	if "date" in paperbibentry.keys():
-		return(int(paperbibentry["date"][:4]))
-	return(0)
+from .bib_get_entries_orcid import getyear
 
 def bib_add_student_markers(years,ugrads,grads,cur_grad,bibfile,outputfile):
 	try:
@@ -36,7 +32,7 @@ def bib_add_student_markers(years,ugrads,grads,cur_grad,bibfile,outputfile):
 		cur_grad_names = pd.DataFrame([],columns=('Student Name','Start Date'))
 		
 	try:
-		grad_names = pd.read_excel(grads,sheet_name="Data",dtype={'Year':int})
+		grad_names = pd.read_excel(grads, sheet_name="Data").fillna({'Year': date.today().year}).astype({'Year': int})
 	except OSError:
 		print("Could not open/read file: " + grads)
 		grad_names = pd.DataFrame([],columns=('Student','Year'))

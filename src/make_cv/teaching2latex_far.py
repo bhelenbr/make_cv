@@ -35,7 +35,7 @@ terms = [(0,"Winter Quarter"),
 def term2STRM(term):
 	year = term2year(term)
 	try:
-		t = term.strip()[0:-4].lower()
+		t = term.strip()[0:-4].strip().lower()
 	except Exception:
 		return(np.nan)
 	# Match using the `terms` list of (num, name) tuples

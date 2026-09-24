@@ -16,6 +16,7 @@ from bibtexparser.customization import convert_to_unicode
 from bibtexparser.bparser import BibTexParser
 import argparse
 from . import global_prefs
+from .copy_with_timestamp import copy_with_timestamp
 
 pub_categories = global_prefs.pub_categories +['ignore']
 
@@ -25,11 +26,12 @@ def guess_type(paperbibentry):
 		if "note" in paperbibentry.keys():
 			if (paperbibentry["note"].find("Patent") > -1):
 				return("patent")
-		elif "howpublished" in paperbibentry.keys():
+
+		if "howpublished" in paperbibentry.keys():
 			if (paperbibentry["howpublished"].find("Patent") > -1):
 				return("patent")
-		else:
-			return("ignore")
+
+		return("ignore")
 	elif entrytype  ==  "article":
 		if "journal" in paperbibentry.keys():
 			if (paperbibentry["journal"].lower().find("rxiv") > -1):
@@ -54,8 +56,8 @@ def guess_type(paperbibentry):
 		return("techreport")
 	elif entrytype  == "book":
 		return("book")
-	else:
-		return('ignore')
+	
+	return('ignore')
 		
 def input_keyword(keyword):
 	print('Guessing type is ' +keyword +'.')
@@ -103,7 +105,7 @@ def check_keyword_exists(paperbibentry):
 			return(False)
 	return(True)
 
-def bib_add_keywords(bibfile,outputfile):
+def bib_add_keywords(bibfile,outputfile,backup_dir=None):
 	# homogenize_fields: Sanitize BibTeX field names, for example change `url` to `link` etc.
 	tbparser = BibTexParser(common_strings=True)
 	tbparser.homogenize_fields = False  # no dice
@@ -112,11 +114,17 @@ def bib_add_keywords(bibfile,outputfile):
 	with open(bibfile,encoding='utf-8') as bibtex_file:
 		bib_database = bibtexparser.load(bibtex_file, tbparser)
 	
-	for paperbibentry in bib_database.entries:
-		if "year" in paperbibentry.keys() or "date" in paperbibentry.keys():
-			if not check_keyword_exists(paperbibentry):
-				print(BibTexWriter()._entry_to_bibtex(paperbibentry))
-				add_keyword(paperbibentry)
+	missing = [e for e in bib_database.entries
+	           if ("year" in e.keys() or "date" in e.keys()) and not check_keyword_exists(e)]
+	if not missing:
+		return False  # nothing to do: no backup, no rewrite
+
+	if backup_dir is not None:
+		copy_with_timestamp(bibfile, backup_dir)
+
+	for paperbibentry in missing:
+		print(BibTexWriter()._entry_to_bibtex(paperbibentry))
+		add_keyword(paperbibentry)
 	
 	# new_db.entries = sorted(new_db.entries, key=lambda k: int(k["year"]), reverse=True)	
 	
@@ -129,6 +137,7 @@ def bib_add_keywords(bibfile,outputfile):
 	with open(outputfile, 'w', encoding='utf-8') as thebibfile:
 		bibtex_str = bibtexparser.dumps(bib_database,writer)
 		thebibfile.write(bibtex_str)
+	return True
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description='This script guesses the type of each entry and adds the type as a keyword')
