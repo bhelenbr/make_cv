@@ -20,7 +20,7 @@ def dollars2latex(dollars):
 		return("\\${:,.0f}".format(dollars))
 
 
-def grants2latex_far(f,years,inputfile,max_rows=-1):
+def grants2latex_far(f,years,inputfile,max_rows=-1,ExcludeColumn=None):
 	try:
 		props = pd.read_excel(inputfile,sheet_name="Data",header=0)
 		if 'Allocated Amt' in props.columns:
@@ -40,6 +40,12 @@ def grants2latex_far(f,years,inputfile,max_rows=-1):
 		props["Funded?"] = "Y"
 	props.fillna(value={"Sponsor": "", "Title": "", "Allocated Amt": 0, "Total Cost": 0, "Funded?": "N", "Begin Date": dt.datetime(1900,1,1),"End Date": dt.datetime(1900,1,1)},inplace=True)
 	grants = props[props['Funded?'].str.match('Y')]
+	
+	total = grants["Total Cost"].sum()
+	allocated = grants["Allocated Amt"].sum()
+
+	if ExcludeColumn is not None and ExcludeColumn in props.columns:
+		grants = grants[grants[ExcludeColumn] != True]
 
 	if (not(grants.shape[0] > 0)):
 		return(0)
@@ -58,9 +64,6 @@ def grants2latex_far(f,years,inputfile,max_rows=-1):
 		nrows = max_rows
 
 	if (nrows > 0):
-		total = grants["Total Cost"].sum()
-		allocated = grants["Allocated Amt"].sum()
-
 		f.write("Personal Allocation: " +dollars2latex(allocated) +"  Total: " +dollars2latex(total)+"\n")
 	
 		if global_prefs.usePandoc:

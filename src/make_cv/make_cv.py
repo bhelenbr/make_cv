@@ -218,7 +218,7 @@ def make_cv_tables(config,table_dir):
 		if not os.path.isfile(filename):
 			print('Falling back to using Proposals file for Grants table')
 			filename = os.path.join(faculty_source,config['ProposalsFile'])
-		nrows = grants2latex_far(fgrants,years,filename,max_rows=max_rows)
+		nrows = grants2latex_far(fgrants,years,filename,max_rows=max_rows,ExcludeColumn=config['ExcludeColumn'])
 		fgrants.close()
 		if not(nrows):
 			os.remove(table_dir +os.sep +'Grants.tex')

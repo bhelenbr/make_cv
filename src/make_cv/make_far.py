@@ -77,7 +77,7 @@ def make_far_tables(config,table_dir):
 	if Path(filename).is_file():
 		print('Updating advisee counts')
 		df = pd.read_excel(filename,skiprows=0)
-		nadvisees = df["Count Distinct Name"].iloc[-1]
+		nadvisees = df["Count"].iloc[-1]
 		fadv = open(table_dir +os.sep +'AdviseeCounts.tex', 'w') # file to write
 		fadv.write("Current undergraduate advisees: " +str(nadvisees) +" \\par\n")
 		fadv.close()
