@@ -10,6 +10,7 @@ import os
 import argparse
 
 from .stringprotect import str2latex
+from . import global_prefs
 from .stringprotect import abbreviate_name_list
 
 def UR2latex_far(f,years,inputfile):
@@ -32,7 +33,7 @@ def UR2latex_far(f,years,inputfile):
 	
 	nrows = df.shape[0]
 	if (nrows > 0):	
-		f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXll}\n & Name: Title  & Program & Term \\\\\n\\hline\n")
+		f.write("\\begin{" + global_prefs.table_env() + "}{\\linewidth}{>{\\rownum}rXll}\n & Name: Title  & Program & Term \\\\\n\\hline\n")
 		count = 0
 		newline=""
 		while count < nrows:
@@ -40,7 +41,7 @@ def UR2latex_far(f,years,inputfile):
 			f.write(" & " +abbreviate_name_list(df.loc[count,"Students"])+": " +str2latex(df.loc[count,"Title"]) + " & " +df.loc[count,"Program Type"] + " & " +df.loc[count,"Term"] +" " +str(df.loc[count,"Calendar Year"]))
 			newline="\\\\\n"
 			count += 1
-		f.write("\n\\end{tabularx}\n")
+		f.write("\n\\end{" + global_prefs.table_env() + "}\n")
 		
 	return(nrows)
 

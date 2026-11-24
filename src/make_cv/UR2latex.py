@@ -9,6 +9,7 @@ import os
 import argparse
 
 from .stringprotect import str2latex
+from . import global_prefs
 from .stringprotect import abbreviate_name_list
 
 def UR2latex(f,years,inputfile,max_rows=-1):
@@ -42,7 +43,7 @@ def UR2latex(f,years,inputfile,max_rows=-1):
 		df.sort_values(by=['Calendar Year'], inplace=True, ascending = [False])
 		df = df.reset_index()
 		
-		f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXV{4cm}l}\n & Name: Title  & Program & Date(Semesters) \\tablehead\n")
+		f.write("\\begin{" + global_prefs.table_env() + "}{\\linewidth}{>{\\rownum}rXV{4cm}l}\n & Name: Title  & Program & Date(Semesters) \\tablehead\n")
 		f.write("\\tablecontinue{Undergraduate Research}\n")
 		count = 0
 		newline=""
@@ -52,7 +53,7 @@ def UR2latex(f,years,inputfile,max_rows=-1):
 			newline="\\\\\n"
 			count += 1
 	
-		f.write("\n\\end{tabularx}\n")
+		f.write("\n\\end{" + global_prefs.table_env() + "}\n")
 	
 	return(nrows)
 

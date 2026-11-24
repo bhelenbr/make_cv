@@ -17,3 +17,7 @@ files = {'ScholarshipFile': 'Scholarship/scholarship.bib',
             'GrantsFile': 'Proposals & Grants/grants.xlsx',
 			'ProposalsFile': 'Proposals & Grants/proposals & grants.xlsx'
 			} 
+def table_env():
+	"""LaTeX environment for generated (possibly multi-page) tables.
+	xltabular gives page-breaking tabularx tables; pandoc only understands tabularx."""
+	return "tabularx" if usePandoc else "xltabular"

@@ -10,6 +10,7 @@ import sys
 import argparse
 
 from .stringprotect import str2latex
+from . import global_prefs
 
 
 def service2latex_far(f,years,inputfile):
@@ -31,7 +32,7 @@ def service2latex_far(f,years,inputfile):
 	nrows = df.shape[0]
 
 	if nrows > 0:
-		f.write("\\begin{tabularx}{\\linewidth}{lllXl}\nYear & Term & Type & Description & Hours \\\\\n\\hline\n")
+		f.write("\\begin{" + global_prefs.table_env() + "}{\\linewidth}{lllXl}\nYear & Term & Type & Description & Hours \\\\\n\\hline\n")
 		count = 0
 		newline=""
 		while count < nrows:
@@ -40,7 +41,7 @@ def service2latex_far(f,years,inputfile):
 			f.write(str2latex("{:d}".format(int(df.loc[count,"Calendar Year"]))) + " & " +str2latex(df.loc[count,"Term"]) + " & " +str2latex(df.loc[count,"Type"]) + " & " +str2latex(df.loc[count,"Description"]) + " & " +str2latex(df.loc[count,"Hours/Semester"]))
 			newline="\\\\\n"
 			count += 1
-		f.write("\n\\end{tabularx}\n")
+		f.write("\n\\end{" + global_prefs.table_env() + "}\n")
 		
 	return(nrows)
 	

@@ -174,9 +174,9 @@ def thesis2latex_far(f,years,studentfile,thesisfile,max_rows=-1):
 
 	if (nrows+nrows2 > 0):
 		if global_prefs.usePandoc:
-			f.write("\\begin{tabularx}{\\linewidth}{lXll}\n & Name: Title  &" + DateHeader + " & Degree \\\\\n")
+			f.write("\\begin{" + global_prefs.table_env() + "}{\\linewidth}{lXll}\n & Name: Title  &" + DateHeader + " & Degree \\\\\n")
 		else:
-			f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXll}\n & Name: Title  & " + DateHeader + " & Degree \\tablehead\n")
+			f.write("\\begin{" + global_prefs.table_env() + "}{\\linewidth}{>{\\rownum}rXll}\n & Name: Title  & " + DateHeader + " & Degree \\tablehead\n")
 			f.write("\\tablecontinue{" + TableHeader + "}\n")
 		newline=""
 		if nrows > 0:
@@ -205,7 +205,7 @@ def thesis2latex_far(f,years,studentfile,thesisfile,max_rows=-1):
 				newline="\\\\\n"
 				count += 1
 	
-		f.write("\n\\end{tabularx}\n")
+		f.write("\n\\end{" + global_prefs.table_env() + "}\n")
 		
 	return(nrows+nrows2)
 	

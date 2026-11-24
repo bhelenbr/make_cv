@@ -58,9 +58,9 @@ def props2latex_far(f,years,inputfile,max_rows=-1):
 	
 	if (nrows > 0):	
 		if global_prefs.usePandoc:
-			f.write("\\begin{tabularx}{\\linewidth}{lXll}\n& Sponsor: Title & Alloc/Total & Dates  \\\\\n")
+			f.write("\\begin{" + global_prefs.table_env() + "}{\\linewidth}{lXll}\n& Sponsor: Title & Alloc/Total & Dates  \\\\\n")
 		else:
-			f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXll}\n& Sponsor: Title & Alloc/Total & Dates  \\tablehead\n")
+			f.write("\\begin{" + global_prefs.table_env() + "}{\\linewidth}{>{\\rownum}rXll}\n& Sponsor: Title & Alloc/Total & Dates  \\tablehead\n")
 			f.write("\\tablecontinue{Proposals}\n")
 		newline = ""
 		count = 0
@@ -72,7 +72,7 @@ def props2latex_far(f,years,inputfile,max_rows=-1):
 			f.write(" & " +props.loc[count,"Begin Date"].strftime("%m/%Y") +"-" +props.loc[count,"End Date"].strftime("%m/%Y"))
 			newline = "\\\\\n"
 			count += 1
-		f.write("\n\\end{tabularx}\n")
+		f.write("\n\\end{" + global_prefs.table_env() + "}\n")
 	
 	return(nrows)
 

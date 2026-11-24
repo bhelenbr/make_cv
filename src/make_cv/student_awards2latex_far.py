@@ -11,6 +11,7 @@ from datetime import date
 import argparse
 
 from .stringprotect import str2latex
+from . import global_prefs
 from .stringprotect import abbreviate_name_list
 
 def student_awards2latex_far(f,years,inputfile):
@@ -33,7 +34,7 @@ def student_awards2latex_far(f,years,inputfile):
 	if (nrows > 0):	
 		df2 = df.sort_values(by=['Year','Title','Student'], ascending = [False,True,True])
 		df = df2.reset_index()
-		f.write("\\begin{tabularx}{\linewidth}{lXl}\nYear & Title  & Student \\\\\n\\hline\n")
+		f.write("\\begin{" + global_prefs.table_env() + "}{\\linewidth}{lXl}\nYear & Title  & Student \\\\\n\\hline\n")
 		newline=""
 		count = 0
 		while count < nrows:
@@ -42,7 +43,7 @@ def student_awards2latex_far(f,years,inputfile):
 			newline="\\\\\n"
 			count += 1
 	
-		f.write("\n\\end{tabularx}\n")
+		f.write("\n\\end{" + global_prefs.table_env() + "}\n")
 	
 	return(nrows)
 

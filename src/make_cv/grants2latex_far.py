@@ -67,9 +67,9 @@ def grants2latex_far(f,years,inputfile,max_rows=-1,ExcludeColumn=None):
 		f.write("Personal Allocation: " +dollars2latex(allocated) +"  Total: " +dollars2latex(total)+"\n")
 	
 		if global_prefs.usePandoc:
-			f.write("\\begin{tabularx}{\\linewidth}{lXll}\n& Sponsor: Title & Alloc/Total & Dates  \\\\\n")
+			f.write("\\begin{" + global_prefs.table_env() + "}{\\linewidth}{lXll}\n& Sponsor: Title & Alloc/Total & Dates  \\\\\n")
 		else:
-			f.write("\\begin{tabularx}{\\linewidth}{>{\\rownum}rXllll}\n& Sponsor: Title & Alloc/Total & Dates  \\tablehead\n")
+			f.write("\\begin{" + global_prefs.table_env() + "}{\\linewidth}{>{\\rownum}rXllll}\n& Sponsor: Title & Alloc/Total & Dates  \\tablehead\n")
 			f.write("\\tablecontinue{Grants}\n")
 		
 		count = 0
@@ -82,7 +82,7 @@ def grants2latex_far(f,years,inputfile,max_rows=-1,ExcludeColumn=None):
 			f.write(" & " +grants.loc[count,"Begin Date"].strftime("%m/%Y") +"-" +grants.loc[count,"End Date"].strftime("%m/%Y"))
 			newline="\\\\\n"
 			count += 1
-		f.write("\n\\end{tabularx}\n")
+		f.write("\n\\end{" + global_prefs.table_env() + "}\n")
 	
 	return(nrows)
 	

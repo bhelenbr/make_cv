@@ -116,12 +116,12 @@ def teaching2latex_far(f,years,inputfile,private=False,sortbycourse=False,shortf
 			ending = "\\\\\n\\hline\n"
 
 		if (private):
-			f.write("\\begin{tabularx}{\\linewidth}{" + rowtype + "}\n")
+			f.write("\\begin{" + global_prefs.table_env() + "}{\\linewidth}{" + rowtype + "}\n")
 			f.write(f"{headers[0]}  & {headers[1]} & Secs & Enroll. {ending}")
 			if not global_prefs.usePandoc: 
 				f.write("\\multicolumn{4}{l}{\\conthead{Teaching}} \\endhead \\hline\n")
 		else:
-			f.write("\\begin{tabularx}{\\linewidth}{" +rowtype +"lll}\n")
+			f.write("\\begin{" + global_prefs.table_env() + "}{\\linewidth}{" +rowtype +"lll}\n")
 			f.write(f"{headers[0]} & {headers[1]} & Secs & Enroll. & \\%Resp. & Q19 & Q20 {ending}")
 			if not global_prefs.usePandoc: 
 				f.write("\\multicolumn{7}{l}{\\conthead{Teaching}} \\endhead \\hline\n")
@@ -134,7 +134,7 @@ def teaching2latex_far(f,years,inputfile,private=False,sortbycourse=False,shortf
 				f.write(" & " +"{:3.0f}".format(df.loc[count,('count_19','sum')]*100.0/df.loc[count,('enrollment','sum')]) + "\\% & " +"{:3.2f}".format(df.loc[count,('weighted_19','sum')]/df.loc[count,('count_19','sum')]) + " & " +"{:3.2f}".format(df.loc[count,('weighted_20','sum')]/df.loc[count,('count_20','sum')]))
 			newline="\\\\\n"
 			count += 1
-		f.write("\n\\end{tabularx}\n")
+		f.write("\n\\end{" + global_prefs.table_env() + "}\n")
 		
 	return(nrows)
 

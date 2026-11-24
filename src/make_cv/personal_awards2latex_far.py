@@ -11,6 +11,7 @@ from datetime import date
 import argparse
 
 from .stringprotect import str2latex
+from . import global_prefs
 
 def personal_awards2latex_far(f,years,inputfile):
 	source = inputfile # file to read
@@ -35,7 +36,7 @@ def personal_awards2latex_far(f,years,inputfile):
 		#print(df)
 		#print(df.columns)
 	
-		f.write("\\begin{tabularx}{\\linewidth}{llX}\nYear & Type  & Title \\\\\n\\hline\n")
+		f.write("\\begin{" + global_prefs.table_env() + "}{\\linewidth}{llX}\nYear & Type  & Title \\\\\n\\hline\n")
 		count = 0
 		newline = ""
 		while count < nrows:
@@ -44,7 +45,7 @@ def personal_awards2latex_far(f,years,inputfile):
 			newline = "\\\\\n"
 			count += 1
 	
-		f.write("\n\\end{tabularx}\n")
+		f.write("\n\\end{" + global_prefs.table_env() + "}\n")
 	
 	return(nrows)
 	

@@ -58,16 +58,16 @@ def reviews2latex_far(f,years,inputfile,max_rows=-1):
 		f.write("Reviewing activity since " +str(yearmin)+ ": " +str(nreviews) +" reviews (" +str(nrounds) +" total review rounds)\\par\\vspace\\baselineskip\n")
 
 		if global_prefs.usePandoc:
-			f.write("\\begin{tabularx}{\\linewidth}{Xl}\nJournal & Reviews(Rounds) \\\\ \\hline\n")
+			f.write("\\begin{" + global_prefs.table_env() + "}{\\linewidth}{Xl}\nJournal & Reviews(Rounds) \\\\ \\hline\n")
 		else:
-			f.write("\\begin{tabularx}{\\linewidth}{Xl}\nJournal & Reviews(Rounds) \\endfirsthead\n")
+			f.write("\\begin{" + global_prefs.table_env() + "}{\\linewidth}{Xl}\nJournal & Reviews(Rounds) \\endfirsthead\n")
 			f.write("\\multicolumn{2}{l}{\\conthead{Reviewing Activity}} \\endhead \\hline\n")
 
 		count = 0
 		while count < nrows:
 			f.write(str2latex(table.loc[count,"Journal"]) + " & " +str(table.loc[count,"Reviews"]) +"(" +str(table.loc[count,"Rounds"]) +")" +"\\\\\n")
 			count += 1
-		f.write("\\end{tabularx}\n")
+		f.write("\\end{" + global_prefs.table_env() + "}\n")
 	return(nrows)
 	
 if __name__ == "__main__":
