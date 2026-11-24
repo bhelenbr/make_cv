@@ -623,8 +623,6 @@ def typeset(config,filename,command):
 		except OSError as err:
 			continue
 	print("\ntypesetting pass 3\n")
-	subprocess.run(command,stdout=subprocess.DEVNULL,stderr=subprocess.STDOUT) 
-	print("\ntypesetting pass 4\n")
 	ps = subprocess.run(command)
 	
 	# cleanup
