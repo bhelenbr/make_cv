@@ -140,56 +140,59 @@ def bib_get_entries_scopus(bibfile, author_id, years, outputfile):
     bib_db.comments.append('Scopus_stats: ' + json.dumps(author_stats))
     
     eids = author.get_documents(refresh=10)
-    for doc in eids:
-        # Extract a usable identifier (EID/Scopus ID/DOI) from the returned document
-        eid_val = getattr(doc, "eid")
-        ab = AbstractRetrieval(eid_val, view="FULL")
-        try:
-            meta = scopus_metadata(ab)
-        except Exception:
-            continue
-
-        if not meta["year"] or int(meta["year"]) < begin_year:
-            continue
-
-        title_id = make_title_id(meta["title"], meta["year"])
-
-        # DOI duplicate check
-        if meta["doi"] and any(meta["doi"].lower() == d for _, _, d in existing_ids):
-            continue
-
-        # Title/year duplicate check
-        if any(title_id == t for _, t, _ in existing_ids):
-            continue
-
-        # Prefer native Scopus BibTeX for journal articles
-        try:
-            bib = ab.get_bibtex()
-            if re.search(r'@comment{', bib):
-                raise Exception("Invalid BibTeX from Scopus")
-            
-            # Reset the citation key to our generated one, preserving entry type
-            # scopus citation keys can cause errors
-            bib = bibtex_str2latex(bib)
-            bib = re.sub(r'@([a-zA-Z]+)\w*{[^\n]+',f'@\\1{{{title_id},', bib, count=1)
-        except Exception:
-            bib = None
-
-        if not bib:
-            bib = build_bibtex(ab)
-            completer = BibtexAutocomplete()
-            completer.load_string(bib)
-            completer.autocomplete()
-            bib = completer.write_string()[0]
-            bib = bibtex_str2latex(bib)
-        print(bib)
-
-        if not global_prefs.quiet:
-            yn = input("Add this entry? Y/N ").upper()
-            if yn != "Y":
+    if not eids:
+        print("No documents found for this author in Scopus.")
+    else:
+        for doc in eids:
+            # Extract a usable identifier (EID/Scopus ID/DOI) from the returned document
+            eid_val = getattr(doc, "eid")
+            ab = AbstractRetrieval(eid_val, view="FULL")
+            try:
+                meta = scopus_metadata(ab)
+            except Exception:
                 continue
 
-        bib_db = bibtexparser.loads(bib, tbparser)
+            if not meta["year"] or int(meta["year"]) < begin_year:
+                continue
+
+            title_id = make_title_id(meta["title"], meta["year"])
+
+            # DOI duplicate check
+            if meta["doi"] and any(meta["doi"].lower() == d for _, _, d in existing_ids):
+                continue
+
+            # Title/year duplicate check
+            if any(title_id == t for _, t, _ in existing_ids):
+                continue
+
+            # Prefer native Scopus BibTeX for journal articles
+            try:
+                bib = ab.get_bibtex()
+                if re.search(r'@comment{', bib):
+                    raise Exception("Invalid BibTeX from Scopus")
+                
+                # Reset the citation key to our generated one, preserving entry type
+                # scopus citation keys can cause errors
+                bib = bibtex_str2latex(bib)
+                bib = re.sub(r'@([a-zA-Z]+)\w*{[^\n]+',f'@\\1{{{title_id},', bib, count=1)
+            except Exception:
+                bib = None
+
+            if not bib:
+                bib = build_bibtex(ab)
+                completer = BibtexAutocomplete()
+                completer.load_string(bib)
+                completer.autocomplete()
+                bib = completer.write_string()[0]
+                bib = bibtex_str2latex(bib)
+            print(bib)
+
+            if not global_prefs.quiet:
+                yn = input("Add this entry? Y/N ").upper()
+                if yn != "Y":
+                    continue
+
+            bib_db = bibtexparser.loads(bib, tbparser)
 
     writer = BibTexWriter()
     writer.order_entries_by = None
