@@ -117,6 +117,8 @@ Service
    1. `undergraduate research data.xlsx`.  See the notes sheet in this file for an explanation of the categories.  
         
    2. `service data.xlsx`.   Use this file to keep track of your service data.   The categories are “Description”, “Type”-(University,Department,Professional,Community), “Position”-(Member,Chair), “Term”, “Calendar Year”, “Hours/Semester”.  “Hours/Semester” is not used when making the c.v. only for activity reports.  If you have repeated service each term, you should copy and paste the lines from the previous term and make a new entry for each term that you are on an assignment.   make\_cv will gather all like entries into a single entry in the c.v. with a year sequence.  For example, “Science fair judge 2018-2021,2023”  
+
+      By default all service goes into one section with a subheading for each Type (`servicegroups = combined` in `make_cv.cfg`).  With `servicegroups = separate`, make\_cv instead writes each Type to its own file, `Service_<Type>.tex` (e.g. `Service_University.tex`; spaces and punctuation are dropped from the Type in the file name), so `cv.tex` can place each Type in its own section.  The CAPTE template uses this.  
         
    3. `reviews data.xlsx`. I recommend that you let Web of Science keep your paper reviewing activity records for you.  To use the service do the following  
         

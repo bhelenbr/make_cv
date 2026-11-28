@@ -30,7 +30,8 @@ cv_keys = {'Years': '-1',
 			'Timestamp': 'false',
 			'ExcludeColumn': 'None',
 			'GoogleStats': 'true',
-			'ScopusStats': 'true'
+			'ScopusStats': 'true',
+			'ServiceGroups': 'combined'
 			}
 
 def load_personal_data(configuration):

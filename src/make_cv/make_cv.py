@@ -42,7 +42,7 @@ from .bib2latex_far import bib2latex_far
 from .thesis2latex_far import thesis2latex_far
 from .personal_awards2latex import personal_awards2latex
 from .student_awards2latex import student_awards2latex
-from .service2latex import service2latex
+from .service2latex import service2latex, service2latex_separate
 from .reviews2latex_far import reviews2latex_far
 from .teaching2latex_far import teaching2latex_far
 from .teaching2latex_short import teaching2latex_short
@@ -129,12 +129,16 @@ def make_cv_tables(config,table_dir):
 	[include,years,max_rows] = getSectionVals(config,'Service')
 	if include:
 		print('Updating service table')
-		fservice = open(table_dir +os.sep +'Service.tex', 'w') # file to write
 		filename = os.path.join(faculty_source,config['ServiceFile'])
-		nrows = service2latex(fservice,years,filename,'Service',max_rows=max_rows,ExcludeColumn=config['ExcludeColumn'])	
-		fservice.close()
-		if not(nrows):
-			os.remove(table_dir+os.sep +'Service.tex')
+		if config.get('ServiceGroups','combined').strip().lower() == 'separate':
+			# one file per Type: Service_<Type>.tex
+			service2latex_separate(table_dir,'Service',years,filename,max_rows=max_rows,ExcludeColumn=config['ExcludeColumn'])
+		else:
+			fservice = open(table_dir +os.sep +'Service.tex', 'w') # file to write
+			nrows = service2latex(fservice,years,filename,'Service',max_rows=max_rows,ExcludeColumn=config['ExcludeColumn'])	
+			fservice.close()
+			if not(nrows):
+				os.remove(table_dir+os.sep +'Service.tex')
 
 	# Professional Development
 	[include,years,max_rows] = getSectionVals(config,'ProfDevelopment')	
